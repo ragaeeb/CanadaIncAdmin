@@ -40,6 +40,34 @@ Page
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
                 
+                PersistDropDown
+                {
+                    title: qsTr("Ilm Language") + Retranslate.onLanguageChanged
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    key: "translation"
+                    
+                    Option {
+                        text: qsTr("Arabic") + Retranslate.onLanguageChanged
+                        value: "arabic"
+                    }
+                    
+                    Option {
+                        text: qsTr("English") + Retranslate.onLanguageChanged
+                        value: "english"
+                    }
+                    
+                    onValueChanged: {
+                        if (diff)
+                        {
+                            var confirm = persist.showBlockingToast( "Download", "Database doesn't exist, download it?" );
+                            
+                            if (confirm) {
+                                
+                            }
+                        }
+                    }
+                }
+                
                 ProgressIndicator
                 {
                     id: progressIndicator
@@ -92,16 +120,6 @@ Page
                         admin.compressed.connect(onCompressed);
                         admin.compressProgress.connect(onCompressProgress);
                     }
-                }
-                
-                Label {
-                    id: infoText
-                    multiline: true
-                    textStyle.fontSize: FontSize.XXSmall
-                    textStyle.textAlign: TextAlign.Center
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    verticalAlignment: VerticalAlignment.Bottom
-                    horizontalAlignment: HorizontalAlignment.Center
                 }
             }
         }

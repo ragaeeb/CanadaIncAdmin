@@ -1,5 +1,6 @@
-// This file is used to store precompiled headers.
+#include <bb/cascades/AbstractPane>
+#include <bb/cascades/Application>
+#include <bb/cascades/ArrayDataModel>
+#include <bb/cascades/QmlDocument>
 
-#include <QObject>
-#include <QString>
-#include <QVariant>
+#include <bb/data/XmlDataAccess>

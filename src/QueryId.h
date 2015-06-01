@@ -3,7 +3,7 @@
 
 #include <qobjectdefs.h>
 
-namespace quran {
+namespace admin {
 
 class QueryId
 {

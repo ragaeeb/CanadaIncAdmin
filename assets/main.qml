@@ -17,8 +17,6 @@ TabbedPane
                 definition.source = "SettingsPage.qml"
                 var settingsPage = definition.createObject();
                 root.activePane.push(settingsPage);
-                
-                reporter.record("SettingsPage");
             }
         }
     }
