@@ -17,6 +17,7 @@ class IlmHelper : public QObject
     Q_OBJECT
 
     DatabaseHelper* m_sql;
+    QString m_name;
 
     qint64 generateIndividualField(QObject* caller, QString const& value);
 
@@ -72,6 +73,8 @@ public:
 
     void lazyInit();
     static QStringList setupTableStatements();
+    void setDatabaseName(QString const& name);
+    QString databaseName() const;
 };
 
 } /* namespace ilm */

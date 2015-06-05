@@ -75,6 +75,14 @@ TabbedPane
         }
     }
     
+    function onReady() {
+        app.loadIlmDatabase();
+    }
+    
+    onCreationCompleted: {
+        app.lazyInitComplete.connect(onReady);
+    }
+    
     attachedObjects: [
         ComponentDefinition {
             id: definition

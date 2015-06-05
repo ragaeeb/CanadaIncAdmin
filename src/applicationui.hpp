@@ -54,7 +54,7 @@ private slots:
     void onDirectoryChanged(QString const& path);
     void onExecuted(int id);
     void onFileChanged(QString const& path);
-    void onRequestComplete(QVariant const& cookie, QByteArray const& data);
+    void onRequestComplete(QVariant const& cookie, QByteArray const& data, bool error);
 
 public:
     ApplicationUI();
@@ -62,6 +62,9 @@ public:
 
     Q_SLOT void compressIlmDatabase();
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
+    Q_INVOKABLE void loadIlmDatabase();
+
+    QString ilmDatabaseName();
 };
 
 }

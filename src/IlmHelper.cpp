@@ -607,6 +607,17 @@ void IlmHelper::lazyInit()
 }
 
 
+void IlmHelper::setDatabaseName(QString const& name)
+{
+    m_name = name;
+}
+
+
+QString IlmHelper::databaseName() const {
+    return m_name;
+}
+
+
 IlmHelper::~IlmHelper()
 {
 }

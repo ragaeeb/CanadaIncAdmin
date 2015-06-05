@@ -220,6 +220,12 @@ void QuranHelper::updateTafsirLink(QObject* caller, qint64 explanationId, int su
 }
 
 
+void QuranHelper::setDatabaseName(QString const& name)
+{
+    m_name = name;
+}
+
+
 QuranHelper::~QuranHelper()
 {
 }

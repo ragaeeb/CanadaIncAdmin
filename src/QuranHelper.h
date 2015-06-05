@@ -27,6 +27,7 @@ class QuranHelper : public QObject
 	DatabaseHelper* m_sql;
 	QStringList m_chapters;
 	QFutureWatcher<QStringList> m_chaptersWatcher;
+	QString m_name;
 
 private slots:
     void onCaptureCompleted();
@@ -47,6 +48,8 @@ public:
     Q_INVOKABLE void linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVariantList const& chapterVerseData);
     Q_INVOKABLE void unlinkAyatsForTafsir(QObject* caller, QVariantList const& ids, qint64 suitePageId);
     Q_INVOKABLE void updateTafsirLink(QObject* caller, qint64 explanationId, int surahId, int fromVerse, int toVerse);
+
+    void setDatabaseName(QString const& name);
 };
 
 } /* namespace quran */
