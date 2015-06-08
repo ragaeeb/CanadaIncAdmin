@@ -38,7 +38,7 @@ class ApplicationUI : public QObject
     static void onErrorMessage(const char* msg);
 
 signals:
-    void childCardFinished(QString const& message);
+    void childCardFinished(QString const& message, QString const& cookie);
     void compressed(bool success);
     void compressProgress(qint64 current, qint64 total);
     void compressing();

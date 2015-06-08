@@ -16,6 +16,19 @@ Page
         }
     }
     
+    function onFinished(message, cookie)
+    {
+        var tokens = message.split("/");
+        var surahId = parseInt( tokens[0] );
+        var verseId = parseInt( tokens[1] );
+        
+        if (cookie == "searchPicked") {
+            searchAction.onPicked(surahId, verseId);
+        } else if (cookie == "ayatPicked" || cookie == "surahPicked") {
+            lookupAction.onPicked(surahId, verseId);
+        }
+    }
+    
     function popToRoot()
     {
         while (navigationPane.top != narrationsPage) {
@@ -74,14 +87,13 @@ Page
                 prompt.show();
             }
             
+            onCreationCompleted: {
+                app.childCardFinished.connect(onFinished);
+            }
+            
             onTriggered: {
-                console.log("UserEvent: LookupChapter");
-                definition.source = "SearchPage.qml";
-                var p = definition.createObject();
-                p.picked.connect(onPicked);
-                
-                prompt.resetIndexPath();
-                navigationPane.push(p);
+                console.log("UserEvent: SearchForText");
+                persist.invoke("com.canadainc.Quran10.search.picker", "searchPicked");
             }
         },
         
@@ -128,7 +140,8 @@ Page
     ]
     
     function cleanUp() {
-        admin.ayatsCaptured.disconnect(extractAyats.onCaptured);
+        quran.ayatsCaptured.disconnect(extractAyats.onCaptured);
+        app.childCardFinished.disconnect(onFinished);
     }
     
     titleBar: TitleBar
@@ -171,12 +184,12 @@ Page
             function onPicked(chapter, verse)
             {
                 navigationPane.pop();
-                
+
                 if (verse > 0) {
                     prompt.inputField.defaultText = chapter+":"+verse;
                 } else {
                     prompt.inputField.defaultText = chapter+":";
-                } 
+                }
                 
                 prompt.show();
             }
@@ -186,12 +199,7 @@ Page
                 definition.source = "SurahPickerPage.qml";
                 
                 prompt.resetIndexPath();
-                var p = definition.createObject();
-                p.picked.connect(onPicked);
-                p.focusOnSearchBar = true;
-                p.ready();
-                
-                navigationPane.push(p);
+                persist.invoke("com.canadainc.Quran10.surah.picker", "surahPicked");
             }
         }
     }
@@ -265,12 +273,10 @@ Page
                     var page = definition.createObject();
                     
                     if (d.from_verse_number) {
-                        page.surahId = d.surah_id;
-                        page.verseId = dataModel.data(indexPath).from_verse_number;
+                        persist.invoke( "com.canadainc.Quran10.previewer", "", "", "quran://%1/%2".arg(d.surah_id).arg(d.from_verse_number) );
                     } else {
-                        page.surahId = d.surah_id;
+                        persist.invoke( "com.canadainc.Quran10.ayat.picker", "ayatPicked", "", "", d.surah_id );
                         prompt.indexPath = indexPath;
-                        page.picked.connect(lookupAction.onPicked);
                     }
                     
                     navigationPane.push(page);
