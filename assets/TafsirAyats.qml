@@ -11,7 +11,7 @@ Page
     onSuitePageIdChanged: {
         if (suitePageId)
         {
-            helper.fetchAyatsForTafsir(listView, suitePageId);
+            quran.fetchAyatsForTafsir(listView, suitePageId);
             tafsirHelper.fetchBioMetadata(listView, suitePageId);
         }
     }
@@ -97,7 +97,7 @@ Page
                 if (id == QueryId.FetchTafsirContent)
                 {
                     if (data.length > 0) {
-                        admin.captureAyats("admin", data[0].body);
+                        quran.captureAyats(data[0].body);
                     } else {
                         busy.delegateActive = false;
                     }
@@ -107,25 +107,22 @@ Page
             onTriggered: {
                 console.log("UserEvent: ExtractHeadings");
                 busy.delegateActive = true;
-                helper.fetchTafsirContent(extractAyats, suitePageId);
+                tafsirHelper.fetchTafsirContent(extractAyats, suitePageId);
             }
             
-            function onCaptured(all, cookie)
+            function onCaptured(all)
             {
-                if (cookie == "admin")
-                {
-                    if (all && all.length > 0) {
-                        tafsirHelper.linkAyatsToTafsir(listView, suitePageId, all);
-                        busy.delegateActive = true;
-                    } else {
-                        persist.showToast( qsTr("No ayat signatures found..."), "images/menu/ic_capture_ayats.png" );
-                        busy.delegateActive = false;
-                    }
+                if (all && all.length > 0) {
+                    quran.linkAyatsToTafsir(listView, suitePageId, all);
+                    busy.delegateActive = true;
+                } else {
+                    persist.showToast( qsTr("No ayat signatures found..."), "images/menu/ic_capture_ayats.png" );
+                    busy.delegateActive = false;
                 }
             }
             
             onCreationCompleted: {
-                admin.ayatsCaptured.connect(onCaptured);
+                quran.ayatsCaptured.connect(onCaptured);
             }
         }
     ]
@@ -213,31 +210,6 @@ Page
             dataModel: ArrayDataModel {
                 id: adm
             }
-            
-            multiSelectHandler.actions: [
-                DeleteActionItem
-                {
-                    imageSource: "images/menu/ic_unlink_tafsir_ayat.png"
-                    title: qsTr("Unlink") + Retranslate.onLanguageChanged
-                    
-                    onTriggered: {
-                        console.log("UserEvent: UnlinkAyatsFromTafsirTriggered");
-                        
-                        var all = listView.selectionList();
-                        var ids = [];
-                        
-                        for (var i = all.length-1; i >= 0; i--) {
-                            ids.push( adm.data(all[i]).id );
-                        }
-                        
-                        helper.unlinkNarrationsForTafsir(listView, ids, suitePageId);
-                        
-                        for (var i = all.length-1; i >= 0; i--) {
-                            adm.removeAt( all[i][0] );
-                        }
-                    }
-                }
-            ]
             
             function onDataLoaded(id, data)
             {
@@ -339,7 +311,7 @@ Page
             function unlink(ListItem)
             {
                 busy.delegateActive = true;
-                tafsirHelper.unlinkAyatsForTafsir(listView, [ListItem.data.id], suitePageId);
+                quran.unlinkAyatsForTafsir(listView, [ListItem.data.id], suitePageId);
                 adm.removeAt(ListItem.indexPath[0]);
             }
             
@@ -493,10 +465,10 @@ Page
                             current.from_verse_number = fromVerse;
                             current.to_verse_number = toVerse;
                             
-                            tafsirHelper.updateTafsirLink(listView, current.id, chapter, fromVerse, toVerse);
+                            quran.updateTafsirLink(listView, current.id, chapter, fromVerse, toVerse);
                             adm.replace(indexPath[0], current);
                         } else {
-                            tafsirHelper.linkAyatToTafsir(listView, suitePageId, chapter, fromVerse, toVerse);
+                            quran.linkAyatToTafsir(listView, suitePageId, chapter, fromVerse, toVerse);
                         }
                     } else {
                         persist.showToast( qsTr("Invalid entry specified. Please enter something with the Chapter:Verse scheme (ie: 2:55 for Surah Baqara vese #55)"), "images/toast/invalid_entry.png" );

@@ -95,8 +95,6 @@ TabbedPane
         app.compressing.disconnect(spd.onCompressing);
         app.compressed.disconnect(spd.onCompressed);
         app.compressProgress.disconnect(spd.onCompressProgress);
-
-        app.loadIlmDatabase();
     }
     
     onCreationCompleted: {

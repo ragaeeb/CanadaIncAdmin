@@ -3,6 +3,7 @@
 
 #include "DatabaseHelper.h"
 #include "IlmHelper.h"
+#include "InvokeHelper.h"
 #include "NetworkProcessor.h"
 #include "Persistance.h"
 #include "QuranHelper.h"
@@ -26,13 +27,12 @@ class ApplicationUI : public QObject
     DatabaseHelper m_sql;
     Persistance m_persistance;
     NetworkProcessor m_network;
-    bb::system::InvokeRequest m_request;
-    QObject* m_root;
     ilm::IlmHelper m_ilm;
     quran::QuranHelper m_quran;
     QFileSystemWatcher m_watcher;
     QFile m_source;
     QFile m_target;
+    InvokeHelper m_invoke;
 
     void init(QString const& qml);
     static void onErrorMessage(const char* msg);

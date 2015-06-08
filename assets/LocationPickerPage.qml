@@ -274,6 +274,7 @@ Page
                     console.log("UserEvent: CityPicked");
                     
                     var city = d.formatted_address;
+                    var locality;
                     
                     if (city)
                     {
@@ -286,7 +287,15 @@ Page
                             var types = parts[i].types;
                             
                             if ( types.indexOf("locality") != -1 ) {
-                                city = parts[i].long_name;
+                                locality = parts[i].long_name;
+                            }
+                        }
+                        
+                        if (locality) {
+                            var useLocality = persist.showBlockingDialog("Loaclity", qsTr("Do you want to use '%1' instead?").arg(locality) );
+                            
+                            if (useLocality) {
+                                city = locality;
                             }
                         }
                         

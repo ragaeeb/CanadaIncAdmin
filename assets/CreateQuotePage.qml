@@ -10,7 +10,7 @@ Page
     
     onQuoteIdChanged: {
         if (quoteId) {
-            helper.fetchQuote(createPage, quoteId);
+            tafsirHelper.fetchQuote(createPage, quoteId);
         }
     }
     

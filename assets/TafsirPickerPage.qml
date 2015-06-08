@@ -39,7 +39,7 @@ Page
     function reload()
     {
         busy.delegateActive = true;
-        helper.fetchAllTafsir(listView);
+        tafsirHelper.fetchAllTafsir(listView);
     }
     
     titleBar: TitleBar

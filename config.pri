@@ -151,6 +151,7 @@ config_pri_source_group1 {
     SOURCES += \
         $$quote($$BASEDIR/src/CommonConstants.cpp) \
         $$quote($$BASEDIR/src/IlmHelper.cpp) \
+        $$quote($$BASEDIR/src/InvokeHelper.cpp) \
         $$quote($$BASEDIR/src/QuranHelper.cpp) \
         $$quote($$BASEDIR/src/ThreadUtils.cpp) \
         $$quote($$BASEDIR/src/applicationui.cpp) \
@@ -159,6 +160,7 @@ config_pri_source_group1 {
     HEADERS += \
         $$quote($$BASEDIR/src/CommonConstants.h) \
         $$quote($$BASEDIR/src/IlmHelper.h) \
+        $$quote($$BASEDIR/src/InvokeHelper.h) \
         $$quote($$BASEDIR/src/QueryId.h) \
         $$quote($$BASEDIR/src/QuranHelper.h) \
         $$quote($$BASEDIR/src/ThreadUtils.h) \

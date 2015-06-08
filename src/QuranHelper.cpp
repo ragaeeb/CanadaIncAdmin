@@ -47,12 +47,12 @@ void analyzeAyats(QRegExp const& regex, QVariantList& result, QString const& bod
     }
 }
 
-QVariantList captureAyatsInBody(QString const& cookie, QString body, QStringList const& chapters)
+QVariantList captureAyatsInBody(QString body, QStringList const& chapters)
 {
     body.remove( QChar(8217) ); // remove special apostrophe character
     body = body.simplified();
 
-    QVariantList result = QVariantList() << cookie;
+    QVariantList result;
     analyzeAyats( QRegExp("[0-9]{1,3}:[0-9]{1,3}\\s{0,1}-\\s{0,1}[0-9]{1,3}[\\)\\]]|[0-9]{1,3}:[0-9]{1,3}[\\)\\]]|\\([0-9]{1,3}\\) {0,1}: {0,1}[0-9]{1,3}- {0,1}[0-9]{1,3}|\\([0-9]{1,3}\\) {0,1}: {0,1}[0-9]{1,3}"), result, body );
 
     QRegExp nameRegex = QRegExp("[A-Za-z\\-']+\\s{0,1}:\\s{0,1}[0-9]{1,3}\\s{0,1}-\\s{0,1}[0-9]{1,3}[\\)\\]]|[A-Za-z\\-']+\\s{0,1}:\\s{0,1}[0-9]{1,3}[\\)\\]]");
@@ -114,14 +114,14 @@ QuranHelper::QuranHelper(DatabaseHelper* sql) : m_sql(sql)
 }
 
 
-void QuranHelper::captureAyats(QString const& cookie, QString const& body)
+void QuranHelper::captureAyats(QString const& body)
 {
     LOGGER( body.size() );
 
     QFutureWatcher<QVariantList>* qfw = new QFutureWatcher<QVariantList>(this);
     connect( qfw, SIGNAL( finished() ), this, SLOT( onCaptureCompleted() ) );
 
-    QFuture<QVariantList> future = QtConcurrent::run(captureAyatsInBody, cookie, body, m_chapters);
+    QFuture<QVariantList> future = QtConcurrent::run(captureAyatsInBody, body, m_chapters);
     qfw->setFuture(future);
 }
 

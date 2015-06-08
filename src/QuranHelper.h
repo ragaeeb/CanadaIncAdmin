@@ -42,7 +42,7 @@ public:
 
 	void lazyInit();
 
-    Q_INVOKABLE void captureAyats(QString const& cookie, QString const& body);
+    Q_INVOKABLE void captureAyats(QString const& body);
     Q_INVOKABLE void fetchAyatsForTafsir(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void linkAyatToTafsir(QObject* caller, qint64 suitePageId, int chapter, int fromVerse, int toVerse, QueryId::Type linkId=QueryId::LinkAyatsToTafsir);
     Q_INVOKABLE void linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVariantList const& chapterVerseData);

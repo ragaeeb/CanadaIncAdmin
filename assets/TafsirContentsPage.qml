@@ -13,7 +13,7 @@ Page
         if (suiteId)
         {
             busy.delegateActive = true;
-            helper.fetchAllTafsirForSuite(listView, suiteId);
+            tafsirHelper.fetchAllTafsirForSuite(listView, suiteId);
             
             var marker = persist.getValueFor("suitePageMarker");
             

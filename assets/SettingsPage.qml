@@ -49,13 +49,8 @@ Page
                     }
                     
                     onValueChanged: {
-                        if (diff)
-                        {
-                            var confirm = persist.showBlockingToast( "Download", "Database doesn't exist, download it?" );
-                            
-                            if (confirm) {
-                                
-                            }
+                        if (diff) {
+                            app.loadIlmDatabase();
                         }
                     }
                 }
