@@ -39,6 +39,8 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/CreateIndividualPage.qml) \
         $$quote($$BASEDIR/assets/CreateQuotePage.qml) \
         $$quote($$BASEDIR/assets/CreateTafsirPage.qml) \
+        $$quote($$BASEDIR/assets/Dashboard.qml) \
+        $$quote($$BASEDIR/assets/IlmPane.qml) \
         $$quote($$BASEDIR/assets/IndividualPickerPage.qml) \
         $$quote($$BASEDIR/assets/IndividualTextField.qml) \
         $$quote($$BASEDIR/assets/IndividualsPane.qml) \
@@ -141,23 +143,25 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/toast/success_upload_local.png) \
         $$quote($$BASEDIR/assets/images/toast/toast_bg.amd) \
         $$quote($$BASEDIR/assets/images/toast/toast_bg.png) \
-        $$quote($$BASEDIR/assets/images/toast/yellow_delete.png) \
-        $$quote($$BASEDIR/assets/main.qml)
+        $$quote($$BASEDIR/assets/main.qml) \
+        $$quote($$BASEDIR/assets/xml/quran-data.xml)
 }
 
 config_pri_source_group1 {
     SOURCES += \
-        $$quote($$BASEDIR/src/AdminHelper.cpp) \
         $$quote($$BASEDIR/src/CommonConstants.cpp) \
-        $$quote($$BASEDIR/src/QueryHelper.cpp) \
+        $$quote($$BASEDIR/src/IlmHelper.cpp) \
+        $$quote($$BASEDIR/src/QuranHelper.cpp) \
+        $$quote($$BASEDIR/src/ThreadUtils.cpp) \
         $$quote($$BASEDIR/src/applicationui.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
-        $$quote($$BASEDIR/src/AdminHelper.h) \
         $$quote($$BASEDIR/src/CommonConstants.h) \
-        $$quote($$BASEDIR/src/QueryHelper.h) \
+        $$quote($$BASEDIR/src/IlmHelper.h) \
         $$quote($$BASEDIR/src/QueryId.h) \
+        $$quote($$BASEDIR/src/QuranHelper.h) \
+        $$quote($$BASEDIR/src/ThreadUtils.h) \
         $$quote($$BASEDIR/src/applicationui.hpp)
 }
 
@@ -198,7 +202,10 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../assets/images/tabs/*.qs) \
         $$quote($$BASEDIR/../assets/images/toast/*.qml) \
         $$quote($$BASEDIR/../assets/images/toast/*.js) \
-        $$quote($$BASEDIR/../assets/images/toast/*.qs)
+        $$quote($$BASEDIR/../assets/images/toast/*.qs) \
+        $$quote($$BASEDIR/../assets/xml/*.qml) \
+        $$quote($$BASEDIR/../assets/xml/*.js) \
+        $$quote($$BASEDIR/../assets/xml/*.qs)
 
     HEADERS += \
         $$quote($$BASEDIR/../src/*.h) \

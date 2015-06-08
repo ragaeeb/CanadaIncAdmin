@@ -560,9 +560,9 @@ void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 
 void IlmHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
 {
-    LOGGER(individualId);
+    LOGGER(individualId << m_name);
 
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1 AS author,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i") );
+    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1 AS author,body,reference FROM %2.quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i") ).arg(m_name);
 
     if (individualId) {
         queryParams << QString("WHERE quotes.author=%1").arg(individualId);

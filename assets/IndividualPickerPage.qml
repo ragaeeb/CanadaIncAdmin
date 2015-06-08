@@ -126,11 +126,11 @@ Page
     }
     
     function cleanUp() {
-        helper.textualChange.disconnect(performSearch);
+        app.textualChange.disconnect(performSearch);
     }
     
     onCreationCompleted: {
-        helper.textualChange.connect(performSearch);
+        app.textualChange.connect(performSearch);
         deviceUtils.attachTopBottomKeys(individualPage, listView);
     }
     

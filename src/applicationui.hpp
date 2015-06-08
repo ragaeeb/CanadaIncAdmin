@@ -1,4 +1,4 @@
-#ifndef ApplicationUI_HPP_
+    #ifndef ApplicationUI_HPP_
 #define ApplicationUI_HPP_
 
 #include "DatabaseHelper.h"
@@ -44,7 +44,9 @@ signals:
     void compressing();
     void initialize();
     void lazyInitComplete();
-    void uploadProgress(QVariant const& cookie, qint64 bytesSent, qint64 bytesTotal);
+    void requestComplete();
+    void transferProgress(QVariant const& cookie, qint64 bytesSent, qint64 bytesTotal);
+    void textualChange();
 
 private slots:
     void childCardDone(bb::system::CardDoneMessage const& message=bb::system::CardDoneMessage());
@@ -52,7 +54,6 @@ private slots:
     void lazyInit();
     void onCompressed();
     void onDirectoryChanged(QString const& path);
-    void onExecuted(int id);
     void onFileChanged(QString const& path);
     void onRequestComplete(QVariant const& cookie, QByteArray const& data, bool error);
 

@@ -95,7 +95,7 @@ QStringList fetchChapters()
     QVariantList list = xda.load("asset:///xml/quran-data.xml").toList();
 
     foreach (QVariant const& q, list) {
-        result << q.value("tname").toString();
+        result << q.toMap().value("tname").toString();
     }
 
     return result;

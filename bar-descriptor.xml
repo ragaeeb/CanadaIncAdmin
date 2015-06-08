@@ -90,6 +90,10 @@
     <asset path="translations" dest="qm">
         <include name="*.qm"/>
     </asset>
+    
+    <asset path="../canadainc/assets/EmptyDelegate.qml">assets/EmptyDelegate.qml</asset>
+    <asset path="../canadainc/assets/PersistDropDown.qml">assets/PersistDropDown.qml</asset>
+	<asset path="../canadainc/assets/ProgressControl.qml">assets/ProgressControl.qml</asset>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>

@@ -13,13 +13,13 @@ NavigationPane
     function reload()
     {
         busy.delegateActive = true;
-        helper.fetchAllQuotes(listView);
+        tafsirHelper.fetchAllQuotes(listView);
     }
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(quotePickerPage, listView, true);
         reload();
-        helper.textualChange.connect(reload);
+        app.textualChange.connect(reload);
     }
     
     Page
@@ -68,7 +68,7 @@ NavigationPane
                 onTriggered: {
                     console.log("UserEvent: FindDuplicateQuotes");
                     busy.delegateActive = true;
-                    helper.findDuplicateQuotes(listView, searchColumn.selectedValue);
+                    tafsirHelper.findDuplicateQuotes(listView, searchColumn.selectedValue);
                 }
                 
                 shortcuts: [

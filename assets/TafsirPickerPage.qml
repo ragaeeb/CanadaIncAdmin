@@ -16,11 +16,11 @@ Page
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(tafsirPickerPage, listView, true);
-        helper.textualChange.connect(clearAndReload);
+        app.textualChange.connect(clearAndReload);
     }
     
     function cleanUp() {
-        helper.textualChange.disconnect(clearAndReload);
+        app.textualChange.disconnect(clearAndReload);
     }
     
     function clearAndReload()
