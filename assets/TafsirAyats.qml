@@ -82,7 +82,6 @@ Page
             
             function onPicked(chapter, verse)
             {
-                navigationPane.pop();
                 prompt.inputField.defaultText = chapter+":"+verse;
                 prompt.show();
             }
@@ -183,8 +182,6 @@ Page
             
             function onPicked(chapter, verse)
             {
-                navigationPane.pop();
-
                 if (verse > 0) {
                     prompt.inputField.defaultText = chapter+":"+verse;
                 } else {
@@ -229,7 +226,7 @@ Page
                             adm.append(data);
                         }
                     } else { // do diff
-                        admin.doDiff(data, adm);
+                        app.doDiff(data, adm);
                         listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     }
                     
