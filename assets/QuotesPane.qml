@@ -16,10 +16,16 @@ NavigationPane
         tafsirHelper.fetchAllQuotes(listView);
     }
     
+    function clearAndReload()
+    {
+        adm.clear();
+        reload();
+    }
+    
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(quotePickerPage, listView, true);
         reload();
-        app.textualChange.connect(reload);
+        app.textualChange.connect(clearAndReload);
     }
     
     Page

@@ -98,7 +98,6 @@
 	<invoke-target id="com.canadainc.CanadaIncAdmin.editIndividual">        
 		<invoke-target-type>card.composer</invoke-target-type>
 		<invoke-target-name>Canada Inc Admin</invoke-target-name>
-		<entry-point-id>CanadaIncAdmin</entry-point-id>
 		<icon>
 			<image>icon.png</image>
 		</icon>
