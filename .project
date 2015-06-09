@@ -3,8 +3,6 @@
 	<name>CanadaIncAdmin</name>
 	<comment></comment>
 	<projects>
-		<project>canadainc</project>
-		<project>quazip</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

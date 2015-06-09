@@ -241,7 +241,7 @@ Page
                     persist.showToast( qsTr("Ayat linked to tafsir!"), "images/menu/ic_link_ayat_to_tafsir.png" );
                     suitePageIdChanged();
                     popToRoot();
-                    busy.delegateActive = true;
+                    busy.delegateActive = false;
                 } else if (id == QueryId.UpdateTafsirLink) {
                     persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_update_link.png" );
                     busy.delegateActive = false;
@@ -251,7 +251,7 @@ Page
                 } else if (id == QueryId.AddBioLink) {
                     persist.showToast( qsTr("Biography linked!"), "images/dropdown/save_bio.png" );
                     suitePageIdChanged();
-                    busy.delegateActive = true;
+                    busy.delegateActive = false;
                 }
                 
                 listView.visible = !adm.isEmpty();
@@ -266,20 +266,12 @@ Page
 
                 if ( itemType(d, indexPath) == "ayat" )
                 {
-                    if (!d.from_verse_number) {
-                        definition.source = "SurahPage.qml";
-                    }
-                    
-                    var page = definition.createObject();
-                    
                     if (d.from_verse_number) {
                         persist.invoke( "com.canadainc.Quran10.previewer", "", "", "quran://%1/%2".arg(d.surah_id).arg(d.from_verse_number) );
                     } else {
                         persist.invoke( "com.canadainc.Quran10.ayat.picker", "ayatPicked", "", "", d.surah_id );
                         prompt.indexPath = indexPath;
                     }
-                    
-                    navigationPane.push(page);
                 } else {
                     persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", d.target_id.toString() );
                 }

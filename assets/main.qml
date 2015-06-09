@@ -10,6 +10,7 @@ TabbedPane
         settingsAction: SettingsActionItem
         {
             id: settingsActionItem
+            imageSource: "images/menu/ic_settings.png"
             
             onTriggered:
             {
@@ -27,6 +28,7 @@ TabbedPane
         title: "Dashboard"
         description: "Admin Dashboard"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        imageSource: "images/tabs/ic_dash.png"
         
         onTriggered: {
             console.log("UserEvent: Dashboard");

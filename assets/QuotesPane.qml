@@ -313,7 +313,7 @@ NavigationPane
             EmptyDelegate
             {
                 id: noElements
-                graphic: "images/placeholders/empty_suites.png"
+                graphic: "images/placeholders/empty_quotes.png"
                 labelText: qsTr("No quotes matched your search criteria. Please try a different search term.") + Retranslate.onLanguageChanged
                 
                 onImageTapped: {
@@ -327,7 +327,7 @@ NavigationPane
                 id: busy
                 asset: "images/progress/loading_quotes.png"
             }
-        }   
+        }
     }
     
     attachedObjects: [

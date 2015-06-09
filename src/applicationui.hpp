@@ -7,6 +7,7 @@
 #include "NetworkProcessor.h"
 #include "Persistance.h"
 #include "QuranHelper.h"
+#include "TextUtils.h"
 
 #include <bb/system/CardDoneMessage>
 
@@ -33,6 +34,7 @@ class ApplicationUI : public QObject
     QFile m_source;
     QFile m_target;
     InvokeHelper m_invoke;
+    TextUtils m_textUtils;
 
     void init(QString const& qml);
     static void onErrorMessage(const char* msg);
@@ -58,7 +60,7 @@ private slots:
     void onRequestComplete(QVariant const& cookie, QByteArray const& data, bool error);
 
 public:
-    ApplicationUI();
+    ApplicationUI(bb::system::InvokeManager* im);
     virtual ~ApplicationUI() {}
 
     Q_SLOT void compressIlmDatabase();
