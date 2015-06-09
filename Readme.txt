@@ -1,3 +1,12 @@
+CREATE TABLE sects (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE ON CONFLICT IGNORE, birth INTEGER, death INTEGER, founder INTEGER REFERENCES individuals(id) ON DELETE SET NULL ON UPDATE CASCADE, location INTEGER REFERENCES locations(id) ON DELETE SET NULL ON UPDATE CASCADE);
+CREATE TABLE individuals (id INTEGER PRIMARY KEY, prefix TEXT, name TEXT, kunya TEXT, hidden INTEGER, birth INTEGER, death INTEGER, female INTEGER, displayName TEXT, location INTEGER REFERENCES locations(id) ON DELETE SET NULL ON UPDATE CASCADE, is_companion INTEGER, CHECK(is_companion=1 AND female=1 AND hidden=1 AND name <> '' AND prefix <> '' AND kunya <> '' AND displayName <> ''));
+
+
+
+
+
+
+
 void AdminHelper::analyzeKingFahadFrench(QString text)
 {
     LOGGER( text.size() );

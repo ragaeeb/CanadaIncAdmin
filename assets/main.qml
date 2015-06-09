@@ -130,10 +130,24 @@ TabbedPane
                 } else {
                     statusDetails = qsTr("Error...");
                 }
+                
+                update();
             }
             
-            function onCompressing() {
+            function onCompressing()
+            {
                 statusDetails = qsTr("Compressing...");
+                showOrUpdate();
+            }
+            
+            function showOrUpdate()
+            {
+                if (!showing) {
+                    show();
+                    showing = true;
+                } else {
+                    update();
+                }
             }
             
             function onTransferring(cookie, current, total)
@@ -141,12 +155,7 @@ TabbedPane
                 progress = ((current*1.0)/total)*100;
                 statusMessage = "Progress: %1%".arg(progress);
                 
-                if (!showing) {
-                    show();
-                    showing = true;
-                } else {
-                    update();
-                }
+                showOrUpdate();
             }
             
             function dismiss()
