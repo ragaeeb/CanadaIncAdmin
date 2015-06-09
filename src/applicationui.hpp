@@ -70,6 +70,7 @@ public:
     Q_SLOT void compressIlmDatabase();
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
     Q_INVOKABLE void loadIlmDatabase();
+    Q_INVOKABLE QString databasePath();
 };
 
 }
