@@ -5,6 +5,7 @@
 #include "IlmHelper.h"
 #include "InvokeHelper.h"
 #include "NetworkProcessor.h"
+#include "Offloader.h"
 #include "Persistance.h"
 #include "QuranHelper.h"
 #include "TextUtils.h"
@@ -36,6 +37,7 @@ class ApplicationUI : public QObject
     InvokeHelper m_invoke;
     TextUtils m_textUtils;
     QFutureWatcher< QPair<QByteArray, QString> > m_compressor;
+    Offloader m_offloader;
 
     void init(QString const& qml);
     static void onErrorMessage(const char* msg);

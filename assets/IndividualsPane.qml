@@ -195,7 +195,11 @@ NavigationPane
         ]
         
         onPicked: {
-            persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", individualId.toString() );
+            definition.source = "ProfilePage.qml";
+            var page = definition.createObject();
+            page.individualId = individualId;
+            
+            navigationPane.push(page);
         }
     }
     
