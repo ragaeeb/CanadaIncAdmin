@@ -30,7 +30,7 @@ Page
             
             function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
             {
-                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, birth, death, location, companion);
+                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, location, companion);
                 
                 var obj = {'id': id, 'name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
                 
@@ -177,7 +177,7 @@ Page
                         StandardListItem
                         {
                             id: sli
-                            imageSource: ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
+                            imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
                             title: ListItemData.name
                         }
                     }

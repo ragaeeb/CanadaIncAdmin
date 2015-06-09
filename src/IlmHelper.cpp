@@ -171,7 +171,7 @@ void IlmHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds, q
 void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText)
 {
     LOGGER(trimmedText);
-    m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion FROM individuals i WHERE %1 ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+    m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
 }
 
 
@@ -407,7 +407,7 @@ void IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
 
 void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, bool orderByDeath)
 {
-    QString query = "SELECT i.id,%1 AS name,is_companion FROM individuals i ORDER BY displayName,name";
+    QString query = "SELECT i.id,%1 AS name,hidden,is_companion FROM individuals i ORDER BY displayName,name";
     QStringList tokens;
 
     if (orderByDeath) {
@@ -519,18 +519,19 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, int birth, int death, QString const& location, bool companion)
+qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, QString const& location, bool companion)
 {
     LOGGER( prefix << name << kunya << displayName << birth << death << location << companion );
 
     qint64 id = QDateTime::currentMSecsSinceEpoch();
-    QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,birth,death,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?)").arg(id);
+    QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,hidden,birth,death,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?,?)").arg(id);
 
     QVariantList args;
     args << protect(prefix);
     args << name;
     args << protect(kunya);
     args << protect(displayName);
+    args << ( hidden ? 1 : QVariant() );
     args << ( birth != 0 ? birth : QVariant() );
     args << ( death != 0 ? death : QVariant() );
     args << ( !location.isEmpty() ? location.toLongLong() : QVariant() );

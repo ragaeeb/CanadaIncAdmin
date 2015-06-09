@@ -125,7 +125,7 @@ NavigationPane
                 StandardListItem
                 {
                     id: sli
-                    imageSource: ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
+                    imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
                     title: ListItemData.name
                     
                     contextActions: [
