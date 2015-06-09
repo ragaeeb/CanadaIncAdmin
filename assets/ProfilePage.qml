@@ -82,6 +82,78 @@ Page
                  
                  navigationPane.push(p);
             }
+        },
+        
+        ActionItem
+        {
+            id: addParent
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_add_teacher.png"
+            title: qsTr("Add Parent") + Retranslate.onLanguageChanged
+            
+            function onPicked(parentId, name)
+            {
+                tafsirHelper.addParent(bioPage, individualId, parentId);
+                checkForDuplicate( {'id': parentId, 'parent': name, 'type': "parent"} );
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddParent");
+                definition.source = "IndividualPickerPage.qml";
+                
+                var p = definition.createObject();
+                p.picked.connect(onPicked);
+                
+                navigationPane.push(p);
+            }
+        },
+        
+        ActionItem
+        {
+            id: addSibling
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_add_teacher.png"
+            title: qsTr("Add Sibling") + Retranslate.onLanguageChanged
+            
+            function onPicked(siblingId, name)
+            {
+                tafsirHelper.addSibling(bioPage, individualId, siblingId);
+                checkForDuplicate( {'id': siblingId, 'sibling': name, 'type': "sibling"} );
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddSibling");
+                definition.source = "IndividualPickerPage.qml";
+                
+                var p = definition.createObject();
+                p.picked.connect(onPicked);
+                
+                navigationPane.push(p);
+            }
+        },
+        
+        ActionItem
+        {
+            id: addChild
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_add_student.png"
+            title: qsTr("Add Child") + Retranslate.onLanguageChanged
+            
+            function onPicked(child, name)
+            {
+                tafsirHelper.addChild(bioPage, individualId, child);
+                checkForDuplicate( {'id': child, 'child': name, 'type': "child"} );
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddChild");
+                definition.source = "IndividualPickerPage.qml";
+                
+                var p = definition.createObject();
+                p.picked.connect(onPicked);
+                
+                navigationPane.push(p);
+            }
         }
     ]
     
@@ -92,6 +164,9 @@ Page
             tafsirHelper.fetchIndividualData(bioPage, individualId);
             tafsirHelper.fetchTeachers(bioPage, individualId);
             tafsirHelper.fetchStudents(bioPage, individualId);
+            tafsirHelper.fetchParents(bioPage, individualId);
+            tafsirHelper.fetchSiblings(bioPage, individualId);
+            tafsirHelper.fetchChildren(bioPage, individualId);
         }
     }
     
@@ -163,10 +238,22 @@ Page
             persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.RemoveStudent) {
             persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_companions.png" );
+        } else if (id == QueryId.RemoveChild) {
+            persist.showToast( qsTr("Child removed!"), "images/menu/ic_remove_companions.png" );
         } else if (id == QueryId.AddTeacher) {
             persist.showToast( qsTr("Teacher added!"), "images/menu/ic_set_companions.png" );
         } else if (id == QueryId.AddStudent) {
             persist.showToast( qsTr("Student added!"), "images/menu/ic_add_student.png" );
+        } else if (id == QueryId.RemoveParent) {
+            persist.showToast( qsTr("Parent removed!"), "images/menu/ic_remove_teacher.png" );
+        } else if (id == QueryId.RemoveSibling) {
+            persist.showToast( qsTr("Sibling removed!"), "images/menu/ic_remove_companions.png" );
+        } else if (id == QueryId.AddParent) {
+            persist.showToast( qsTr("Parent added!"), "images/menu/ic_set_companions.png" );
+        } else if (id == QueryId.AddSibling) {
+            persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_student.png" );
+        } else if (id == QueryId.AddChild) {
+            persist.showToast( qsTr("Child added!"), "images/menu/ic_add_student.png" );
         }
         
         data = offloader.fillType(data, id);
@@ -187,7 +274,7 @@ Page
             id: body
             editable: false
             backgroundVisible: false
-            content.flags: TextContentFlag.ActiveText | TextContentFlag.EmoticonsOff
+            content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
             input.flags: TextInputFlag.SpellCheckOff
             topPadding: 0;
             textStyle.fontSize: FontSize.Large
@@ -230,6 +317,12 @@ Page
                     return qsTr("Teachers");
                 } else if (ListItemData == "student") {
                     return qsTr("Students");
+                } else if (ListItemData == "parent") {
+                    return qsTr("Parents");
+                } else if (ListItemData == "sibling") {
+                    return qsTr("Siblings");
+                } else if (ListItemData == "child") {
+                    return qsTr("Children");
                 }
             }
             
@@ -248,9 +341,27 @@ Page
                 bioModel.removeAt(ListItem.indexPath);
             }
             
+            function removeChild(ListItem)
+            {
+                tafsirHelper.removeChild(bioPage, individualId, ListItem.data.id);
+                bioModel.removeAt(ListItem.indexPath);
+            }
+            
             function removeTeacher(ListItem)
             {
                 tafsirHelper.removeTeacher(bioPage, individualId, ListItem.data.id);
+                bioModel.removeAt(ListItem.indexPath);
+            }
+            
+            function removeSibling(ListItem)
+            {
+                tafsirHelper.removeSibling(bioPage, individualId, ListItem.data.id);
+                bioModel.removeAt(ListItem.indexPath);
+            }
+            
+            function removeParent(ListItem)
+            {
+                tafsirHelper.removeParent(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             
@@ -347,6 +458,93 @@ Page
                             }
                         ]
                     }
+                },
+                
+                ListItemComponent
+                {
+                    type: "child"
+                    
+                    StandardListItem
+                    {
+                        id: childSli
+                        imageSource: "images/list/ic_student.png"
+                        title: ListItemData.child
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: childSli.title
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_remove_student.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveChild");
+                                        childSli.ListItem.view.removeChild(childSli.ListItem);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                
+                ListItemComponent
+                {
+                    type: "parent"
+                    
+                    StandardListItem
+                    {
+                        id: parentSli
+                        imageSource: "images/list/ic_teacher.png"
+                        title: ListItemData.parent
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: parentSli.title
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_remove_teacher.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveParent");
+                                        parentSli.ListItem.view.removeParent(parentSli.ListItem);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                
+                ListItemComponent
+                {
+                    type: "sibling"
+                    
+                    StandardListItem
+                    {
+                        id: siblingSli
+                        imageSource: "images/list/ic_student.png"
+                        title: ListItemData.sibling
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: siblingSli.title
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_remove_student.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveSibling");
+                                        siblingSli.ListItem.view.removeSibling(siblingSli.ListItem);
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 }
             ]
             
@@ -359,7 +557,7 @@ Page
                 var d = dataModel.data(indexPath);
                 console.log("UserEvent: AttributeTapped", d.type);
                 
-                if (d.type == "student" || d.type == "teacher") {
+                if (d.type == "student" || d.type == "teacher" || d.type == "child" || d.type == "parent" || d.type == "sibling") {
                     persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", d.id.toString() );
                 } else if (d.type == "bio" || d.type == "citing") {
                     persist.invoke( "com.canadainc.Quran10.tafsir.previewer", "", "", "quran://tafsir/"+d.suite_page_id.toString() );

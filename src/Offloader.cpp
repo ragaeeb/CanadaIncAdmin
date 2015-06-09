@@ -19,6 +19,9 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
     map[QueryId::FetchBio] = ATTRIBUTE_TYPE_BIO;
     map[QueryId::FetchTeachers] = "teacher";
     map[QueryId::FetchStudents] = "student";
+    map[QueryId::FetchParents] = "parent";
+    map[QueryId::FetchSiblings] = "sibling";
+    map[QueryId::FetchChildren] = "child";
 
     if ( map.contains(queryId) )
     {
