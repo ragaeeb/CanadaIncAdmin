@@ -9,6 +9,8 @@ Page
         title: qsTr("Settings") + Retranslate.onLanguageChanged
     }
     
+    function cleanUp() {}
+    
     Container
     {
         horizontalAlignment: HorizontalAlignment.Fill

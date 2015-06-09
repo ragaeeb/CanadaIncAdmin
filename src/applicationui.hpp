@@ -35,6 +35,7 @@ class ApplicationUI : public QObject
     QFile m_target;
     InvokeHelper m_invoke;
     TextUtils m_textUtils;
+    QFutureWatcher< QPair<QByteArray, QString> > m_compressor;
 
     void init(QString const& qml);
     static void onErrorMessage(const char* msg);

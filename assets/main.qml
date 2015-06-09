@@ -90,17 +90,8 @@ TabbedPane
         }
     }
     
-    function onReady()
-    {
-        app.transferProgress.connect(spd.onTransferring);
-        app.requestComplete.connect(spd.dismiss);
-        app.compressing.disconnect(spd.onCompressing);
-        app.compressed.disconnect(spd.onCompressed);
-        app.compressProgress.disconnect(spd.onCompressProgress);
-    }
-    
     onCreationCompleted: {
-        app.lazyInitComplete.connect(onReady);
+        app.lazyInitComplete.connect(spd.onReady);
     }
     
     attachedObjects: [
@@ -165,6 +156,15 @@ TabbedPane
                     showing = false;
                     cancel();
                 }
+            }
+            
+            function onReady()
+            {
+                app.compressing.connect(onCompressing);
+                app.compressed.connect(onCompressed);
+                app.compressProgress.connect(onCompressProgress);
+                app.requestComplete.connect(dismiss);
+                app.transferProgress.connect(onTransferring);
             }
         }
     ]
