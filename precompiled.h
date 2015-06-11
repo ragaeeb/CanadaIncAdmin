@@ -3,6 +3,7 @@
 #include <bb/cascades/ArrayDataModel>
 #include <bb/cascades/QmlDocument>
 
+#include <bb/data/JsonDataAccess>
 #include <bb/data/XmlDataAccess>
 
 #include <bb/system/CardDoneMessage>

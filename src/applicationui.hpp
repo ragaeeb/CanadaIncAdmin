@@ -49,6 +49,7 @@ signals:
     void compressing();
     void initialize();
     void lazyInitComplete();
+    void locationsFound(QVariant const& locations);
     void requestComplete();
     void transferProgress(QVariant const& cookie, qint64 bytesSent, qint64 bytesTotal);
     void textualChange();
@@ -71,6 +72,8 @@ public:
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
     Q_INVOKABLE void loadIlmDatabase();
     Q_INVOKABLE QString databasePath();
+    Q_INVOKABLE void geoLookup(QString const& location);
+    Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);
 };
 
 }

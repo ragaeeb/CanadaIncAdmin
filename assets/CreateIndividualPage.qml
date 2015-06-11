@@ -396,7 +396,7 @@ Page
                                     createLocationPicker();
                                     var tokens = trimmed.split(",");
                                     app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
-                                } else if ( trimmed.match("\\d+") ) {
+                                } else if ( trimmed.match("\\d+$") ) {
                                     valid = true;
                                 } else {
                                     createLocationPicker();

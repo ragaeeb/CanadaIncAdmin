@@ -12,6 +12,7 @@ namespace admin {
 
 struct CommonConstants
 {
+    static QUrl generateGeocodingUrl();
     static QUrl generateHostUrl(QString const& path=QString());
 };
 
