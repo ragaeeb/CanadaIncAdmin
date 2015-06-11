@@ -88,7 +88,7 @@ Page
         {
             id: addParent
             ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_teacher.png"
+            imageSource: "images/menu/ic_add_parent.png"
             title: qsTr("Add Parent") + Retranslate.onLanguageChanged
             
             function onPicked(parentId, name)
@@ -112,7 +112,7 @@ Page
         {
             id: addSibling
             ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_teacher.png"
+            imageSource: "images/menu/ic_add_sibling.png"
             title: qsTr("Add Sibling") + Retranslate.onLanguageChanged
             
             function onPicked(siblingId, name)
@@ -136,7 +136,7 @@ Page
         {
             id: addChild
             ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_student.png"
+            imageSource: "images/menu/ic_add_child.png"
             title: qsTr("Add Child") + Retranslate.onLanguageChanged
             
             function onPicked(child, name)
@@ -409,7 +409,7 @@ Page
                     StandardListItem
                     {
                         id: teacherSli
-                        imageSource: "images/list/ic_teacher.png"
+                        imageSource: "images/menu/ic_preview.png"
                         title: ListItemData.teacher
                         
                         contextActions: [
@@ -438,7 +438,7 @@ Page
                     StandardListItem
                     {
                         id: studentSli
-                        imageSource: "images/list/ic_student.png"
+                        imageSource: "images/menu/ic_preview.png"
                         title: ListItemData.student
                         
                         contextActions: [
@@ -467,7 +467,7 @@ Page
                     StandardListItem
                     {
                         id: childSli
-                        imageSource: "images/list/ic_student.png"
+                        imageSource: "images/menu/ic_preview.png"
                         title: ListItemData.child
                         
                         contextActions: [
@@ -477,7 +477,7 @@ Page
                                 
                                 DeleteActionItem
                                 {
-                                    imageSource: "images/menu/ic_remove_student.png"
+                                    imageSource: "images/menu/ic_remove_child.png"
                                     
                                     onTriggered: {
                                         console.log("UserEvent: RemoveChild");
@@ -496,7 +496,7 @@ Page
                     StandardListItem
                     {
                         id: parentSli
-                        imageSource: "images/list/ic_teacher.png"
+                        imageSource: "images/menu/ic_preview.png"
                         title: ListItemData.parent
                         
                         contextActions: [
@@ -506,7 +506,7 @@ Page
                                 
                                 DeleteActionItem
                                 {
-                                    imageSource: "images/menu/ic_remove_teacher.png"
+                                    imageSource: "images/menu/ic_remove_parent.png"
                                     
                                     onTriggered: {
                                         console.log("UserEvent: RemoveParent");
@@ -525,7 +525,7 @@ Page
                     StandardListItem
                     {
                         id: siblingSli
-                        imageSource: "images/list/ic_student.png"
+                        imageSource: "images/menu/ic_preview.png"
                         title: ListItemData.sibling
                         
                         contextActions: [
@@ -535,7 +535,7 @@ Page
                                 
                                 DeleteActionItem
                                 {
-                                    imageSource: "images/menu/ic_remove_student.png"
+                                    imageSource: "images/menu/ic_remove_sibling.png"
                                     
                                     onTriggered: {
                                         console.log("UserEvent: RemoveSibling");
@@ -558,7 +558,11 @@ Page
                 console.log("UserEvent: AttributeTapped", d.type);
                 
                 if (d.type == "student" || d.type == "teacher" || d.type == "child" || d.type == "parent" || d.type == "sibling") {
-                    persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", d.id.toString() );
+                    definition.source = "ProfilePage.qml";
+                    var page = definition.createObject();
+                    page.individualId = d.id;
+                    
+                    navigationPane.push(page);
                 } else if (d.type == "bio" || d.type == "citing") {
                     persist.invoke( "com.canadainc.Quran10.tafsir.previewer", "", "", "quran://tafsir/"+d.suite_page_id.toString() );
                 }

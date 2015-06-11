@@ -33,6 +33,7 @@ NavigationPane
             
             InvokeActionItem
             {
+                imageSource: "images/menu/ic_share_db.png"
                 title: qsTr("Share Database")
                 ActionBar.placement: ActionBarPlacement.OnBar
                 

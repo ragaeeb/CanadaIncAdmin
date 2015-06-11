@@ -132,7 +132,7 @@ NavigationPane
                     
                     Option {
                         description: qsTr("Search author field") + Retranslate.onLanguageChanged
-                        imageSource: "images/dropdown/search_author.png"
+                        imageSource: "images/dropdown/search_quotes_author.png"
                         text: qsTr("Author") + Retranslate.onLanguageChanged
                         value: "author"
                     }

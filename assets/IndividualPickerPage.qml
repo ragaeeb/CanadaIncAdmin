@@ -65,7 +65,7 @@ Page
         
         ActionItem {
             id: searchAction
-            imageSource: "images/menu/ic_search_individual.png"
+            imageSource: "images/menu/ic_search_rijaal.png"
             title: qsTr("Search") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
             

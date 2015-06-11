@@ -265,7 +265,7 @@ Page
                                     
                                     ActionItem
                                     {
-                                        imageSource: "images/menu/ic_replace_individual.png"
+                                        imageSource: "images/menu/ic_merge.png"
                                         title: qsTr("Merge") + Retranslate.onLanguageChanged
                                         
                                         onTriggered: {
