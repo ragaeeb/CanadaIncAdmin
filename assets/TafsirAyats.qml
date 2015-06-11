@@ -270,7 +270,11 @@ Page
                         prompt.indexPath = indexPath;
                     }
                 } else {
-                    persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", d.target_id.toString() );
+                    definition.source = "ProfilePage.qml";
+                    var page = definition.createObject();
+                    page.individualId = d.target_id;
+                    
+                    navigationPane.push(page);
                 }
             }
             

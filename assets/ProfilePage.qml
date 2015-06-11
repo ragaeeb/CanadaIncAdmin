@@ -223,7 +223,7 @@ Page
             result += " ";
             
             if (metadata.birth && metadata.death) {
-                result += "(%1-%2)".arg( getHijriYear(metadata.birth, metadata.death) );
+                result += "(%1)".arg( getHijriYear(metadata.birth, metadata.death) );
             } else if (metadata.birth) {
                 result += qsTr("(born %1)").arg( getHijriYear(metadata.birth) );
             } else if (metadata.death) {
