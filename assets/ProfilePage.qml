@@ -154,6 +154,30 @@ Page
                 
                 navigationPane.push(p);
             }
+        },
+        
+        ActionItem
+        {
+            imageSource: "images/menu/ic_edit_rijaal.png"
+            title: qsTr("Edit") + Retranslate.onLanguageChanged
+            
+            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
+            {
+                tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
+                
+                reload();
+                popToRoot();
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: EditProfile");
+                definition.source = "CreateIndividualPage.qml";
+                var page = definition.createObject();
+                page.individualId = individualId;
+                page.createIndividual.connect(onEdit);
+                
+                navigationPane.push(page);
+            }
         }
     ]
     
@@ -254,6 +278,8 @@ Page
             persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_student.png" );
         } else if (id == QueryId.AddChild) {
             persist.showToast( qsTr("Child added!"), "images/menu/ic_add_student.png" );
+        } else if (id == QueryId.EditIndividual) {
+            persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         }
         
         data = offloader.fillType(data, id);
