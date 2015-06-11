@@ -280,18 +280,6 @@ NavigationPane
                                             }
                                         }
                                         
-                                        ActionItem
-                                        {
-                                            imageSource: "images/menu/ic_preview.png"
-                                            title: qsTr("Preview") + Retranslate.onLanguageChanged
-                                            
-                                            onTriggered: {
-                                                console.log("UserEvent: PreviewQuote");
-                                                var body = "<html><i>“%1”</i>\n\n- <b>%2</b>\n\n[%3]</html>".arg( ListItemData.body.replace(/&/g,"&amp;") ).arg(ListItemData.author).arg( ListItemData.reference.replace(/&/g,"&amp;") );
-                                                notification.init(body, "images/menu/ic_preview.png");
-                                            }
-                                        }
-                                        
                                         DeleteActionItem
                                         {
                                             imageSource: "images/menu/ic_delete_quote.png"
