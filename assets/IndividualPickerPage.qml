@@ -31,9 +31,9 @@ Page
             function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
             {
                 id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, location, companion);
-                
+
                 var obj = {'id': id, 'name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
-                
+
                 if (displayName.length > 0) {
                     obj["name"] = displayName;
                 }
@@ -49,8 +49,9 @@ Page
                 if (location.length > 0) {
                     obj["location"] = location;
                 }
-                
+
                 adm.insert(0, obj);
+                refresh();
             }
             
             onTriggered: {
