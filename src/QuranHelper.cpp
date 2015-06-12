@@ -92,7 +92,7 @@ QStringList fetchChapters()
     QStringList result;
 
     bb::data::XmlDataAccess xda;
-    QVariantList list = xda.load("asset:///xml/quran-data.xml").toList();
+    QVariantList list = xda.load("app/native/assets/xml/quran-data.xml", "sura").toList();
 
     foreach (QVariant const& q, list) {
         result << q.toMap().value("tname").toString();
@@ -223,6 +223,11 @@ void QuranHelper::updateTafsirLink(QObject* caller, qint64 explanationId, int su
 void QuranHelper::setDatabaseName(QString const& name)
 {
     m_name = name;
+}
+
+
+QStringList QuranHelper::chapters() const {
+    return m_chapters;
 }
 
 

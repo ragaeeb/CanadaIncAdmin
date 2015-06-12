@@ -193,10 +193,13 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: LookupChapter");
-                definition.source = "SurahPickerPage.qml";
+                definition.source = "QuranSurahPicker.qml";
+                var surahPicker = definition.createObject();
+                surahPicker.picked.connect(onPicked);
+                
+                navigationPane.push(surahPicker);
                 
                 prompt.resetIndexPath();
-                persist.invoke("com.canadainc.Quran10.surah.picker", "surahPicked");
             }
         }
     }

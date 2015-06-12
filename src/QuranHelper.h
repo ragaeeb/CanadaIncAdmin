@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE void updateTafsirLink(QObject* caller, qint64 explanationId, int surahId, int fromVerse, int toVerse);
 
     void setDatabaseName(QString const& name);
+    Q_INVOKABLE QStringList chapters() const;
 };
 
 } /* namespace quran */
