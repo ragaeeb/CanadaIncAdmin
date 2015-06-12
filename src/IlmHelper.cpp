@@ -709,7 +709,7 @@ void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString 
     m_sql->executeQuery(caller, QString("INSERT INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage); // don't port the translator
     m_sql->executeQuery(caller, QString("INSERT INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
     m_sql->executeQuery(caller, QString("INSERT INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.explanations SELECT * FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
+    m_sql->executeQuery(caller, QString("INSERT INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
     m_sql->endTransaction(caller, QueryId::TranslateSuitePage);
 
     m_sql->detach(destinationLanguage);
