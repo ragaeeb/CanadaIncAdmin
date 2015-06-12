@@ -17,21 +17,21 @@ Page
             textField.input.submitKey: SubmitKey.Search
             
             textField.onTextChanging: {
-                var textValue = textField.textField.text.trim();
+                var textValue = textField.textField.text.trim().toLowerCase();
                 var matches = [];
                 
                 if (textValue.length > 1)
                 {
-                    for (var i = chapters.length-1; i >= 0; i--)
+                    for (var i = 0; i < chapters.length; i++)
                     {
                         var current = chapters[i];
-                        
-                        if ( current.indexOf(textValue) > -1 ) {
+
+                        if ( current.toLowerCase().indexOf(textValue) > -1 ) {
                             matches.push({'surah_id': i+1, 'name': current})
                         }
                     }
                 } else if (textValue.length == 0) {
-                    for (var i = chapters.length-1; i >= 0; i--)
+                    for (var i = 0; i < chapters.length; i++)
                     {
                         var current = chapters[i];
                         matches.push({'surah_id': i+1, 'name': current})
