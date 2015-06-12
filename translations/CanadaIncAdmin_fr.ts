@@ -524,12 +524,12 @@
     <message>
         <location filename="../assets/ProfilePage.qml" line="16"/>
         <source>Add Student</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter étudiants</translation>
     </message>
     <message>
         <location filename="../assets/ProfilePage.qml" line="40"/>
         <source>Add Teacher</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter des enseignants</translation>
     </message>
     <message>
         <location filename="../assets/ProfilePage.qml" line="64"/>
@@ -589,12 +589,12 @@
     <message>
         <location filename="../assets/ProfilePage.qml" line="238"/>
         <source>Teacher removed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Enseignant enlevé!</translation>
     </message>
     <message>
         <location filename="../assets/ProfilePage.qml" line="240"/>
         <source>Student removed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Étudiant retiré!</translation>
     </message>
     <message>
         <location filename="../assets/ProfilePage.qml" line="242"/>
@@ -604,7 +604,7 @@
     <message>
         <location filename="../assets/ProfilePage.qml" line="244"/>
         <source>Teacher added!</source>
-        <translation type="unfinished"></translation>
+        <translation>Enseignant ajouté!</translation>
     </message>
     <message>
         <location filename="../assets/ProfilePage.qml" line="246"/>
