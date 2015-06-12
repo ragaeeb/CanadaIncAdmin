@@ -48,6 +48,37 @@ Page
                         value: "english"
                     }
                     
+                    Option {
+                        text: qsTr("French") + Retranslate.onLanguageChanged
+                        value: "french"
+                        imageSource: "images/dropdown/ic_translation.png"
+                    }
+                    
+                    Option {
+                        text: qsTr("Indonesian") + Retranslate.onLanguageChanged
+                        value: "indo"
+                        imageSource: "images/dropdown/ic_translation.png"
+                    }
+                    
+                    Option {
+                        text: qsTr("Spanish") + Retranslate.onLanguageChanged
+                        value: "spanish"
+                        imageSource: "images/dropdown/ic_translation.png"
+                    }
+                    
+                    Option {
+                        id: thai
+                        text: qsTr("Thai") + Retranslate.onLanguageChanged
+                        value: "thai"
+                        imageSource: "images/dropdown/ic_translation.png"
+                    }
+                    
+                    Option {
+                        text: qsTr("Urdu") + Retranslate.onLanguageChanged
+                        value: "urdu"
+                        imageSource: "images/dropdown/ic_translation.png"
+                    }
+                    
                     onValueChanged: {
                         if (diff) {
                             app.loadIlmDatabase();
