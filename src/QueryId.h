@@ -77,6 +77,10 @@ public:
         SearchTafsir,
         SettingUpTafsir,
         SetupTafsir,
+        TranslatingQuote,
+        TranslateQuote,
+        TranslatingSuitePage,
+        TranslateSuitePage,
         UnlinkAyatsFromTafsir,
         UpdateTafsirLink
     };

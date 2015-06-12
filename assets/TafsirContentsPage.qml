@@ -25,15 +25,25 @@ Page
         }
     }
     
-    function cleanUp() {}
+    function cleanUp()
+    {
+        app.textualChange.disconnect(reload);
+    }
     
-    titleBar: TitleBar {
-        id: tb
-        scrollBehavior: TitleBarScrollBehavior.NonSticky
+    function reload()
+    {
+        adm.clear();
+        suiteIdChanged();
     }
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(tafsirContentsPage, listView, true);
+        app.textualChange.connect(reload);
+    }
+    
+    titleBar: TitleBar {
+        id: tb
+        scrollBehavior: TitleBarScrollBehavior.NonSticky
     }
     
     actions: [
@@ -242,6 +252,9 @@ Page
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
                 } else if (id == QueryId.EditTafsirPage) {
                     persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_bio.png" );
+                } else if (id == QueryId.TranslateSuitePage) {
+                    persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_edit_bio.png" );
+                    persist.saveValueFor("translation", "arabic");
                 }
                 
                 busy.delegateActive = false;
@@ -270,6 +283,12 @@ Page
             {
                 persist.saveValueFor("suitePageMarker", {'suiteId': suiteId, 'indexPath': ListItem.indexPath[0]});
                 persist.showToast( qsTr("Market set"), "images/menu/ic_set_marker.png" );
+            }
+            
+            function translateSuitePage(indexPath, ListItemData)
+            {
+                editItem(indexPath, ListItemData);
+                tafsirHelper.translateSuitePage(listView, ListItemData.id);
             }
             
             onTriggered: {
@@ -352,6 +371,17 @@ Page
                                     onTriggered: {
                                         console.log("UserEvent: SetSuitePageMarker");
                                         rootItem.ListItem.view.setSuitePageMarker(rootItem.ListItem);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_merge.png"
+                                    title: qsTr("Translate") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: Translate");
+                                        rootItem.ListItem.view.translateSuitePage(rootItem.ListItem.indexPath, ListItemData);
                                     }
                                 }
                                 

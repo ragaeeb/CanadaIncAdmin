@@ -182,6 +182,9 @@ NavigationPane
                         } else if (id == QueryId.AddQuote) {
                             persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );
                             reload();
+                        } else if (id == QueryId.TranslateQuote) {
+                            persist.showToast( qsTr("Quote translated!"), "images/menu/ic_preview.png" );
+                            persist.saveValueFor("translation", "arabic");
                         } else if (id == QueryId.SearchQuote || id == QueryId.FindDuplicates) {
                             adm.clear();
                             adm.append(data);
@@ -226,6 +229,12 @@ NavigationPane
                         var page = openQuote(ListItemData);
                         page.createQuote.connect(addAction.onCreate);
                         page.titleBar.title = qsTr("New Quote");
+                    }
+                    
+                    function translateQuote(indexPath, ListItemData)
+                    {
+                        editItem(indexPath, ListItemData);
+                        tafsirHelper.translateQuote(listView, ListItemData.id);
                     }
                     
                     function editItem(indexPath, ListItemData)
@@ -277,6 +286,17 @@ NavigationPane
                                                 console.log("UserEvent: CopyQuote");
                                                 var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(ListItemData.reference);
                                                 persist.copyToClipboard(body);
+                                            }
+                                        }
+                                        
+                                        ActionItem
+                                        {
+                                            imageSource: "images/menu/ic_preview.png"
+                                            title: qsTr("Translate") + Retranslate.onLanguageChanged
+                                            
+                                            onTriggered: {
+                                                console.log("UserEvent: TranslateQuote");
+                                                rootItem.ListItem.view.translateQuote(rootItem.ListItem.indexPath, ListItemData);
                                             }
                                         }
                                         
