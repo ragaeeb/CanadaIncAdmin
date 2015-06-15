@@ -186,6 +186,17 @@ NavigationPane
                             
                             ActionItem
                             {
+                                imageSource: "images/menu/ic_preview.png"
+                                title: qsTr("Open in Quran10") + Retranslate.onLanguageChanged
+                                
+                                onTriggered: {
+                                    console.log("UserEvent: OpenQuran10");
+                                    persist.invoke( "com.canadainc.Quran10.bio.previewer", "", "", "", ListItemData.id.toString() );
+                                }
+                            }
+                            
+                            ActionItem
+                            {
                                 imageSource: "images/menu/ic_replace_individual.png"
                                 title: qsTr("Replace") + Retranslate.onLanguageChanged
                                 

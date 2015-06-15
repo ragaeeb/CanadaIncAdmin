@@ -34,9 +34,17 @@ Page
                 }
             ]
             
+            function endsWith(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            }
+            
             onTriggered: {
                 console.log("UserEvent: NewSite");
-                var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "http://", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim();
+                var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "http://", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
+                
+                if ( endsWith(uri, "/") ) {
+                    uri = uri.substring(0, uri.length-1);
+                }
 
                 if (uri.length > 0)
                 {
@@ -59,7 +67,7 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: NewEmail");
-                var email = persist.showBlockingPrompt( qsTr("Enter email"), qsTr("Please enter the email address for this individual:"), "", qsTr("Enter email (ie: abc@hotmail.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Email ).trim();
+                var email = persist.showBlockingPrompt( qsTr("Enter email"), qsTr("Please enter the email address for this individual:"), "", qsTr("Enter email (ie: abc@hotmail.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Email ).trim().toLowerCase();
 
                 if (email.length > 0)
                 {
@@ -513,7 +521,7 @@ Page
                                     
                                     onTriggered: {
                                         console.log("UserEvent: DeleteSite");
-                                        sli.ListItem.view.deleteSite(ListItemData);
+                                        sliEmail.ListItem.view.deleteSite(ListItemData);
                                     }
                                 }
                             }
@@ -542,7 +550,7 @@ Page
                                     
                                     onTriggered: {
                                         console.log("UserEvent: DeleteSite");
-                                        sli.ListItem.view.deleteSite(ListItemData);
+                                        sliPhone.ListItem.view.deleteSite(ListItemData);
                                     }
                                 }
                             }
