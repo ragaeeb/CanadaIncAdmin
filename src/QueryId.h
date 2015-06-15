@@ -56,6 +56,8 @@ public:
         FindDuplicates,
         LinkAyatsToTafsir,
         LinkingAyatsToTafsir,
+        PortingIndividuals,
+        PortIndividuals,
         RemoveBioLink,
         RemoveChild,
 		RemoveIndividual,

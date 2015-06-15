@@ -53,6 +53,8 @@ NavigationPane
         } else if (id == QueryId.ReplaceIndividual) {
             persist.showToast( qsTr("Successfully replaced individual!"), "images/menu/ic_replace_individual.png" );
             tafsirHelper.fetchAllIndividuals(individualPicker.pickerList);
+        } else if (id == QueryId.PortIndividuals) {
+            persist.showToast( qsTr("Successfully ported individuals!"), "images/menu/ic_replace_individual.png" );
         }
     }
     
@@ -73,6 +75,20 @@ NavigationPane
         id: individualPicker
         property variant toReplaceId
         property variant editIndexPath
+        
+        actions: [
+            ActionItem {
+                id: portAction
+                imageSource: "images/menu/ic_preview.png"
+                title: qsTr("Port") + Retranslate.onLanguageChanged
+                ActionBar.placement: ActionBarPlacement.OnBar
+                
+                onTriggered: {
+                    console.log("UserEvent: Port");
+                    tafsirHelper.portIndividuals(navigationPane, "arabic");
+                }
+            }
+        ]
         
         onContentLoaded: {
             navigationPane.parent.unreadContentCount = size;

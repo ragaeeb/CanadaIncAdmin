@@ -81,6 +81,7 @@ public:
     Q_INVOKABLE void searchTafsir(QObject* caller, QString const& fieldName, QString const& searchTerm);
     Q_INVOKABLE void translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage="arabic");
     Q_INVOKABLE void translateSuitePage(QObject* caller, qint64 suitePageId, QString destinationLanguage="arabic");
+    Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
 
     void lazyInit();
     static QStringList setupTableStatements();

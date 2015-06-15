@@ -685,13 +685,13 @@ void IlmHelper::lazyInit()
 
 void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage)
 {
-    LOGGER(quoteId);
+    LOGGER(quoteId << destinationLanguage);
 
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::TranslatingQuote);
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.quotes SELECT * FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::TranslatingQuote);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes SELECT * FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::TranslatingQuote);
     m_sql->endTransaction(caller, QueryId::TranslateQuote);
 
     m_sql->detach(destinationLanguage);
@@ -700,17 +700,30 @@ void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinat
 
 void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString destinationLanguage)
 {
-    LOGGER(suitePageId);
+    LOGGER(suitePageId << destinationLanguage);
 
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage); // don't port the translator
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage); // don't port the translator
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
     m_sql->endTransaction(caller, QueryId::TranslateSuitePage);
+
+    m_sql->detach(destinationLanguage);
+}
+
+
+void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
+{
+    destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
+    m_sql->attachIfNecessary(destinationLanguage, true);
+
+    m_sql->startTransaction(caller, QueryId::PortingIndividuals);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage), QueryId::PortingIndividuals);
+    m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
     m_sql->detach(destinationLanguage);
 }
