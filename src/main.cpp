@@ -12,7 +12,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 
     bb::system::InvokeManager i;
 
-    registerLogging( i.startupMode() == ApplicationStartupMode::InvokeCard ? "card" : "ui" );
+    registerLogging( i.startupMode() == ApplicationStartupMode::InvokeCard ? CARD_LOG : UI_LOG );
     ApplicationUI appui(&i);
 
     return Application::exec();

@@ -464,7 +464,7 @@ Page
                     StandardListItem
                     {
                         id: studentSli
-                        imageSource: "images/menu/ic_preview.png"
+                        imageSource: "images/list/ic_student.png"
                         title: ListItemData.student
                         
                         contextActions: [
@@ -493,7 +493,7 @@ Page
                     StandardListItem
                     {
                         id: childSli
-                        imageSource: "images/menu/ic_preview.png"
+                        imageSource: "images/list/ic_child.png"
                         title: ListItemData.child
                         
                         contextActions: [
@@ -522,7 +522,7 @@ Page
                     StandardListItem
                     {
                         id: parentSli
-                        imageSource: "images/menu/ic_preview.png"
+                        imageSource: "images/list/ic_parent.png"
                         title: ListItemData.parent
                         
                         contextActions: [
@@ -551,7 +551,7 @@ Page
                     StandardListItem
                     {
                         id: siblingSli
-                        imageSource: "images/menu/ic_preview.png"
+                        imageSource: "images/list/ic_sibling.png"
                         title: ListItemData.sibling
                         
                         contextActions: [

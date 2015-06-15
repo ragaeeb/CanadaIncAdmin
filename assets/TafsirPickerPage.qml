@@ -103,6 +103,13 @@ Page
                 }
                 
                 Option {
+                    description: qsTr("Search tafsir description") + Retranslate.onLanguageChanged
+                    imageSource: "images/dropdown/search_description.png"
+                    text: qsTr("Description") + Retranslate.onLanguageChanged
+                    value: "description"
+                }
+                
+                Option {
                     description: qsTr("Search reference field") + Retranslate.onLanguageChanged
                     imageSource: "images/dropdown/search_reference.png"
                     text: qsTr("Reference") + Retranslate.onLanguageChanged
