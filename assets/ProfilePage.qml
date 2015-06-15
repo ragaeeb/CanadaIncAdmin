@@ -435,7 +435,7 @@ Page
                     StandardListItem
                     {
                         id: teacherSli
-                        imageSource: "images/menu/ic_preview.png"
+                        imageSource: "images/list/ic_teacher.png"
                         title: ListItemData.teacher
                         
                         contextActions: [

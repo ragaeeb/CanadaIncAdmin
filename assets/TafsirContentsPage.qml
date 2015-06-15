@@ -90,6 +90,21 @@ Page
                         
                         Page
                         {
+                            actions: [
+                                ActionItem
+                                {
+                                    id: optimize
+                                    ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+                                    imageSource: "images/menu/ic_settings.png"
+                                    title: qsTr("Optimize Text") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: OptimizeContent");
+                                        bodyField.text = bodyField.text.replace(/\n/g, " ");
+                                    }
+                                }
+                            ]
+                            
                             titleBar: TitleBar
                             {
                                 title: !sheet.suitePageId ? qsTr("New Page") + Retranslate.onLanguageChanged : qsTr("Edit Page") + Retranslate.onLanguageChanged

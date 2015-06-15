@@ -14,6 +14,7 @@ public:
     Offloader();
     virtual ~Offloader();
 
+    Q_INVOKABLE QVariantList decorateWebsites(QVariantList input);
     Q_INVOKABLE QVariantList fillType(QVariantList input, int queryId);
 };
 
