@@ -6,16 +6,12 @@
 #include "QueryId.h"
 #include "TextUtils.h"
 
+#define KEY_DEATH "death"
+#define KEY_KUNYA "kunya"
+#define KEY_NAME "name"
+#define KEY_PREFIX "prefix"
 #define NAME_FIELD(var) QString("coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || %1.name || ' ' || coalesce(%1.kunya,''))))").arg(var)
 #define NAME_SEARCH(var) QString("%1.name LIKE '%' || ? || '%' OR %1.displayName LIKE '%' || ? || '%' OR %1.kunya LIKE '%' || ? || '%'").arg(var)
-
-namespace {
-
-QVariant protect(QString const& a) {
-    return a.isEmpty() ? QVariant() : a;
-}
-
-}
 
 namespace ilm {
 
@@ -28,24 +24,15 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 
 qint64 IlmHelper::generateIndividualField(QObject* caller, QString const& value)
 {
-    static QRegExp allNumbers = QRegExp("\\d+");
-
-    if ( allNumbers.exactMatch(value) ) {
+    if ( QRegExp("\\d+").exactMatch(value) ) {
         return value.toLongLong();
     } else {
+        initPrefixes();
+
         qint64 id = QDateTime::currentMSecsSinceEpoch();
+        QVariantMap parsed = parseName(value);
 
-        if ( value.startsWith("Shaykh ") || value.startsWith("Sheikh ") || value.startsWith("Imam ") || value.startsWith("Imaam ") )
-        {
-            QStringList all = value.split(" ");
-            QString prefix = all.takeFirst();
-            QString actualName = all.join(" ");
-
-            m_sql->executeQuery(caller, QString("INSERT INTO individuals (id,prefix,name) VALUES (%1,?,?)").arg(id), QueryId::AddIndividual, QVariantList() << prefix << actualName);
-        } else {
-            m_sql->executeQuery(caller, QString("INSERT INTO individuals (id,name) VALUES (%1,?)").arg(id), QueryId::AddIndividual, QVariantList() << value);
-        }
-
+        m_sql->executeQuery(caller, QString("INSERT INTO individuals (id,prefix,kunya,name) VALUES (?,?,?,?)"), QueryId::AddIndividual, QVariantList() << id << parsed.value(KEY_PREFIX) << parsed.value(KEY_KUNYA) << parsed.value(KEY_NAME));
         return id;
     }
 }
@@ -288,8 +275,8 @@ void IlmHelper::addQuote(QObject* caller, QString const& author, QString const& 
     qint64 authorId = generateIndividualField(caller, author);
     QString query = QString("INSERT INTO quotes (author,body,reference,suite_id,uri) VALUES(%1,?,?,?,?)").arg(authorId);
     QVariantList args = QVariantList() << body << reference;
-    args <<  ( !suiteId.isEmpty() ? suiteId.toLongLong() : QVariant() );
-    args << protect(uri);
+    args <<  suiteId.toLongLong();
+    args << uri;
 
     m_sql->executeQuery(caller, query, QueryId::AddQuote, args);
 }
@@ -300,7 +287,7 @@ void IlmHelper::addTafsir(QObject* caller, QString const& author, QString const&
     LOGGER(author << translator << explainer << title << description << reference);
 
     QStringList fields = QStringList() << "id" << "title" << "description" << "reference";
-    QVariantList args = QVariantList() << QDateTime::currentMSecsSinceEpoch() << title << protect(description) << reference;
+    QVariantList args = QVariantList() << QDateTime::currentMSecsSinceEpoch() << title << description << reference;
 
     if ( !author.isEmpty() )
     {
@@ -330,7 +317,7 @@ void IlmHelper::addTafsirPage(QObject* caller, qint64 suiteId, QString const& bo
     LOGGER( suiteId << body.length() << reference.length() );
 
     QString query = QString("INSERT OR IGNORE INTO suite_pages (id,suite_id,body,heading,reference) VALUES(%1,%2,?,?,?)").arg( QDateTime::currentMSecsSinceEpoch() ).arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::AddTafsirPage, QVariantList() << body << protect(heading) << protect(reference) );
+    m_sql->executeQuery(caller, query, QueryId::AddTafsirPage, QVariantList() << body << heading << reference );
 }
 
 
@@ -386,7 +373,7 @@ void IlmHelper::editTafsir(QObject* caller, qint64 suiteId, QString const& autho
     QStringList fields = QStringList() << "author=?" << "title=?" << "description=?" << "reference=?" << "translator=?" << "explainer=?";
     QVariantList args = QVariantList() << generateIndividualField(caller, author);
     args << title;
-    args << protect(description);
+    args << description;
     args << reference;
 
     if ( translator.isEmpty() ) {
@@ -411,7 +398,7 @@ void IlmHelper::editTafsirPage(QObject* caller, qint64 suitePageId, QString cons
     LOGGER( suitePageId << body.length() << heading.length() << reference.length() );
 
     QString query = QString("UPDATE suite_pages SET body=?, heading=?, reference=? WHERE id=%1").arg(suitePageId);
-    m_sql->executeQuery( caller, query, QueryId::EditTafsirPage, QVariantList() << body << protect(heading) << protect(reference) );
+    m_sql->executeQuery( caller, query, QueryId::EditTafsirPage, QVariantList() << body << heading << reference );
 }
 
 
@@ -422,15 +409,15 @@ void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix
     QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, is_companion=? WHERE id=%1").arg(id);
 
     QVariantList args;
-    args << protect(prefix);
+    args << prefix;
     args << name;
-    args << protect(kunya);
-    args << protect(displayName);
+    args << kunya;
+    args << displayName;
     args << ( hidden ? 1 : QVariant() );
-    args << ( birth != 0 ? birth : QVariant() );
-    args << ( death != 0 ? death : QVariant() );
+    args << birth;
+    args << death;
     args << ( female ? 1 : QVariant() );
-    args << ( !location.isEmpty() ? location.toLongLong() : QVariant() );
+    args << location.toLongLong();
     args << ( companion ? 1 : QVariant() );
 
     m_sql->executeQuery(caller, query, QueryId::EditIndividual, args);
@@ -444,8 +431,8 @@ void IlmHelper::editQuote(QObject* caller, qint64 quoteId, QString const& author
     qint64 authorId = generateIndividualField(caller, author);
     QString query = QString("UPDATE quotes SET author=%2,body=?,reference=?,suite_id=?,uri=? WHERE id=%1").arg(quoteId).arg(authorId);
     QVariantList args = QVariantList() << body << reference;
-    args << ( !suiteId.isEmpty() ? suiteId.toLongLong() : QVariant() );
-    args << protect(uri);
+    args << suiteId.toLongLong();
+    args << uri;
 
     m_sql->executeQuery(caller, query, QueryId::EditQuote, args);
 }
@@ -603,14 +590,14 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
     QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,hidden,birth,death,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?,?)").arg(id);
 
     QVariantList args;
-    args << protect(prefix);
+    args << prefix;
     args << name;
-    args << protect(kunya);
-    args << protect(displayName);
+    args << kunya;
+    args << displayName;
     args << ( hidden ? 1 : QVariant() );
-    args << ( birth != 0 ? birth : QVariant() );
-    args << ( death != 0 ? death : QVariant() );
-    args << ( !location.isEmpty() ? location.toLongLong() : QVariant() );
+    args << birth;
+    args << death;
+    args << location.toLongLong();
     args << ( companion ? 1 : QVariant() );
 
     m_sql->executeQuery(caller, query, QueryId::AddIndividual, args);
@@ -737,6 +724,91 @@ void IlmHelper::setDatabaseName(QString const& name)
 
 QString IlmHelper::databaseName() const {
     return m_name;
+}
+
+
+void IlmHelper::initPrefixes()
+{
+    if ( m_prefixes.isEmpty() ) {
+        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh";
+    }
+
+    if ( m_kunyas.isEmpty() ) {
+        m_kunyas << "Abu" << "Aboo";
+    }
+}
+
+
+QVariantMap IlmHelper::parseName(QString n)
+{
+    initPrefixes();
+
+    QStringList prefix;
+    QStringList kunya;
+    int death = 0;
+    QStringList all = n.split(" ");
+    QVariantMap result;
+
+    if ( all.size() > 1 )
+    {
+        QString last = all.last().toLower();
+        QString secondLast = all.at( all.size()-2 ).toLower();
+
+        if ( QRegExp("[\\(\\[]{0,1}died|[\\(\\[]{0,1}d\\.{0,1}$").exactMatch(secondLast) )
+        {
+            last.remove( QRegExp("\\D") ); // remove all non numeric values
+            death = last.toInt();
+
+            if (death > 0)
+            {
+                all.takeLast();
+                all.takeLast();
+            }
+        }
+    }
+
+    while ( !all.isEmpty() )
+    {
+        QString current = all.first();
+        LOGGER(current);
+
+        if ( m_prefixes.contains(current) ) {
+            prefix << all.takeFirst();
+        } else if ( m_kunyas.contains(current) ) {
+            kunya << all.takeFirst() << all.takeFirst(); // take the abu as well as the next word
+
+            QString next = all.first().toLower();
+            if (next == "abdur" || next == "abdul" || next == "abdi") { // it's part of a two-word kunya
+                kunya << all.takeFirst();
+            }
+        } else {
+            break;
+        }
+    }
+
+    if ( all.isEmpty() && !kunya.isEmpty() ) // if there was only a kunya
+    {
+        all = kunya;
+        kunya.clear();
+    }
+
+    if ( !kunya.isEmpty() ) {
+        result[KEY_KUNYA] = kunya.join(" ");
+    }
+
+    if ( !prefix.isEmpty() ) {
+        result[KEY_PREFIX] = prefix.join(" ");
+    }
+
+    if ( !all.isEmpty() ) {
+        result[KEY_NAME] = all.join(" ");
+    }
+
+    if (death > 0) {
+        result[KEY_DEATH] = death;
+    }
+
+    return result;
 }
 
 

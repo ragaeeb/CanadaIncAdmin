@@ -18,6 +18,8 @@ class IlmHelper : public QObject
 
     DatabaseHelper* m_sql;
     QString m_name;
+    QSet<QString> m_prefixes;
+    QSet<QString> m_kunyas;
 
     qint64 generateIndividualField(QObject* caller, QString const& value);
 
@@ -63,6 +65,8 @@ public:
     Q_INVOKABLE void fetchTeachers(QObject* caller, qint64 individualId);
     Q_INVOKABLE void findDuplicateSuites(QObject* caller, QString const& field);
     Q_INVOKABLE void mergeSuites(QObject* caller, QVariantList const& toReplaceIds, qint64 actualId);
+    Q_INVOKABLE QVariantMap parseName(QString n);
+    Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
     Q_INVOKABLE void removeBioLink(QObject* caller, qint64 id);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);
     Q_INVOKABLE void removeLocation(QObject* caller, qint64 id);
@@ -81,12 +85,12 @@ public:
     Q_INVOKABLE void searchTafsir(QObject* caller, QString const& fieldName, QString const& searchTerm);
     Q_INVOKABLE void translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage="arabic");
     Q_INVOKABLE void translateSuitePage(QObject* caller, qint64 suitePageId, QString destinationLanguage="arabic");
-    Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
 
     void lazyInit();
     static QStringList setupTableStatements();
     void setDatabaseName(QString const& name);
     QString databaseName() const;
+    void initPrefixes();
 };
 
 } /* namespace ilm */

@@ -262,7 +262,25 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: IndividualNameDoubleTapped");
-                                name.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                var n = textUtils.optimize( persist.getClipboardText() );
+                                n = textUtils.toTitleCase(n);
+                                var x = tafsirHelper.parseName(n);
+
+                                if (x.name) {
+                                    name.text = x.name;
+                                }
+                                
+                                if (x.kunya) {
+                                    kunya.text = x.kunya;
+                                }
+                                
+                                if (x.prefix) {
+                                    prefix.text = x.prefix;
+                                }
+                                
+                                if (x.death) {
+                                    death.text = x.death;
+                                }
                             }
                         }
                     ]
