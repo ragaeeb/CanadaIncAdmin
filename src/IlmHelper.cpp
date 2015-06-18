@@ -27,8 +27,6 @@ qint64 IlmHelper::generateIndividualField(QObject* caller, QString const& value)
     if ( QRegExp("\\d+").exactMatch(value) ) {
         return value.toLongLong();
     } else {
-        initPrefixes();
-
         qint64 id = QDateTime::currentMSecsSinceEpoch();
         QVariantMap parsed = parseName(value);
 
@@ -730,21 +728,15 @@ QString IlmHelper::databaseName() const {
 }
 
 
-void IlmHelper::initPrefixes()
+QVariantMap IlmHelper::parseName(QString n)
 {
     if ( m_prefixes.isEmpty() ) {
-        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh";
+        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King";
     }
 
     if ( m_kunyas.isEmpty() ) {
         m_kunyas << "Abu" << "Aboo";
     }
-}
-
-
-QVariantMap IlmHelper::parseName(QString n)
-{
-    initPrefixes();
 
     QStringList prefix;
     QStringList kunya;

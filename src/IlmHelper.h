@@ -90,7 +90,6 @@ public:
     static QStringList setupTableStatements();
     void setDatabaseName(QString const& name);
     QString databaseName() const;
-    void initPrefixes();
 };
 
 } /* namespace ilm */
