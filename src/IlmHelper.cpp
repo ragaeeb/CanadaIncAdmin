@@ -582,12 +582,12 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, QString const& location, bool companion)
+qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, bool companion)
 {
-    LOGGER( prefix << name << kunya << displayName << birth << death << location << companion );
+    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << companion );
 
     qint64 id = QDateTime::currentMSecsSinceEpoch();
-    QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,hidden,birth,death,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?,?)").arg(id);
+    QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,hidden,birth,death,female,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?,?)").arg(id);
 
     QVariantList args;
     args << prefix;
@@ -597,6 +597,7 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
     args << ( hidden ? 1 : QVariant() );
     args << birth;
     args << death;
+    args << ( female ? 1 : QVariant() );
     args << location.toLongLong();
     args << ( companion ? 1 : QVariant() );
 
@@ -709,6 +710,7 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PortingIndividuals);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage), QueryId::PortingIndividuals);
     m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage), QueryId::PortingIndividuals);
     m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
