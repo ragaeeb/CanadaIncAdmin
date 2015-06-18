@@ -34,9 +34,7 @@ void analyzeAyats(QRegExp const& regex, QVariantList& result, QString const& bod
     while ( (pos = regex.indexIn(body, pos) ) != -1)
     {
         QString current = regex.capturedTexts().first();
-        current.remove(")");
-        current.remove("(");
-        current.remove(" ");
+        current.remove( QRegExp("[\\(\\)\\[\\] ]") );
         QStringList tokens = current.split(":");
 
         int chapter = tokens.first().trimmed().toInt();
