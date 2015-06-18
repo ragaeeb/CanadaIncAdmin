@@ -586,22 +586,23 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
 {
     LOGGER( prefix << name << kunya << displayName << birth << death << female << location << companion );
 
+    QMap<QString,QVariant> keyValues;
     qint64 id = QDateTime::currentMSecsSinceEpoch();
-    QString query = QString("INSERT INTO individuals (id,prefix,name,kunya,displayName,hidden,birth,death,female,location,is_companion) VALUES (%1,?,?,?,?,?,?,?,?,?)").arg(id);
+    keyValues["id"] = id;
+    keyValues["prefix"] = prefix;
+    keyValues["name"] = name;
+    keyValues["kunya"] = kunya;
+    keyValues["displayName"] = displayName;
+    keyValues["hidden"] = ( hidden ? 1 : QVariant() );
+    keyValues["birth"] = birth;
+    keyValues["death"] = death;
+    keyValues["female"] = ( female ? 1 : QVariant() );
+    keyValues["location"] = location.toLongLong();
+    keyValues["is_companion"] = ( companion ? 1 : QVariant() );
 
-    QVariantList args;
-    args << prefix;
-    args << name;
-    args << kunya;
-    args << displayName;
-    args << ( hidden ? 1 : QVariant() );
-    args << birth;
-    args << death;
-    args << ( female ? 1 : QVariant() );
-    args << location.toLongLong();
-    args << ( companion ? 1 : QVariant() );
+    QString query = QString("INSERT INTO individuals (%1) VALUES (%2)").arg( QStringList( keyValues.keys() ).join(",") ).arg( TextUtils::getPlaceHolders( keyValues.size(), false ) );
 
-    m_sql->executeQuery(caller, query, QueryId::AddIndividual, args);
+    m_sql->executeQuery( caller, query, QueryId::AddIndividual, keyValues.values() );
 
     return id;
 }
