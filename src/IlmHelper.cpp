@@ -492,35 +492,35 @@ void IlmHelper::fetchBioMetadata(QObject* caller, qint64 suitePageId)
 void IlmHelper::fetchTeachers(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS teacher FROM teachers INNER JOIN individuals i ON teachers.teacher=i.id WHERE teachers.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchTeachers);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS teacher,i.female FROM teachers INNER JOIN individuals i ON teachers.teacher=i.id WHERE teachers.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchTeachers);
 }
 
 
 void IlmHelper::fetchSiblings(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1 AS sibling FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1 AS sibling FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchSiblings);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1 AS sibling FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchSiblings);
 }
 
 
 void IlmHelper::fetchParents(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS parent FROM parents INNER JOIN individuals i ON parents.parent_id=i.id WHERE parents.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchParents);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS parent,i.female FROM parents INNER JOIN individuals i ON parents.parent_id=i.id WHERE parents.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchParents);
 }
 
 
 void IlmHelper::fetchStudents(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS student FROM teachers INNER JOIN individuals i ON teachers.individual=i.id WHERE teachers.teacher=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchStudents);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS student,i.female FROM teachers INNER JOIN individuals i ON teachers.individual=i.id WHERE teachers.teacher=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchStudents);
 }
 
 
 void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS child FROM parents INNER JOIN individuals i ON parents.individual=i.id WHERE parents.parent_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchChildren);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS child,i.female FROM parents INNER JOIN individuals i ON parents.individual=i.id WHERE parents.parent_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchChildren);
 }
 
 

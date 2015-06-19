@@ -5,7 +5,6 @@
 
 namespace canadainc {
     class DatabaseHelper;
-    class Persistance;
 }
 
 namespace ilm {

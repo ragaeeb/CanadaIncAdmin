@@ -11,7 +11,7 @@ Page
         ActionItem
         {
             id: addStudent
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "images/menu/ic_add_student.png"
             title: qsTr("Add Student") + Retranslate.onLanguageChanged
             
@@ -59,7 +59,7 @@ Page
         ActionItem
         {
             id: editBio
-            ActionBar.placement: ActionBarPlacement.OnBar
+            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             imageSource: "images/menu/ic_edit_rijaal.png"
             title: qsTr("Edit") + Retranslate.onLanguageChanged
             
@@ -261,7 +261,7 @@ Page
         } else if (id == QueryId.RemoveTeacher) {
             persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.RemoveStudent) {
-            persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_companions.png" );
+            persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_student.png" );
         } else if (id == QueryId.RemoveChild) {
             persist.showToast( qsTr("Child removed!"), "images/menu/ic_remove_companions.png" );
         } else if (id == QueryId.AddTeacher) {
@@ -269,15 +269,15 @@ Page
         } else if (id == QueryId.AddStudent) {
             persist.showToast( qsTr("Student added!"), "images/menu/ic_add_student.png" );
         } else if (id == QueryId.RemoveParent) {
-            persist.showToast( qsTr("Parent removed!"), "images/menu/ic_remove_teacher.png" );
+            persist.showToast( qsTr("Parent removed!"), "images/menu/ic_remove_parent.png" );
         } else if (id == QueryId.RemoveSibling) {
-            persist.showToast( qsTr("Sibling removed!"), "images/menu/ic_remove_companions.png" );
+            persist.showToast( qsTr("Sibling removed!"), "images/menu/ic_remove_sibling.png" );
         } else if (id == QueryId.AddParent) {
-            persist.showToast( qsTr("Parent added!"), "images/menu/ic_set_companions.png" );
+            persist.showToast( qsTr("Parent added!"), "images/menu/ic_add_parent.png" );
         } else if (id == QueryId.AddSibling) {
-            persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_student.png" );
+            persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_sibling.png" );
         } else if (id == QueryId.AddChild) {
-            persist.showToast( qsTr("Child added!"), "images/menu/ic_add_student.png" );
+            persist.showToast( qsTr("Child added!"), "images/menu/ic_add_child.png" );
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         }
@@ -435,7 +435,7 @@ Page
                     StandardListItem
                     {
                         id: teacherSli
-                        imageSource: "images/list/ic_teacher.png"
+                        imageSource: ListItemData.female ? "images/list/ic_teacher_female.png" : "images/list/ic_teacher.png"
                         title: ListItemData.teacher
                         
                         contextActions: [
@@ -464,7 +464,7 @@ Page
                     StandardListItem
                     {
                         id: studentSli
-                        imageSource: "images/list/ic_student.png"
+                        imageSource: ListItemData.female ? "images/list/ic_female.png" : "images/list/ic_student.png"
                         title: ListItemData.student
                         
                         contextActions: [
@@ -493,7 +493,7 @@ Page
                     StandardListItem
                     {
                         id: childSli
-                        imageSource: "images/list/ic_child.png"
+                        imageSource: ListItemData.female ? "images/list/ic_child_female.png" : "images/list/ic_child.png"
                         title: ListItemData.child
                         
                         contextActions: [
@@ -522,7 +522,7 @@ Page
                     StandardListItem
                     {
                         id: parentSli
-                        imageSource: "images/list/ic_parent.png"
+                        imageSource: ListItemData.female ? "images/list/ic_parent_female.png" : "images/list/ic_parent.png"
                         title: ListItemData.parent
                         
                         contextActions: [
@@ -551,7 +551,7 @@ Page
                     StandardListItem
                     {
                         id: siblingSli
-                        imageSource: "images/list/ic_sibling.png"
+                        imageSource: ListItemData.female ? "images/list/ic_female.png" : "images/list/ic_sibling.png"
                         title: ListItemData.sibling
                         
                         contextActions: [
