@@ -310,12 +310,16 @@ void IlmHelper::addTafsir(QObject* caller, QString const& author, QString const&
 }
 
 
-void IlmHelper::addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference)
+qint64 IlmHelper::addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference)
 {
     LOGGER( suiteId << body.length() << reference.length() );
 
-    QString query = QString("INSERT OR IGNORE INTO suite_pages (id,suite_id,body,heading,reference) VALUES(%1,%2,?,?,?)").arg( QDateTime::currentMSecsSinceEpoch() ).arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::AddTafsirPage, QVariantList() << body << heading << reference );
+    qint64 id = QDateTime::currentMSecsSinceEpoch();
+
+    QString query = QString("INSERT OR IGNORE INTO suite_pages (id,suite_id,body,heading,reference) VALUES(?,?,?,?,?)").arg(id).arg(suiteId);
+    m_sql->executeQuery(caller, query, QueryId::AddTafsirPage, QVariantList() << id << suiteId << body << heading << reference );
+
+    return id;
 }
 
 
@@ -619,7 +623,7 @@ void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS author,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchBio);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS author,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchBio);
 }
 
 void IlmHelper::fetchAllQuotes(QObject* caller, qint64 individualId)

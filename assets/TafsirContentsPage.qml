@@ -6,7 +6,6 @@ Page
     id: tafsirContentsPage
     property variant suiteId
     property alias title: tb.title
-    
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onSuiteIdChanged: {
@@ -25,8 +24,14 @@ Page
         }
     }
     
-    function cleanUp()
+    function popToRoot()
     {
+        while (navigationPane.top != tafsirContentsPage) {
+            navigationPane.pop();
+        }
+    }
+    
+    function cleanUp() {
         app.textualChange.disconnect(reload);
     }
     
@@ -60,174 +65,24 @@ Page
                 }
             ]
             
-            onTriggered: {
-                console.log("UserEvent: TafsirContentAddTriggered");
-                var sheetControl = contentDef.createObject();
-                sheetControl.open();
+            function onCreateSuitePage(id, body, header, reference)
+            {
+                id = tafsirHelper.addTafsirPage(listView, suiteId, body, header, reference);
+                
+                var x = {'id': id, 'body': body, 'header': header, 'reference': reference};
+                adm.insert(0, x);
             }
             
-            attachedObjects: [
-                ComponentDefinition
-                {
-                    id: contentDef
-                    
-                    Sheet
-                    {
-                        id: sheet
-                        property variant suitePageId
-                        property string currentText
-                        property string headingText
-                        property string reference
-                        property variant indexPath
-                        
-                        onOpened: {
-                            bodyField.requestFocus();
-                        }
-                        
-                        onClosed: {
-                            destroy();
-                        }
-                        
-                        Page
-                        {
-                            actions: [
-                                ActionItem
-                                {
-                                    id: optimize
-                                    ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
-                                    imageSource: "images/menu/ic_settings.png"
-                                    title: qsTr("Optimize Text") + Retranslate.onLanguageChanged
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: OptimizeContent");
-                                        bodyField.text = bodyField.text.replace(/\n/g, " ");
-                                    }
-                                }
-                            ]
-                            
-                            titleBar: TitleBar
-                            {
-                                title: !sheet.suitePageId ? qsTr("New Page") + Retranslate.onLanguageChanged : qsTr("Edit Page") + Retranslate.onLanguageChanged
-                                
-                                dismissAction: ActionItem {
-                                    imageSource: "images/dropdown/suite_changes_cancel.png"
-                                    title: qsTr("Cancel") + Retranslate.onLanguageChanged
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: NewTafsirCancelTriggered");
-                                        sheet.close();
-                                    }
-                                }
-                                
-                                acceptAction: ActionItem
-                                {
-                                    id: saveAction
-                                    imageSource: "images/dropdown/suite_changes_accept.png"
-                                    title: qsTr("Save") + Retranslate.onLanguageChanged
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: NewTafsirPageSaveTriggered");
+            onTriggered: {
+                console.log("UserEvent: TafsirContentAddTriggered");
 
-                                        var newText = bodyField.text.trim();
-                                        var headingValue = heading.text.trim();
-                                        var refValue = referenceField.text.trim();
-                                        
-                                        if (!sheet.suitePageId) {
-                                            tafsirHelper.addTafsirPage(listView, suiteId, newText, headingValue, refValue);
-                                        } else {
-                                            tafsirHelper.editTafsirPage(listView, sheet.suitePageId, newText, headingValue, refValue);
-                                            var item = adm.data(sheet.indexPath);
-                                            item["body"] = newText;
-                                            item["heading"] = headingValue;
-                                            item["reference"] = refValue;
-                                            adm.replace(sheet.indexPath[0], item);
-                                        }
-
-                                        sheet.close();
-                                    }
-                                }
-                            }
-                            
-                            Container
-                            {
-                                horizontalAlignment: HorizontalAlignment.Fill
-                                verticalAlignment: VerticalAlignment.Fill
-                                
-                                TextField {
-                                    id: heading
-                                    horizontalAlignment: HorizontalAlignment.Fill
-                                    hintText: qsTr("Heading...") + Retranslate.onLanguageChanged
-                                    text: sheet.headingText
-                                    backgroundVisible: false
-                                    input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
-                                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                                    
-                                    gestureHandlers: [
-                                        DoubleTapHandler {
-                                            onDoubleTapped: {
-                                                console.log("UserEvent: TafsirHeadingDoubleTapped");
-                                                heading.text = textUtils.toTitleCase( persist.getClipboardText() );
-                                            }
-                                        }
-                                    ]
-                                }
-                                
-                                TextArea
-                                {
-                                    id: bodyField
-                                    horizontalAlignment: HorizontalAlignment.Fill
-                                    verticalAlignment: VerticalAlignment.Fill
-                                    backgroundVisible: false
-                                    content.flags: TextContentFlag.ActiveText | TextContentFlag.EmoticonsOff
-                                    text: sheet.currentText
-                                    hintText: qsTr("Enter tafsir body here...") + Retranslate.onLanguageChanged
-                                    input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
-                                    topPadding: 0; topMargin: 0
-                                    
-                                    onTextChanging: {
-                                        saveAction.enabled = text.trim().length > 10;
-                                    }
-                                    
-                                    gestureHandlers: [
-                                        DoubleTapHandler {
-                                            onDoubleTapped: {
-                                                console.log("UserEvent: TafsirBodyDoubleTapped");
-                                                bodyField.text = textUtils.optimize( persist.getClipboardText() );
-                                            }
-                                        }
-                                    ]
-                                    
-                                    layoutProperties: StackLayoutProperties {
-                                        spaceQuota: 1
-                                    }
-                                }
-                                
-                                TextArea
-                                {
-                                    id: referenceField
-                                    horizontalAlignment: HorizontalAlignment.Fill
-                                    verticalAlignment: VerticalAlignment.Fill
-                                    backgroundVisible: false
-                                    content.flags: TextContentFlag.ActiveText | TextContentFlag.EmoticonsOff
-                                    text: sheet.reference
-                                    hintText: qsTr("Enter reference here...") + Retranslate.onLanguageChanged
-                                    input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
-                                    topPadding: 0; topMargin: 0
-                                    
-                                    gestureHandlers: [
-                                        DoubleTapHandler {
-                                            onDoubleTapped: {
-                                                console.log("UserEvent: TafsirReferenceDoubleTapped");
-                                                referenceField.text = persist.getClipboardText();
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
+                definition.source = "CreateSuitePage.qml";
+                var c = definition.createObject();
+                c.createSuitePage.connect(onCreateSuitePage);
+                c.focusable = true;
+                
+                navigationPane.push(c);
+            }
         }
     ]
     
@@ -241,6 +96,7 @@ Page
         {
             id: listView
             scrollRole: ScrollRole.Main
+            property variant editIndexPath
             
             dataModel: ArrayDataModel {
                 id: adm
@@ -252,9 +108,6 @@ Page
                 {
                     if ( adm.isEmpty() ) {
                         adm.append(data);
-                    } else {
-                        adm.insert(0, data[0]); // add the latest value to avoid refreshing entire list
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     }
                     
                     if ( adm.isEmpty() ) {
@@ -262,11 +115,13 @@ Page
                     }
                 } else if (id == QueryId.AddTafsirPage) {
                     persist.showToast( qsTr("Tafsir page added!"), "images/menu/ic_add_suite_page.png" );
-                    suiteIdChanged();
+                    popToRoot();
+                    listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 } else if (id == QueryId.RemoveTafsirPage) {
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
                 } else if (id == QueryId.EditTafsirPage) {
-                    persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_bio.png" );
+                    persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
+                    popToRoot();
                 } else if (id == QueryId.TranslateSuitePage) {
                     persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_edit_bio.png" );
                     persist.saveValueFor("translation", "arabic");
@@ -283,15 +138,27 @@ Page
                 busy.delegateActive = true;
             }
             
+            function onEditSuitePage(id, body, header, reference)
+            {
+                var x = dataModel.data(editIndexPath);
+                x["body"] = body;
+                x["heading"] = header;
+                x["reference"] = reference;
+                adm.replace(editIndexPath[0], x);
+                
+                tafsirHelper.editTafsirPage(listView, id, body, header, reference);
+            }
+            
             function editItem(indexPath, ListItemData)
             {
-                var sheetControl = contentDef.createObject();
-                sheetControl.suitePageId = ListItemData.id;
-                sheetControl.currentText = ListItemData.body;
-                sheetControl.headingText = ListItemData.heading;
-                sheetControl.reference = ListItemData.reference;
-                sheetControl.indexPath = indexPath;
-                sheetControl.open();
+                editIndexPath = indexPath;
+                definition.source = "CreateSuitePage.qml";
+                var c = definition.createObject();
+                c.createSuitePage.connect(onEditSuitePage);
+                
+                c.suitePageId = ListItemData.id;
+                c.focusable = true;
+                navigationPane.push(c);
             }
             
             function setSuitePageMarker(ListItem)
@@ -335,7 +202,7 @@ Page
                             horizontalAlignment: HorizontalAlignment.Fill
                             verticalAlignment: VerticalAlignment.Fill
                             multiline: true
-                            text: ListItemData.body + (ListItemData.reference ? "\n"+ListItemData.reference : "")
+                            text: ListItemData.body + (ListItemData.reference ? "\n\n"+ListItemData.reference : "")
                         }
                         
                         contextActions: [

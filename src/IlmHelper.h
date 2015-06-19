@@ -34,7 +34,7 @@ public:
     Q_INVOKABLE void addStudent(QObject* caller, qint64 teacherId, qint64 studentId);
     Q_INVOKABLE void addChild(QObject* caller, qint64 parentId, qint64 childId);
     Q_INVOKABLE void addTafsir(QObject* caller, QString const& author, QString const& translator, QString const& explainer, QString const& title, QString const& description, QString const& reference);
-    Q_INVOKABLE void addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference);
+    Q_INVOKABLE qint64 addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference);
     Q_INVOKABLE void addTeacher(QObject* caller, qint64 studentId, qint64 teacherId);
     Q_INVOKABLE void addWebsite(QObject* caller, qint64 individualId, QString const& address);
     Q_INVOKABLE qint64 createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, bool companion);

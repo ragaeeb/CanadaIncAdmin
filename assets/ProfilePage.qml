@@ -257,11 +257,10 @@ Page
             result += "\n";
             
             body.text = "\n"+result;
-            ft.play();
         } else if (id == QueryId.RemoveTeacher) {
             persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.RemoveStudent) {
-            persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_student.png" );
+            persist.showToast( qsTr("Student removed!"), "images/dropdown/suite_changes_cancel.png" );
         } else if (id == QueryId.RemoveChild) {
             persist.showToast( qsTr("Child removed!"), "images/menu/ic_remove_companions.png" );
         } else if (id == QueryId.AddTeacher) {
@@ -280,6 +279,14 @@ Page
             persist.showToast( qsTr("Child added!"), "images/menu/ic_add_child.png" );
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
+        } else if (id == QueryId.ReplaceSuite) {
+            persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge.png" );
+            popToRoot();
+            reload();
+            return;
+        } else if (id == QueryId.EditTafsirPage) {
+            persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
+            popToRoot();
         }
         
         data = offloader.fillType(data, id);
@@ -361,6 +368,33 @@ Page
                 }
             }
             
+            function onDestinationPicked(suites)
+            {
+                var destination = suites[0].id;
+                tafsirHelper.mergeSuites(bioPage, [dataModel.data(editIndexPath).suite_id], destination);
+            }
+            
+            function merge(ListItem)
+            {
+                editIndexPath = ListItem.indexPath;
+                definition.source = "TafsirPickerPage.qml";
+                var ipp = definition.createObject();
+                ipp.tafsirPicked.connect(onDestinationPicked);
+                
+                navigationPane.push(ipp);
+            }
+            
+            function onEditSuitePage(id, body, header, reference)
+            {
+                var x = dataModel.data(editIndexPath);
+                x["body"] = body;
+                x["heading"] = header;
+                x["reference"] = reference;
+                bioModel.updateItem(editIndexPath, x);
+                
+                tafsirHelper.editTafsirPage(bioPage, id, body, header, reference);
+            }
+            
             function removeStudent(ListItem)
             {
                 tafsirHelper.removeStudent(bioPage, individualId, ListItem.data.id);
@@ -410,9 +444,29 @@ Page
                     
                     StandardListItem
                     {
+                        id: bioSli
                         description: ListItemData.heading ? ListItemData.heading : ListItemData.title ? ListItemData.title : ""
                         imageSource: ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/list/ic_bio.png"
                         title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: bioSli.title
+                                subtitle: bioSli.description
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_merge.png"
+                                    title: qsTr("Merge Into") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: MergeSuite");
+                                        bioSli.ListItem.view.merge(bioSli.ListItem);
+                    }
+                                }
+                            }
+                        ]
                     }
                 },
                 
@@ -590,7 +644,13 @@ Page
                     
                     navigationPane.push(page);
                 } else if (d.type == "bio" || d.type == "citing") {
-                    persist.invoke( "com.canadainc.Quran10.tafsir.previewer", "", "", "quran://tafsir/"+d.suite_page_id.toString() );
+                    editIndexPath = indexPath;
+                    definition.source = "CreateSuitePage.qml";
+                    var page = definition.createObject();
+                    page.suitePageId = d.suite_page_id;
+                    page.createSuitePage.connect(onEditSuitePage);
+                    
+                    navigationPane.push(page);
                 }
             }
             
