@@ -384,6 +384,15 @@ Page
                 navigationPane.push(ipp);
             }
             
+            function checkLinks(ListItemData)
+            {
+                definition.source = "TafsirAyats.qml";
+                var ipp = definition.createObject();
+                ipp.suitePageId = ListItemData.suite_page_id;
+                
+                navigationPane.push(ipp);
+            }
+            
             function onEditSuitePage(id, body, header, reference)
             {
                 var x = dataModel.data(editIndexPath);
@@ -463,7 +472,18 @@ Page
                                     onTriggered: {
                                         console.log("UserEvent: MergeSuite");
                                         bioSli.ListItem.view.merge(bioSli.ListItem);
-                    }
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_update_link.png"
+                                    title: qsTr("Check Links") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: CheckLinks");
+                                        bioSli.ListItem.view.checkLinks(ListItemData);
+                                    }
                                 }
                             }
                         ]

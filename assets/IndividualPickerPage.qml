@@ -9,7 +9,6 @@ Page
     property alias pickerList: listView
     property alias busyControl: busy
     property alias model: adm
-    property alias allowEditing: listView.showContextMenu
     property alias searchField: tftk.textField
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
@@ -165,11 +164,19 @@ Page
             {
                 id: listView
                 property alias pickerPage: individualPage
-                property bool showContextMenu: false
                 scrollRole: ScrollRole.Main
                 
                 dataModel: ArrayDataModel {
                     id: adm
+                }
+                
+                function openProfile(ListItemData)
+                {
+                    definition.source = "ProfilePage.qml";
+                    var x = definition.createObject();
+                    x.individualId = ListItemData.id;
+                    
+                    navigationPane.push(x);
                 }
                 
                 listItemComponents: [
@@ -180,6 +187,24 @@ Page
                             id: sli
                             imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
                             title: ListItemData.name
+                            
+                            contextActions: [
+                                ActionSet
+                                {
+                                    title: sli.title
+                                    
+                                    ActionItem
+                                    {
+                                        imageSource: "images/menu/ic_preview.png"
+                                        title: qsTr("View") + Retranslate.onLanguageChanged
+                                        
+                                        onTriggered: {
+                                            console.log("UserEvent: OpenProfile");
+                                            sli.ListItem.view.openProfile(ListItemData);
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]
@@ -194,11 +219,12 @@ Page
                         refresh();
                     } else if (id == QueryId.AddIndividual) {
                         persist.showToast( qsTr("Successfully added individual"), "images/menu/ic_select_individuals.png" );
+                        scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                         
                         while (navigationPane.top != individualPage) {
                             navigationPane.pop();
                         }
-                    } 
+                    }
                 }
                 
                 onTriggered: {

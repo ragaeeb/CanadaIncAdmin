@@ -40,9 +40,9 @@ Page
         deviceUtils.attachTopBottomKeys(narrationsPage, listView);
 
         bioTypeDialog.appendItem( qsTr("Jarh") );
-        bioTypeDialog.appendItem( qsTr("Biography"), true, true );
+        bioTypeDialog.appendItem( qsTr("Biography") );
         bioTypeDialog.appendItem( qsTr("Tahdeel") );
-        bioTypeDialog.appendItem( qsTr("Cited") );
+        bioTypeDialog.appendItem( qsTr("Cited"), true, true );
     }
     
     actions: [
