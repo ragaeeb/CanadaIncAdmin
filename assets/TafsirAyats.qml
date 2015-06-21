@@ -158,7 +158,6 @@ Page
             function onPicked(individualId, name)
             {
                 bioTypeDialog.target = individualId;
-                bioTypeDialog.targetName = name;
                 bioTypeDialog.show();
                 
                 popToRoot();
@@ -258,6 +257,14 @@ Page
                 noElements.delegateActive = !listView.visible;
             }
             
+            function onPeoplePicked(ids)
+            {
+                popToRoot();
+                
+                bioTypeDialog.target = ids;
+                bioTypeDialog.show();
+            }
+            
             onTriggered: {
                 console.log("UserEvent: TafsirAyatTriggered");
                 
@@ -275,6 +282,7 @@ Page
                 } else {
                     definition.source = "ProfilePage.qml";
                     var page = definition.createObject();
+                    page.individualsPicked.connect(onPeoplePicked);
                     page.individualId = d.target_id;
                     
                     navigationPane.push(page);
@@ -483,7 +491,6 @@ Page
         {
             id: bioTypeDialog
             property variant target
-            property string targetName
             title: qsTr("Biography Type") + Retranslate.onLanguageChanged
             body: qsTr("Please select the type of biography this is:") + Retranslate.onLanguageChanged
             cancelButton.label: qsTr("Cancel")
@@ -503,7 +510,7 @@ Page
                         points = 2;
                     }
                     
-                    tafsirHelper.addBioLink(listView, suitePageId, target, points);
+                    tafsirHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
                 }
             }
         }

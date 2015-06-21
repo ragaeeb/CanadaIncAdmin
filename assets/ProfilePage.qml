@@ -6,6 +6,7 @@ Page
     id: bioPage
     property variant individualId
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+    signal individualsPicked(variant ids)
     
     actions: [
         ActionItem
@@ -73,14 +74,14 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: EditBio");
-
-                 definition.source = "CreateIndividualPage.qml";
-                 
-                 var p = definition.createObject();
-                 p.individualId = individualId;
-                 p.createIndividual.connect(onEdit);
-                 
-                 navigationPane.push(p);
+                
+                definition.source = "CreateIndividualPage.qml";
+                
+                var p = definition.createObject();
+                p.individualId = individualId;
+                p.createIndividual.connect(onEdit);
+                
+                navigationPane.push(p);
             }
         },
         
@@ -257,10 +258,11 @@ Page
             result += "\n";
             
             body.text = "\n"+result;
+            ft.play();
         } else if (id == QueryId.RemoveTeacher) {
             persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.RemoveStudent) {
-            persist.showToast( qsTr("Student removed!"), "images/dropdown/suite_changes_cancel.png" );
+            persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_student.png" );
         } else if (id == QueryId.RemoveChild) {
             persist.showToast( qsTr("Child removed!"), "images/menu/ic_remove_companions.png" );
         } else if (id == QueryId.AddTeacher) {
@@ -433,6 +435,45 @@ Page
                 tafsirHelper.removeParent(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
+            
+            onSelectionChanged: {
+                var n = selectionList().length;
+                multiSelectHandler.status = qsTr("%n entries selected", "", n);
+                selectMulti.enabled = n > 0;
+            }
+            
+            multiSelectAction: MultiSelectActionItem {
+                imageSource: "images/menu/ic_select_individuals.png"
+            }
+            
+            multiSelectHandler.actions: [
+                ActionItem
+                {
+                    id: selectMulti
+                    enabled: false
+                    imageSource: "images/menu/ic_set_companions.png"
+                    title: qsTr("Select") + Retranslate.onLanguageChanged
+                    
+                    onTriggered: {
+                        console.log("UserEvent: MultiProfileSelect");
+                        
+                        var all = bios.selectionList();
+                        var ids = [];
+                        var validIndividuals = {'teacher': 1, 'student': 1, 'parent': 1, 'sibling': 1, 'child': 1}
+                        
+                        for (var i = all.length-1; i >= 0; i--)
+                        {
+                            var d = bioModel.data(all[i]);
+                            
+                            if ( bios.itemType(d, all[i]) in validIndividuals ) {
+                                ids.push(d.id);
+                            }
+                        }
+                        
+                        individualsPicked(ids);
+                    }
+                }
+            ]
             
             listItemComponents: [
                 ListItemComponent

@@ -26,7 +26,7 @@ public:
     IlmHelper(DatabaseHelper* sql);
     virtual ~IlmHelper();
 
-    Q_INVOKABLE qint64 addBioLink(QObject* caller, qint64 suitePageId, qint64 targetId, QVariant const& points);
+    Q_INVOKABLE void addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points);
     Q_INVOKABLE qint64 addLocation(QObject* caller, QString const& city, qreal latitude, qreal longitude);
     Q_INVOKABLE void addQuote(QObject* caller, QString const& author, QString const& body, QString const& reference, QString const& suiteId, QString const& uri);
     Q_INVOKABLE void addParent(QObject* caller, qint64 childId, qint64 parentId);

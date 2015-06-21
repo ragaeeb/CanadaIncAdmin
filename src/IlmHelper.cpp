@@ -144,20 +144,20 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 {
     LOGGER(toReplaceId << actualId);
 
-    m_sql->startTransaction(caller, QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE mentions SET target=%1 WHERE target=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE quotes SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET translator=%1 WHERE translator=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET explainer=%1 WHERE explainer=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE teachers SET teacher=%1 WHERE teacher=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE teachers SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE parents SET parent_id=%1 WHERE teacparent_idher=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE parents SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE siblings SET sibling_id=%1 WHERE sibling_id=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE siblings SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("UPDATE websites SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingIndividual);
-    m_sql->executeQuery(caller, QString("DELETE FROM individuals WHERE id=%1").arg(toReplaceId), QueryId::ReplacingIndividual);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE mentions SET target=%1 WHERE target=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE quotes SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE suites SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE suites SET translator=%1 WHERE translator=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE suites SET explainer=%1 WHERE explainer=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE teachers SET teacher=%1 WHERE teacher=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE teachers SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE parents SET parent_id=%1 WHERE teacparent_idher=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE parents SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE siblings SET sibling_id=%1 WHERE sibling_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE siblings SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE websites SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("DELETE FROM individuals WHERE id=%1").arg(toReplaceId), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::ReplaceIndividual);
 }
 
@@ -166,15 +166,15 @@ void IlmHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds, q
 {
     LOGGER(toReplaceIds << actualId);
 
-    m_sql->startTransaction(caller, QueryId::ReplacingSuite);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
 
     foreach (QVariant const& q, toReplaceIds)
     {
         qint64 toReplaceId = q.toLongLong();
 
-        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1,heading=(SELECT title FROM suites WHERE id=%2),reference=(SELECT reference FROM suites WHERE id=%2) WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingSuite);
-        m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::ReplacingSuite);
-        m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), QueryId::ReplacingSuite);
+        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1,heading=(SELECT title FROM suites WHERE id=%2),reference=(SELECT reference FROM suites WHERE id=%2) WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), QueryId::PendingTransaction);
     }
 
     m_sql->endTransaction(caller, QueryId::ReplaceSuite);
@@ -232,16 +232,19 @@ void IlmHelper::searchTafsir(QObject* caller, QString const& fieldName, QString 
 }
 
 
-qint64 IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, qint64 targetId, QVariant const& points)
+void IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points)
 {
-    LOGGER(suitePageId << targetId << points);
+    LOGGER(suitePageId << targetIds << points);
 
-    qint64 id = QDateTime::currentMSecsSinceEpoch();
+    QString query = "INSERT INTO mentions (target,suite_page_id,points) VALUES(?,?,?)";
 
-    QString query = "INSERT INTO mentions (id,target,suite_page_id,points) VALUES(?,?,?,?)";
-    m_sql->executeQuery(caller, query, QueryId::AddBioLink, QVariantList() << id << targetId << suitePageId << points);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
 
-    return id;
+    foreach (QVariant const& targetId, targetIds) {
+        m_sql->executeQuery(caller, query, QueryId::PendingTransaction, QVariantList() << targetId << suitePageId << points);
+    }
+
+    m_sql->endTransaction(caller, QueryId::AddBioLink);
 }
 
 
@@ -681,8 +684,8 @@ void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinat
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::TranslatingQuote);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes SELECT * FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::TranslatingQuote);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes SELECT * FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::TranslateQuote);
 
     m_sql->detach(destinationLanguage);
@@ -696,11 +699,11 @@ void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString 
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage); // don't port the translator
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::TranslatingSuitePage);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction); // don't port the translator
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::TranslateSuitePage);
 
     m_sql->detach(destinationLanguage);
@@ -712,9 +715,9 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::PortingIndividuals);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage), QueryId::PortingIndividuals);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage), QueryId::PortingIndividuals);
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
     m_sql->detach(destinationLanguage);
