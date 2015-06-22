@@ -64,6 +64,12 @@ Page
             imageSource: "images/menu/ic_edit_rijaal.png"
             title: qsTr("Edit") + Retranslate.onLanguageChanged
             
+            shortcuts: [
+                SystemShortcut {
+                    type: SystemShortcuts.Edit
+                }
+            ]
+            
             function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
             {
                 tafsirHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
@@ -154,30 +160,6 @@ Page
                 p.picked.connect(onPicked);
                 
                 navigationPane.push(p);
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_edit_rijaal.png"
-            title: qsTr("Edit") + Retranslate.onLanguageChanged
-            
-            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
-            {
-                tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
-                
-                reload();
-                popToRoot();
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: EditProfile");
-                definition.source = "CreateIndividualPage.qml";
-                var page = definition.createObject();
-                page.individualId = individualId;
-                page.createIndividual.connect(onEdit);
-                
-                navigationPane.push(page);
             }
         }
     ]
@@ -289,14 +271,44 @@ Page
         } else if (id == QueryId.EditTafsirPage) {
             persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
             popToRoot();
+        } else if (id == QueryId.AddBioLink) {
+            persist.showToast( qsTr("Biography added!!"), "images/menu/ic_add_bio.png" );
+            popToRoot();
+            reload();
+            return;
         }
         
         data = offloader.fillType(data, id);
         bioModel.insertList(data);
     }
     
-    titleBar: TitleBar {
+    titleBar: TitleBar
+    {
         scrollBehavior: TitleBarScrollBehavior.NonSticky
+        
+        acceptAction: ActionItem
+        {
+            id: addBio
+            imageSource: "images/menu/ic_add_bio.png"
+            title: qsTr("Add Biography") + Retranslate.onLanguageChanged
+            
+            function onSuitePicked(suites)
+            {
+                tafsirHelper.addBioLink(navigationPane, suites[0]);
+                popToRoot();
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddProfileBio");
+                definition.source = "TafsirPickerPage.qml";
+                var page = definition.createObject();
+                page.tafsirPicked.connect(onSuitePicked);
+                page.autoFocus = true;
+                page.reload();
+                
+                navigationPane.push(page);
+            }
+        }
     }
     
     Container

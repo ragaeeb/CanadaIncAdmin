@@ -14,6 +14,39 @@ Page
     property alias busyControl: busy.delegateActive
     property bool allowMultiple: false
     
+    actions: [
+        ActionItem
+        {
+            imageSource: "images/menu/ic_add_suite.png"
+            title: qsTr("Add") + Retranslate.onLanguageChanged
+            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            
+            function onCreate(id, author, translator, explainer, title, description, reference)
+            {
+                tafsirHelper.addTafsir(navigationPane, author, translator, explainer, title, description, reference);
+                
+                while (navigationPane.top != tafsirPicker) {
+                    navigationPane.pop();
+                }
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: NewSuite");
+                definition.source = "CreateTafsirPage.qml";
+                var page = definition.createObject();
+                page.createTafsir.connect(onCreate);
+                
+                navigationPane.push(page);
+            }
+            
+            shortcuts: [
+                SystemShortcut {
+                    type: SystemShortcuts.CreateNew
+                }
+            ]
+        }
+    ]
+    
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(tafsirPickerPage, listView, true);
         app.textualChange.connect(clearAndReload);
