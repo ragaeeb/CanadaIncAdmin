@@ -63,22 +63,16 @@ Page
             }
         },
         
-        ActionItem {
-            id: searchAction
-            imageSource: "images/menu/ic_search_rijaal.png"
-            title: qsTr("Search") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: SearchActionTriggered");
+        TextInputActionItem
+        {
+            id: andConstraint
+            hintText: qsTr("AND...") + Retranslate.onLanguageChanged
+            input.submitKey: SubmitKey.Search
+            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+            input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
+            input.onSubmitted: {
                 performSearch();
             }
-            
-            shortcuts: [
-                SystemShortcut {
-                    type: SystemShortcuts.Search
-                }
-            ]
         }
     ]
     
@@ -90,14 +84,10 @@ Page
             id: tftk
             textField.hintText: qsTr("Enter text to search...") + Retranslate.onLanguageChanged
             textField.input.submitKey: SubmitKey.Search
-            textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheck | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrection
+            textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
             textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
             textField.input.onSubmitted: {
                 performSearch();
-            }
-            
-            onCreationCompleted: {
-                textField.input["keyLayout"] = 7;
             }
         }
     }
@@ -111,7 +101,7 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            tafsirHelper.searchIndividuals(listView, trimmed);
+            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim() );
         } else {
             tafsirHelper.fetchAllIndividuals(listView);
         }

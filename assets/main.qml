@@ -7,6 +7,44 @@ TabbedPane
     
     Menu.definition: MenuDefinition
     {
+        actions: [
+            ActionItem
+            {
+                id: toggler
+                imageSource: "images/menu/ic_validate_location.png"
+                
+                onTriggered:
+                {
+                    console.log("UserEvent: SettingsPage");
+
+                    var current = persist.getValueFor("translation");
+                    
+                    if (!current) {
+                        current = "english";
+                    }
+                                        
+                    persist.saveValueFor("translation", current == "english" ? "arabic" : "english");
+                }
+                
+                function onSettingChanged(newValue, key)
+                {
+                    if (!newValue) {
+                        newValue = "english";
+                    }
+                    
+                    if (newValue == "english") {
+                        title = qsTr("Arabic");
+                    } else {
+                        title = qsTr("English");
+                    }
+                }
+                
+                onCreationCompleted: {
+                    persist.registerForSetting(toggler, "translation");
+                }
+            }
+        ]
+        
         settingsAction: SettingsActionItem
         {
             id: settingsActionItem

@@ -67,7 +67,7 @@ NavigationPane
             
             ActionItem
             {
-                imageSource: "images/menu/ic_search_action.png"
+                imageSource: "images/menu/ic_search_rijaal.png"
                 title: qsTr("Find Duplicates") + Retranslate.onLanguageChanged
                 ActionBar.placement: ActionBarPlacement.OnBar
                 

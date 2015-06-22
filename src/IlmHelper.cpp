@@ -181,10 +181,15 @@ void IlmHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds, q
 }
 
 
-void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText)
+void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint)
 {
     LOGGER(trimmedText);
-    m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+
+    if ( andConstraint.isEmpty() ) {
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+    } else {
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE ((%1) AND (%1)) ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+    }
 }
 
 

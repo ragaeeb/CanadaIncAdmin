@@ -79,7 +79,7 @@ public:
     Q_INVOKABLE void removeParent(QObject* caller, qint64 individual, qint64 parentId);
     Q_INVOKABLE void removeWebsite(QObject* caller, qint64 id);
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
-    Q_INVOKABLE void searchIndividuals(QObject* caller, QString const& trimmedText);
+    Q_INVOKABLE void searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint=QString());
     Q_INVOKABLE void searchQuote(QObject* caller, QString fieldName, QString const& searchTerm);
     Q_INVOKABLE void searchTafsir(QObject* caller, QString const& fieldName, QString const& searchTerm);
     Q_INVOKABLE void translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage="arabic");
