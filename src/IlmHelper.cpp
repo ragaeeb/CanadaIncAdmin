@@ -779,9 +779,13 @@ QVariantMap IlmHelper::parseName(QString n)
         } else if ( m_kunyas.contains(current) ) {
             kunya << all.takeFirst() << all.takeFirst(); // take the abu as well as the next word
 
-            QString next = all.first().toLower();
-            if (next == "abdur" || next == "abdul" || next == "abdi") { // it's part of a two-word kunya
-                kunya << all.takeFirst();
+            if ( !all.isEmpty() )
+            {
+                QString next = all.first().toLower();
+
+                if (next == "abdur" || next == "abdul" || next == "abdi") { // it's part of a two-word kunya
+                    kunya << all.takeFirst();
+                }
             }
         } else {
             break;

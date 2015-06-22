@@ -9,6 +9,7 @@ Page
     property variant individualId
     signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, bool companion)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+    actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
     onIndividualIdChanged: {
         if (individualId)
