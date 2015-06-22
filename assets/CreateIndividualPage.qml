@@ -116,7 +116,6 @@ Page
             female.checked = data.female == 1;
             companion.checked = data.is_companion == 1;
             name.text = data.name;
-            titleBar.title = data.displayName ? data.displayName : data.name;
             
             if (data.prefix) {
                 prefix.text = data.prefix;
@@ -127,11 +126,11 @@ Page
             }
             
             if (data.birth) {
-                birth.text = data.birth;
+                birth.text = data.birth.toString();
             }
             
             if (data.death) {
-                death.text = data.death;
+                death.text = data.death.toString();
             }
             
             if (data.displayName) {
@@ -140,6 +139,10 @@ Page
             
             if (data.location) {
                 location.text = data.location.toString();
+            }
+            
+            if  (data.city) {
+                location.hintText = data.city;
             }
         } else if (id == QueryId.FetchAllWebsites) {
             sites.count = results.length;
@@ -157,7 +160,7 @@ Page
     
     titleBar: TitleBar
     {
-        title: qsTr("New Individual") + Retranslate.onLanguageChanged
+        title: location.focused ? location.hintText : individualId ? qsTr("Edit Individual") + Retranslate.onLanguageChanged : qsTr("New Individual") + Retranslate.onLanguageChanged
         
         acceptAction: ActionItem
         {

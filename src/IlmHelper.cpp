@@ -614,7 +614,7 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    QString query = QString("SELECT * FROM individuals WHERE id=%1").arg(individualId);
+    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,city FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
     m_sql->executeQuery(caller, query, QueryId::FetchIndividualData);
 }
 

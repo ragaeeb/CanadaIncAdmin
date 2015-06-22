@@ -322,7 +322,7 @@ Page
             adm.clear();
             adm.append(result.results);
         } else {
-            persist.showToast( qsTr("Could not fetch geolocation results."), "images/toast/no_geo_found.png" );
+            persist.showToast( qsTr("Could not fetch geolocation results."), "images/toast/no_geo_found.png", 0 );
         }
     }
     
