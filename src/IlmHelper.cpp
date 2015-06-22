@@ -738,7 +738,7 @@ QString IlmHelper::databaseName() const {
 QVariantMap IlmHelper::parseName(QString n)
 {
     if ( m_prefixes.isEmpty() ) {
-        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King";
+        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "ash-Sheikh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Al-Allaamah" << "Al-Allamah" << "Al-Allama" << "Al-Allaama" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King";
     }
 
     if ( m_kunyas.isEmpty() ) {
