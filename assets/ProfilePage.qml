@@ -221,7 +221,7 @@ Page
             
             result += metadata.name;
             
-            titleBar.title = metadata.name;
+            titleBar.title = metadata.displayName ? metadata.displayName : metadata.name;
             
             if (metadata.kunya) {
                 result += " (%1)".arg(metadata.kunya);
@@ -290,7 +290,7 @@ Page
         {
             id: addBio
             imageSource: "images/menu/ic_add_bio.png"
-            title: qsTr("Add Biography") + Retranslate.onLanguageChanged
+            title: qsTr("Add Bio") + Retranslate.onLanguageChanged
             
             function onSuitePicked(suites)
             {

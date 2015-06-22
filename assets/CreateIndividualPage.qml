@@ -115,7 +115,8 @@ Page
             hidden.checked = data.hidden == 1;
             female.checked = data.female == 1;
             companion.checked = data.is_companion == 1;
-            titleBar.title = name.text = data.name;
+            name.text = data.name;
+            titleBar.title = data.displayName ? data.displayName : data.name;
             
             if (data.prefix) {
                 prefix.text = data.prefix;
@@ -263,12 +264,13 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: IndividualNameDoubleTapped");
-                                var n = textUtils.optimize( persist.getClipboardText() );
+                                var n = textUtils.optimize( persist.getClipboardText() ).replace(/,/g, "");
                                 n = textUtils.toTitleCase(n);
                                 var x = tafsirHelper.parseName(n);
 
                                 if (x.name) {
-                                    name.text = x.name;
+                                    var nameValue = x.name;
+                                    name.text = nameValue.charAt(0).toUpperCase() + nameValue.slice(1);
                                 }
                                 
                                 if (x.kunya) {

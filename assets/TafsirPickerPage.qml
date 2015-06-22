@@ -109,6 +109,18 @@ Page
         verticalAlignment: VerticalAlignment.Fill
         layout: DockLayout {}
         
+        EmptyDelegate
+        {
+            id: noElements
+            graphic: "images/placeholders/empty_suites.png"
+            labelText: qsTr("No suites matched your search criteria. Please try a different search term.") + Retranslate.onLanguageChanged
+            
+            onImageTapped: {
+                console.log("UserEvent: NoSuitesTapped");
+                searchField.requestFocus();
+            }
+        }
+        
         Container
         {
             horizontalAlignment: HorizontalAlignment.Fill
@@ -369,18 +381,6 @@ Page
                     listView.visible = !adm.isEmpty();
                     noElements.delegateActive = !listView.visible;
                 }
-            }
-        }
-        
-        EmptyDelegate
-        {
-            id: noElements
-            graphic: "images/placeholders/empty_suites.png"
-            labelText: qsTr("No suites matched your search criteria. Please try a different search term.") + Retranslate.onLanguageChanged
-            
-            onImageTapped: {
-                console.log("UserEvent: NoSuitesTapped");
-                searchField.requestFocus();
             }
         }
         

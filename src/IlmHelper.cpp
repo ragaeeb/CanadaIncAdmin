@@ -737,12 +737,22 @@ QString IlmHelper::databaseName() const {
 
 QVariantMap IlmHelper::parseName(QString n)
 {
-    if ( m_prefixes.isEmpty() ) {
-        m_prefixes << "Shaykh-ul" << "ash-Shaykh" << "ash-Sheikh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Al-Allaamah" << "Al-Allamah" << "Al-Allama" << "Al-Allaama" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King";
+    if ( m_prefixes.isEmpty() )
+    {
+        QStringList prefixes = QStringList() << "Shaykh-ul" << "ash-Shaykh" << "ash-Sheikh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Al-Allaamah" << "Al-Allamah" << "Al-Allama" << "Al-Allaama" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King" << "al-Faqeeh" << "al-Faqih";
+
+        foreach (QString const& p, prefixes) {
+            m_prefixes << p.toLower();
+        }
     }
 
-    if ( m_kunyas.isEmpty() ) {
-        m_kunyas << "Abu" << "Aboo";
+    if ( m_kunyas.isEmpty() )
+    {
+        QStringList kunyas = QStringList() << "Abu" << "Aboo";
+
+        foreach (QString const& p, kunyas) {
+            m_kunyas << p.toLower();
+        }
     }
 
     QStringList prefix;
@@ -774,9 +784,9 @@ QVariantMap IlmHelper::parseName(QString n)
         QString current = all.first();
         LOGGER(current);
 
-        if ( m_prefixes.contains(current) ) {
+        if ( m_prefixes.contains( current.toLower() ) ) {
             prefix << all.takeFirst();
-        } else if ( m_kunyas.contains(current) ) {
+        } else if ( m_kunyas.contains( current.toLower() ) ) {
             kunya << all.takeFirst() << all.takeFirst(); // take the abu as well as the next word
 
             if ( !all.isEmpty() )
