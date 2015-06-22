@@ -6,12 +6,14 @@
 #include "QueryId.h"
 #include "TextUtils.h"
 
+#define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
 #define KEY_DEATH "death"
 #define KEY_KUNYA "kunya"
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
 #define NAME_FIELD(var) QString("coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || %1.name || ' ' || coalesce(%1.kunya,''))))").arg(var)
 #define NAME_SEARCH(var) QString("%1.name LIKE '%' || ? || '%' OR %1.displayName LIKE '%' || ? || '%' OR %1.kunya LIKE '%' || ? || '%'").arg(var)
+#define REPLACE_INDVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
 
 namespace ilm {
 
@@ -144,21 +146,46 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 {
     LOGGER(toReplaceId << actualId);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE mentions SET target=%1 WHERE target=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE quotes SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET author=%1 WHERE author=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET translator=%1 WHERE translator=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE suites SET explainer=%1 WHERE explainer=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE teachers SET teacher=%1 WHERE teacher=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE teachers SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE parents SET parent_id=%1 WHERE teacparent_idher=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE parents SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE siblings SET sibling_id=%1 WHERE sibling_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE siblings SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE websites SET individual=%1 WHERE individual=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("DELETE FROM individuals WHERE id=%1").arg(toReplaceId), QueryId::PendingTransaction);
-    m_sql->endTransaction(caller, QueryId::ReplaceIndividual);
+    QString current = databaseName();
+    QStringList dbs = QStringList() << current;
+    QStringList additional = QStringList() << "arabic";
+
+    foreach (QString const& a, additional)
+    {
+        if ( QFile::exists( QString("%1/%2.db").arg( QDir::homePath() ).arg( QURAN_TAFSIR_FILE(a) ) ) ) {
+            dbs << QURAN_TAFSIR_FILE(a);
+        }
+    }
+
+    LOGGER(dbs);
+
+    for (int i = dbs.size()-1; i >= 0; i--)
+    {
+        QString db = dbs[i];
+
+        LOGGER(db);
+        m_sql->attachIfNecessary(db, true);
+
+        m_sql->startTransaction(caller, QueryId::PendingTransaction);
+        REPLACE_INDVIDUAL("UPDATE %3.mentions SET target=%1 WHERE target=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.quotes SET author=%1 WHERE author=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.suites SET explainer=%1 WHERE explainer=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.teachers SET teacher=%1 WHERE teacher=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.teachers SET individual=%1 WHERE individual=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.parents SET parent_id=%1 WHERE parent_id=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.parents SET individual=%1 WHERE individual=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.siblings SET sibling_id=%1 WHERE sibling_id=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.siblings SET individual=%1 WHERE individual=%2");
+        REPLACE_INDVIDUAL("UPDATE %3.websites SET individual=%1 WHERE individual=%2");
+        m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), QueryId::PendingTransaction);
+        m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : QueryId::PendingTransaction);
+
+        if (db != current) {
+            m_sql->detach(db);
+        }
+    }
 }
 
 
@@ -717,12 +744,24 @@ void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString 
 
 void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
 {
+    QString srcLanguage = databaseName();
     destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("UPDATE %1.individuals SET %2,%3,%4,%5").arg(destinationLanguage)
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "prefix") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "name") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "kunya") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "hidden") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "birth") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "death") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "female") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "location") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "is_companion") ), QueryId::PendingTransaction);
+
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM %2.individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
     m_sql->detach(destinationLanguage);

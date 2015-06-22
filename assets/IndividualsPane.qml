@@ -52,9 +52,10 @@ NavigationPane
             individualPicker.refresh();
         } else if (id == QueryId.ReplaceIndividual) {
             persist.showToast( qsTr("Successfully replaced individual!"), "images/menu/ic_replace_individual.png" );
-            tafsirHelper.fetchAllIndividuals(individualPicker.pickerList);
+            individualPicker.performSearch();
         } else if (id == QueryId.PortIndividuals) {
             persist.showToast( qsTr("Successfully ported individuals!"), "images/menu/ic_replace_individual.png" );
+            individualPicker.busyControl.delegateActive = false;
         }
     }
     
@@ -85,6 +86,7 @@ NavigationPane
                 
                 onTriggered: {
                     console.log("UserEvent: Port");
+                    individualPicker.busyControl.delegateActive = true;
                     tafsirHelper.portIndividuals(navigationPane, "arabic");
                 }
             }

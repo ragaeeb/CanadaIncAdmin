@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#define QURAN_TAFSIR_FILE(lang) QString("quran_tafsir_%1").arg(lang)
+
 namespace canadainc {
     class DatabaseHelper;
 }
