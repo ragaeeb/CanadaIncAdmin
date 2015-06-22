@@ -140,8 +140,16 @@ Page
                     onDoubleTapped: {
                         console.log("UserEvent: TafsirBodyDoubleTapped");
                         
-                        if (bodyField.editable) {
-                            bodyField.text = textUtils.optimize( persist.getClipboardText() );
+                        if (bodyField.editable)
+                        {
+                            var body = textUtils.optimize( persist.getClipboardText() );
+                            body = body.replace(/ÑÍãå Çááå/g, "رحمه الله");
+                            body = body.replace(/ÍÝÙå Çááå/g, "حفظه الله");
+                            body = body.replace(/æ ÇáÍãÏ ááå/g, "ماشاء الله");
+                            body = body.replace(/Åä ÔÇÁ Çááå/g, " إن شاء الله‎");
+                            body = body.replace(/ò/g, "");
+                            
+                            bodyField.text = body;
                         }
                     }
                 },
