@@ -269,6 +269,9 @@ Page
                                 console.log("UserEvent: IndividualNameDoubleTapped");
                                 var n = textUtils.optimize( persist.getClipboardText() ).replace(/,/g, "");
                                 n = textUtils.toTitleCase(n);
+                                n = n.replace(/\-[A-Z]{1}[a-z]{1}\-/, function(v) {
+                                    return v.toLowerCase();
+                                });
                                 var x = tafsirHelper.parseName(n);
 
                                 if (x.name) {
