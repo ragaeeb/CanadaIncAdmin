@@ -1,8 +1,9 @@
 #ifndef INVOKEHELPER_H_
 #define INVOKEHELPER_H_
 
-#include <QObject>
 #include <bb/system/InvokeRequest>
+
+#include "TextUtils.h"
 
 namespace bb {
     namespace system {
@@ -27,6 +28,7 @@ class InvokeHelper : public QObject
     QObject* m_root;
     InvokeManager* m_invokeManager;
     IlmHelper* m_ilm;
+    canadainc::TextUtils m_textUtils;
 
 private slots:
     void onDataLoaded(QVariant id, QVariant data);

@@ -93,16 +93,9 @@ Page
                 
                 gestureHandlers: [
                     DoubleTapHandler {
-                        function getCapitalizedClipboard()
-                        {
-                            var x = persist.getClipboardText();
-                            x = x.charAt(0).toUpperCase() + x.slice(1); 
-                            return x;
-                        }
-                        
                         onDoubleTapped: {
                             console.log("UserEvent: QuoteBodyDoubleTapped"); 
-                            bodyField.text = getCapitalizedClipboard();
+                            bodyField.text = global.getCapitalizedClipboard();
                         }
                     }
                 ]

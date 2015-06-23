@@ -25,7 +25,7 @@ Page
             {
                 tafsirHelper.addTafsir(navigationPane, author, translator, explainer, title, description, reference);
                 
-                while (navigationPane.top != tafsirPicker) {
+                while (navigationPane.top != tafsirPickerPage) {
                     navigationPane.pop();
                 }
             }

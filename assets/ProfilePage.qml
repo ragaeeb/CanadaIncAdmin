@@ -195,19 +195,6 @@ Page
         popToRoot();
     }
     
-    function getHijriYear(y1, y2)
-    {
-        if (y1 > 0 && y2 > 0) {
-            return qsTr("%1-%2 AH").arg(y1).arg(y2);
-        } else if (y1 < 0 && y2 < 0) {
-            return qsTr("%1-%2 BH").arg( Math.abs(y1) ).arg( Math.abs(y2) );
-        } else if (y1 < 0 && y2 > 0) {
-            return qsTr("%1 BH - %2 AH").arg( Math.abs(y1) ).arg(y2);
-        } else {
-            return y1 > 0 ? qsTr("%1 AH").arg(y1) : qsTr("%1 BH").arg( Math.abs(y1) );
-        }
-    }
-    
     function onDataLoaded(id, data)
     {
         if (id == QueryId.FetchIndividualData && data.length > 0) {
@@ -230,17 +217,16 @@ Page
             result += " ";
             
             if (metadata.birth && metadata.death) {
-                result += "(%1)".arg( getHijriYear(metadata.birth, metadata.death) );
+                result += "(%1)".arg( global.getHijriYear(metadata.birth, metadata.death) );
             } else if (metadata.birth) {
-                result += qsTr("(born %1)").arg( getHijriYear(metadata.birth) );
+                result += qsTr("(born %1)").arg( global.getHijriYear(metadata.birth) );
             } else if (metadata.death) {
-                result += qsTr("(died %1)").arg( getHijriYear(metadata.death) );
+                result += qsTr("(died %1)").arg( global.getHijriYear(metadata.death) );
             }
             
             result += "\n";
             
             body.text = "\n"+result;
-            ft.play();
         } else if (id == QueryId.RemoveTeacher) {
             persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.RemoveStudent) {
@@ -270,6 +256,9 @@ Page
             return;
         } else if (id == QueryId.EditTafsirPage) {
             persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
+            popToRoot();
+        } else if (id == QueryId.EditTafsir) {
+            persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_bio.png" );
             popToRoot();
         } else if (id == QueryId.AddBioLink) {
             persist.showToast( qsTr("Biography added!!"), "images/menu/ic_add_bio.png" );
@@ -418,6 +407,29 @@ Page
                 tafsirHelper.editTafsirPage(bioPage, id, body, header, reference);
             }
             
+            function onEditTafsir(id, author, translator, explainer, title, description, reference)
+            {
+                tafsirHelper.editTafsir(listView, id, author, translator, explainer, title, description, reference);
+                
+                var current = dataModel.data(editIndexPath);
+                current["title"] = title;
+                current["reference"] = reference;
+                
+                bioModel.updateItem(editIndexPath, current);
+            }
+            
+            function editBio(ListItem, ListItemData)
+            {
+                editIndexPath = ListItem.indexPath;
+                
+                definition.source = "CreateTafsirPage.qml";
+                var ipp = definition.createObject();
+                ipp.createTafsir.connect(onEditTafsir);
+                ipp.suiteId = ListItemData.suite_id;
+                
+                navigationPane.push(ipp);
+            }
+            
             function removeStudent(ListItem)
             {
                 tafsirHelper.removeStudent(bioPage, individualId, ListItem.data.id);
@@ -482,7 +494,9 @@ Page
                             }
                         }
                         
-                        individualsPicked(ids);
+                        if (ids.length > 0) {
+                            individualsPicked(ids);
+                        }
                     }
                 }
             ]
@@ -519,23 +533,34 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_merge.png"
-                                    title: qsTr("Merge Into") + Retranslate.onLanguageChanged
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: MergeSuite");
-                                        bioSli.ListItem.view.merge(bioSli.ListItem);
-                                    }
-                                }
-                                
-                                ActionItem
-                                {
                                     imageSource: "images/menu/ic_update_link.png"
                                     title: qsTr("Check Links") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
                                         console.log("UserEvent: CheckLinks");
                                         bioSli.ListItem.view.checkLinks(ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_edit_bio.png"
+                                    title: qsTr("Edit") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: EditBio");
+                                        bioSli.ListItem.view.editBio(bioSli.ListItem, ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_merge.png"
+                                    title: qsTr("Merge Into") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: MergeSuite");
+                                        bioSli.ListItem.view.merge(bioSli.ListItem);
                                     }
                                 }
                             }

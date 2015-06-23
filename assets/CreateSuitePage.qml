@@ -107,7 +107,7 @@ Page
                 DoubleTapHandler {
                     onDoubleTapped: {
                         console.log("UserEvent: TafsirHeadingDoubleTapped");
-                        heading.text = textUtils.toTitleCase( persist.getClipboardText() );
+                        heading.text = global.optimizeAndClean( global.getCapitalizedClipboard() );
                     }
                 }
             ]

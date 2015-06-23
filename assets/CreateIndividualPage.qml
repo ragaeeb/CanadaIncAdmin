@@ -267,11 +267,7 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: IndividualNameDoubleTapped");
-                                var n = textUtils.optimize( persist.getClipboardText() ).replace(/,/g, "");
-                                n = textUtils.toTitleCase(n);
-                                n = n.replace(/\-[A-Z]{1}[a-z]{1}\-/, function(v) {
-                                    return v.toLowerCase();
-                                });
+                                var n = global.optimizeAndClean( persist.getClipboardText().replace(/,/g, "") );
                                 var x = tafsirHelper.parseName(n);
 
                                 if (x.name) {
@@ -377,7 +373,7 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: DisplayNameDoubleTapped");
-                                displayName.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                displayName.text = global.optimizeAndClean( persist.getClipboardText() );
                             }
                         }
                     ]
@@ -449,6 +445,7 @@ Page
                             function onPicked(id, name)
                             {
                                 location.text = id.toString();
+                                location.hintText = name;
                                 navigationPane.pop();
                             }
                             

@@ -43,6 +43,11 @@ void InvokeHelper::init(QString const& qmlDoc, QMap<QString, QObject*> const& co
 
     DeviceUtils::create(this);
 
+    QmlDocument* qml = QmlDocument::create("asset:///GlobalProperties.qml").parent(this);
+    qml->setContextProperty("textUtils", &m_textUtils);
+    QObject* global = qml->createRootObject<QObject>();
+    QmlDocument::defaultDeclarativeEngine()->rootContext()->setContextProperty("global", global);
+
     m_root = CardUtils::initAppropriate(qmlDoc, context, parent);
 }
 
