@@ -8,6 +8,8 @@ Page
     signal createTafsir(variant id, string author, string translator, string explainer, string title, string description, string reference)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
+    function cleanUp() {}
+    
     onSuiteIdChanged: {
         if (suiteId) {
             tafsirHelper.fetchTafsirMetadata(createPage, suiteId);

@@ -205,40 +205,73 @@ Page
                 {
                     leftPadding: 10; rightPadding: 10
                     
-                    CheckBox {
-                        id: hidden
-                        text: qsTr("Hidden") + Retranslate.onLanguageChanged
-                    }
-                    
-                    CheckBox {
-                        id: female
-                        text: qsTr("Female") + Retranslate.onLanguageChanged
-                    }
-                    
-                    CheckBox {
-                        id: companion
-                        text: qsTr("Companion") + Retranslate.onLanguageChanged
+                    Container
+                    {
+                        layout: StackLayout {
+                            orientation: LayoutOrientation.LeftToRight
+                        }
+                        
+                        CheckBox {
+                            id: female
+                            text: qsTr("Female") + Retranslate.onLanguageChanged
+                        }
+                        
+                        CheckBox {
+                            id: companion
+                            text: qsTr("Companion") + Retranslate.onLanguageChanged
+                        }
                     }
                 }
                 
-                TextField
+                Container
                 {
-                    id: prefix
-                    hintText: qsTr("Prefix (ie: al-Hafidh, Shaykh)") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.submitKey: SubmitKey.Next
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                    topMargin: 10
                     
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: PrefixDoubleTapped");
-                                prefix.text = textUtils.toTitleCase( persist.getClipboardText() );
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    
+                    TextField
+                    {
+                        id: prefix
+                        hintText: qsTr("Prefix (ie: al-Hafidh, Shaykh)") + Retranslate.onLanguageChanged
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        input.submitKey: SubmitKey.Next
+                        input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        
+                        gestureHandlers: [
+                            DoubleTapHandler {
+                                onDoubleTapped: {
+                                    console.log("UserEvent: PrefixDoubleTapped");
+                                    prefix.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
+                    
+                    TextField
+                    {
+                        id: kunya
+                        hintText: qsTr("Kunya...") + Retranslate.onLanguageChanged
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        input.submitKey: SubmitKey.Next
+                        input.keyLayout: KeyLayout.Contact
+                        inputMode: TextFieldInputMode.Text
+                        input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        
+                        gestureHandlers: [
+                            DoubleTapHandler {
+                                onDoubleTapped: {
+                                    console.log("UserEvent: IndividualKunyaDoubleTapped");
+                                    kunya.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                }
+                            }
+                        ]
+                    }
                 }
                 
                 TextField
@@ -291,70 +324,55 @@ Page
                     ]
                 }
                 
-                TextField
+                Container
                 {
-                    id: kunya
-                    hintText: qsTr("Kunya...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.submitKey: SubmitKey.Next
-                    input.keyLayout: KeyLayout.Contact
-                    inputMode: TextFieldInputMode.Text
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
                     
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: IndividualKunyaDoubleTapped");
-                                kunya.text = textUtils.toTitleCase( persist.getClipboardText() );
+                    TextField
+                    {
+                        id: birth
+                        hintText: qsTr("Birth (AH)...") + Retranslate.onLanguageChanged
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        inputMode: TextFieldInputMode.NumbersAndPunctuation
+                        maximumLength: 4
+                        input.submitKey: SubmitKey.Next
+                        input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        
+                        gestureHandlers: [
+                            DoubleTapHandler {
+                                onDoubleTapped: {
+                                    console.log("UserEvent: BirthDoubleTapped");
+                                    birth.text = persist.getClipboardText();
+                                }
                             }
-                        }
-                    ]
-                }
-                
-                TextField
-                {
-                    id: birth
-                    hintText: qsTr("Birth (AH)...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    inputMode: TextFieldInputMode.NumbersAndPunctuation
-                    maximumLength: 4
-                    input.submitKey: SubmitKey.Next
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        ]
+                    }
                     
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: BirthDoubleTapped");
-                                birth.text = persist.getClipboardText();
+                    TextField
+                    {
+                        id: death
+                        hintText: qsTr("Death (AH)...") + Retranslate.onLanguageChanged
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        inputMode: TextFieldInputMode.NumbersAndPunctuation
+                        maximumLength: 4
+                        input.submitKey: SubmitKey.Next
+                        input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        
+                        gestureHandlers: [
+                            DoubleTapHandler {
+                                onDoubleTapped: {
+                                    console.log("UserEvent: DeathDoubleTapped");
+                                    death.text = persist.getClipboardText();
+                                }
                             }
-                        }
-                    ]
-                }
-                
-                TextField
-                {
-                    id: death
-                    hintText: qsTr("Death (AH)...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    inputMode: TextFieldInputMode.NumbersAndPunctuation
-                    maximumLength: 4
-                    input.submitKey: SubmitKey.Next
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
-                    
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: DeathDoubleTapped");
-                                death.text = persist.getClipboardText();
-                            }
-                        }
-                    ]
+                        ]
+                    }
                 }
                 
                 TextField
@@ -379,83 +397,98 @@ Page
                     ]
                 }
                 
-                TextField
+                Container
                 {
-                    id: location
-                    hintText: qsTr("City of birth...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.submitKey: SubmitKey.Search
-                    input.keyLayout: KeyLayout.Text
-                    inputMode: TextFieldInputMode.Text
-
-                    input.onSubmitted: {
-                        console.log("UserEvent: CityOfBirthSubmit");
-                        location.validator.validate();
+                    leftPadding: 10; rightPadding: 10
+                    
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
                     }
                     
-                    validator: Validator
+                    CheckBox {
+                        id: hidden
+                        text: qsTr("Hidden") + Retranslate.onLanguageChanged
+                        verticalAlignment: VerticalAlignment.Center
+                    }
+                    
+                    TextField
                     {
-                        errorMessage: qsTr("No locations found...") + Retranslate.onLanguageChanged;
-                        mode: ValidationMode.Custom
-
-                        function parseCoordinate(input)
+                        id: location
+                        hintText: qsTr("City of birth...") + Retranslate.onLanguageChanged
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        input.submitKey: SubmitKey.Search
+                        input.keyLayout: KeyLayout.Text
+                        inputMode: TextFieldInputMode.Text
+                        
+                        input.onSubmitted: {
+                            console.log("UserEvent: CityOfBirthSubmit");
+                            location.validator.validate();
+                        }
+                        
+                        validator: Validator
                         {
-                            var tokens = input.trim().split(" ");
-                            var value = parseFloat( tokens[0].trim() );
-
-                            if ( tokens[1].trim() == "S" || tokens[1].trim() == "W") {
-                                value *= -1;
+                            errorMessage: qsTr("No locations found...") + Retranslate.onLanguageChanged;
+                            mode: ValidationMode.Custom
+                            
+                            function parseCoordinate(input)
+                            {
+                                var tokens = input.trim().split(" ");
+                                var value = parseFloat( tokens[0].trim() );
+                                
+                                if ( tokens[1].trim() == "S" || tokens[1].trim() == "W") {
+                                    value *= -1;
+                                }
+                                
+                                return value;
                             }
                             
-                            return value;
-                        }
-
-                        onValidate: {
-                            var trimmed = location.text.trim();
-                            
-                            if (trimmed.length == 0) {
-                                valid = true;
-                            } else {
-                                if ( trimmed.match("\\d.+\\s[NS]{1},\\s+\\d.+\\s[EW]{1}") )
-                                {
-                                    createLocationPicker();
-                                    var tokens = trimmed.split(",");
-                                    app.geoLookup( parseCoordinate(tokens[0]), parseCoordinate(tokens[1]) );
-                                } else if ( trimmed.match("-{0,1}\\d.+,\\s+-{0,1}\\d.+") ) {
-                                    createLocationPicker();
-                                    var tokens = trimmed.split(",");
-                                    app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
-                                } else if ( trimmed.match("\\d+$") ) {
+                            onValidate: {
+                                var trimmed = location.text.trim();
+                                
+                                if (trimmed.length == 0) {
                                     valid = true;
                                 } else {
-                                    createLocationPicker();
-                                    app.geoLookup(trimmed);
+                                    if ( trimmed.match("\\d.+\\s[NS]{1},\\s+\\d.+\\s[EW]{1}") )
+                                    {
+                                        createLocationPicker();
+                                        var tokens = trimmed.split(",");
+                                        app.geoLookup( parseCoordinate(tokens[0]), parseCoordinate(tokens[1]) );
+                                    } else if ( trimmed.match("-{0,1}\\d.+,\\s+-{0,1}\\d.+") ) {
+                                        createLocationPicker();
+                                        var tokens = trimmed.split(",");
+                                        app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
+                                    } else if ( trimmed.match("\\d+$") ) {
+                                        valid = true;
+                                    } else {
+                                        createLocationPicker();
+                                        app.geoLookup(trimmed);
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    gestureHandlers: [
-                        DoubleTapHandler
-                        {
-                            id: dth
-                            
-                            function onPicked(id, name)
+                        
+                        gestureHandlers: [
+                            DoubleTapHandler
                             {
-                                location.text = id.toString();
-                                location.hintText = name;
-                                navigationPane.pop();
+                                id: dth
+                                
+                                function onPicked(id, name)
+                                {
+                                    location.text = id.toString();
+                                    location.hintText = name;
+                                    navigationPane.pop();
+                                }
+                                
+                                onDoubleTapped: {
+                                    console.log("UserEvent: LocationFieldDoubleTapped");
+                                    var p = createLocationPicker();
+                                    p.performSearch();
+                                }
                             }
-                            
-                            onDoubleTapped: {
-                                console.log("UserEvent: LocationFieldDoubleTapped");
-                                var p = createLocationPicker();
-                                p.performSearch();
-                            }
-                        }
-                    ]
+                        ]
+                    }
                 }
             }
         }

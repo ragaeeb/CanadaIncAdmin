@@ -409,7 +409,7 @@ Page
             
             function onEditTafsir(id, author, translator, explainer, title, description, reference)
             {
-                tafsirHelper.editTafsir(listView, id, author, translator, explainer, title, description, reference);
+                tafsirHelper.editTafsir(bioPage, id, author, translator, explainer, title, description, reference);
                 
                 var current = dataModel.data(editIndexPath);
                 current["title"] = title;
