@@ -6,6 +6,7 @@ Page
     id: createPage
     property variant suiteId
     signal createTafsir(variant id, string author, string translator, string explainer, string title, string description, string reference)
+    signal deleteTafsir(variant id)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     function cleanUp() {}
@@ -60,6 +61,24 @@ Page
             }
         }
     }
+    
+    actions: [
+        DeleteActionItem
+        {
+            enabled: suiteId > 0
+            imageSource: "images/menu/ic_remove_suite.png"
+            
+            onTriggered: {
+                console.log("UserEvent: DeleteSuite");
+                
+                var yes = persist.showBlockingDialog( qsTr("Confirmation"), qsTr("Are you sure you want to delete this suite?") );
+                
+                if (yes) {
+                    deleteTafsir(suiteId);
+                }
+            }
+        }
+    ]
     
     ScrollView
     {

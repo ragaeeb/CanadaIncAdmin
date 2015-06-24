@@ -235,6 +235,12 @@ Page
                     popToRoot();
                 }
                 
+                function onDelete(id)
+                {
+                    removeItem({'id': id});
+                    popToRoot();
+                }
+                
                 function editItem(indexPath, ListItemData)
                 {
                     editIndexPath = indexPath;
@@ -243,6 +249,7 @@ Page
                     var page = definition.createObject();
                     page.suiteId = ListItemData.id;
                     page.createTafsir.connect(onEdit);
+                    page.deleteTafsir.connect(onDelete);
                     
                     navigationPane.push(page);
                 }

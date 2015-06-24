@@ -144,7 +144,7 @@ NavigationPane
                 {
                     id: sli
                     imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
-                    title: ListItemData.name
+                    title: ListItemData.display_name
                     
                     contextActions: [
                         ActionSet
@@ -159,19 +159,7 @@ NavigationPane
                                 
                                 onTriggered: {
                                     console.log("UserEvent: CopyIndividual");
-                                    var result = "";
-                                    
-                                    if (ListItemData.prefix) {
-                                        result += ListItemData.prefix+" ";
-                                    }
-                                    
-                                    result += ListItemData.name;
-                                    
-                                    if (ListItemData.kunya) {
-                                        result += " "+ListItemData.kunya;
-                                    }
-                                    
-                                    persist.copyToClipboard(result);
+                                    persist.copyToClipboard(sli.title);
                                 }
                             }
                             

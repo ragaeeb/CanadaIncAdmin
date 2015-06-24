@@ -168,6 +168,7 @@ Page
                 definition.source = "IndividualPickerPage.qml";
                 var c = definition.createObject();
                 c.picked.connect(onPicked);
+                tafsirHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
                 
                 navigationPane.push(c);
             }

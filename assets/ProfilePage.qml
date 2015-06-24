@@ -28,6 +28,7 @@ Page
                 
                 var p = definition.createObject();
                 p.picked.connect(onPicked);
+                tafsirHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "individual");
                 
                 navigationPane.push(p);
             }
@@ -52,6 +53,7 @@ Page
                 
                 var p = definition.createObject();
                 p.picked.connect(onPicked);
+                tafsirHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "teacher");
                 
                 navigationPane.push(p);
             }
@@ -260,6 +262,9 @@ Page
         } else if (id == QueryId.EditTafsir) {
             persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_bio.png" );
             popToRoot();
+        } else if (id == QueryId.RemoveTafsir) {
+            persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
+            popToRoot();
         } else if (id == QueryId.AddBioLink) {
             persist.showToast( qsTr("Biography added!!"), "images/menu/ic_add_bio.png" );
             popToRoot();
@@ -418,6 +423,12 @@ Page
                 bioModel.updateItem(editIndexPath, current);
             }
             
+            function onDelete(id)
+            {
+                tafsirHelper.removeTafsir(bioPage, id);
+                bioModel.removeAt(editIndexPath);
+            }
+            
             function editBio(ListItem, ListItemData)
             {
                 editIndexPath = ListItem.indexPath;
@@ -426,6 +437,7 @@ Page
                 var ipp = definition.createObject();
                 ipp.createTafsir.connect(onEditTafsir);
                 ipp.suiteId = ListItemData.suite_id;
+                ipp.deleteTafsir.connect(onDelete);
                 
                 navigationPane.push(ipp);
             }

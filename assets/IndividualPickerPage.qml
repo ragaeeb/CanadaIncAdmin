@@ -176,7 +176,7 @@ Page
                         {
                             id: sli
                             imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
-                            title: ListItemData.name
+                            title: ListItemData.display_name
                             
                             contextActions: [
                                 ActionSet
@@ -219,8 +219,8 @@ Page
                 
                 onTriggered: {
                     var d = dataModel.data(indexPath);
-                    console.log("UserEvent: IndividualPicked", d.name);
-                    picked(d.id, d.name);
+                    console.log("UserEvent: IndividualPicked", d.display_name);
+                    picked(d.id, d.display_name);
                 }
             }
         }

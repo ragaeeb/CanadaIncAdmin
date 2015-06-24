@@ -11,7 +11,7 @@
 #define KEY_KUNYA "kunya"
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
-#define NAME_FIELD(var) QString("coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || %1.name || ' ' || coalesce(%1.kunya,''))))").arg(var)
+#define NAME_FIELD(var) QString("replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || %1.name || ' ' || coalesce(%1.kunya,'')))),\"'\",''), '%2', ''), '%3', '')").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
 #define NAME_SEARCH(var) QString("%1.name LIKE '%' || ? || '%' OR %1.displayName LIKE '%' || ? || '%' OR %1.kunya LIKE '%' || ? || '%'").arg(var)
 #define REPLACE_INDVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
 
@@ -213,9 +213,9 @@ void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, Q
     LOGGER(trimmedText);
 
     if ( andConstraint.isEmpty() ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
     } else {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS name,is_companion,hidden FROM individuals i WHERE ((%1) AND (%1)) ORDER BY displayName,name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden FROM individuals i WHERE ((%1) AND (%1)) ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
     }
 }
 
@@ -486,20 +486,22 @@ void IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
 
 void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, bool orderByDeath)
 {
-    QString query = "SELECT i.id,%1 AS name,hidden,is_companion FROM individuals i ORDER BY displayName,name";
+    QString query = QString("SELECT i.id,%1 AS display_name,hidden,is_companion FROM individuals i").arg( NAME_FIELD("i") );
     QStringList tokens;
 
     if (orderByDeath) {
         tokens << "death";
     }
 
-    tokens << "displayName" << "name";
+    tokens << "display_name";
 
     if (companionsOnly) {
         query += " WHERE is_companion=1";
     }
 
-    m_sql->executeQuery(caller, query.arg( NAME_FIELD("i") ), QueryId::FetchAllIndividuals);
+    query += QString("ORDER BY %1").arg( tokens.join(",") );
+
+    m_sql->executeQuery(caller, query, QueryId::FetchAllIndividuals);
 }
 
 
@@ -565,7 +567,7 @@ void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
 
 void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, QString const& field, int n)
 {
-    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2 AS name,is_companion FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY name").arg(n).arg( NAME_FIELD("i") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
+    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2 AS display_name,is_companion FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
 }
 
 
