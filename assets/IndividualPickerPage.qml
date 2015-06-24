@@ -31,10 +31,10 @@ Page
             {
                 id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
 
-                var obj = {'id': id, 'name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
+                var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
 
                 if (displayName.length > 0) {
-                    obj["name"] = displayName;
+                    obj["display_name"] = displayName;
                 }
                 
                 if (birth > 0) {
