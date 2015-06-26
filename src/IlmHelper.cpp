@@ -551,7 +551,7 @@ void IlmHelper::fetchTeachers(QObject* caller, qint64 individualId)
 void IlmHelper::fetchSiblings(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1 AS sibling FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchSiblings);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchSiblings);
 }
 
 
