@@ -439,6 +439,17 @@ void IlmHelper::editTafsirPage(QObject* caller, qint64 suitePageId, QString cons
 }
 
 
+
+void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
+{
+    LOGGER(id << points);
+
+    QString query = "UPDATE mentions SET points=? WHERE id=?";
+
+    m_sql->executeQuery( caller, query, QueryId::EditBioLink, QVariantList() << points << id );
+}
+
+
 void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, bool companion)
 {
     LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location );

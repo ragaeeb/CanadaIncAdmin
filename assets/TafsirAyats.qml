@@ -245,6 +245,9 @@ Page
                 } else if (id == QueryId.UpdateTafsirLink) {
                     persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_update_link.png" );
                     busy.delegateActive = false;
+                } else if (id == QueryId.EditBioLink) {
+                    persist.showToast( qsTr("Biography link updated"), "images/menu/ic_update_link.png" );
+                    busy.delegateActive = false;
                 } else if (id == QueryId.RemoveBioLink) {
                     persist.showToast( qsTr("Biography unlinked!"), "images/menu/ic_remove_bio.png" );
                     busy.delegateActive = false;
@@ -319,6 +322,13 @@ Page
                 prompt.show();
             }
             
+            function updateBioLink(ListItem)
+            {
+                prompt.indexPath = ListItem.indexPath;
+                bioTypeDialog.target = undefined;
+                bioTypeDialog.show();
+            }
+            
             function unlink(ListItem)
             {
                 busy.delegateActive = true;
@@ -350,6 +360,17 @@ Page
                             ActionSet
                             {
                                 title: bioRoot.title
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_update_link.png"
+                                    title: qsTr("Edit") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: UpdateBioLink");
+                                        bioRoot.ListItem.view.updateBioLink(bioRoot.ListItem);
+                                    }
+                                }
                                 
                                 DeleteActionItem
                                 {
@@ -510,8 +531,16 @@ Page
                     } else if (selectedIndex == 3) {
                         points = 2;
                     }
-                    
-                    tafsirHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
+ 
+                    if (target) {
+                        tafsirHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
+                    } else {
+                        var current = adm.data(prompt.indexPath);
+                        current.points = points;
+                        adm.replace(prompt.indexPath[0], current);
+                        
+                        tafsirHelper.editBioLink(listView, current.id, points);
+                    }
                 }
             }
         }

@@ -24,6 +24,7 @@ public:
         AddTafsirPage,
         AddTeacher,
         AddWebsite,
+        EditBioLink,
         EditIndividual,
         EditLocation,
         EditQuote,

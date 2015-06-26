@@ -8,3 +8,4 @@
 
 #include <bb/system/CardDoneMessage>
 #include <bb/system/InvokeManager>
+#include <bb/system/SystemDialog>
