@@ -499,7 +499,7 @@ void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, bool o
         query += " WHERE is_companion=1";
     }
 
-    query += QString("ORDER BY %1").arg( tokens.join(",") );
+    query += QString(" ORDER BY %1").arg( tokens.join(",") );
 
     m_sql->executeQuery(caller, query, QueryId::FetchAllIndividuals);
 }
