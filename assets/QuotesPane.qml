@@ -268,17 +268,6 @@ NavigationPane
                                         
                                         ActionItem
                                         {
-                                            imageSource: "images/menu/ic_edit_quote.png"
-                                            title: qsTr("Edit") + Retranslate.onLanguageChanged
-                                            
-                                            onTriggered: {
-                                                console.log("UserEvent: EditQuote");
-                                                rootItem.ListItem.view.editItem(rootItem.ListItem.indexPath, ListItemData);
-                                            }
-                                        }
-                                        
-                                        ActionItem
-                                        {
                                             imageSource: "images/menu/ic_copy.png"
                                             title: qsTr("Copy") + Retranslate.onLanguageChanged
                                             
@@ -286,6 +275,17 @@ NavigationPane
                                                 console.log("UserEvent: CopyQuote");
                                                 var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(ListItemData.reference);
                                                 persist.copyToClipboard(body);
+                                            }
+                                        }
+                                        
+                                        ActionItem
+                                        {
+                                            imageSource: "images/menu/ic_edit_quote.png"
+                                            title: qsTr("Edit") + Retranslate.onLanguageChanged
+                                            
+                                            onTriggered: {
+                                                console.log("UserEvent: EditQuote");
+                                                rootItem.ListItem.view.editItem(rootItem.ListItem.indexPath, ListItemData);
                                             }
                                         }
                                         

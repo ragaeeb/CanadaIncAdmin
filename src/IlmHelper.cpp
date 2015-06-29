@@ -208,6 +208,14 @@ void IlmHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds, q
 }
 
 
+void IlmHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId)
+{
+    LOGGER(suitePageId << destSuiteId);
+
+    m_sql->executeQuery(caller, "UPDATE suite_pages SET suite_id=? WHERE id=?", QueryId::MoveToSuite, QVariantList() << destSuiteId << suitePageId);
+}
+
+
 void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint)
 {
     LOGGER(trimmedText);

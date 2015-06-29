@@ -284,6 +284,7 @@ Page
                     definition.source = "TafsirPickerPage.qml";
                     var ipp = definition.createObject();
                     ipp.allowMultiple = true;
+                    ipp.autoFocus = true;
                     ipp.tafsirPicked.connect(onActualPicked);
                     
                     navigationPane.push(ipp);

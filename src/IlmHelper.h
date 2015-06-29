@@ -67,6 +67,7 @@ public:
     Q_INVOKABLE void fetchTeachers(QObject* caller, qint64 individualId);
     Q_INVOKABLE void findDuplicateSuites(QObject* caller, QString const& field);
     Q_INVOKABLE void mergeSuites(QObject* caller, QVariantList const& toReplaceIds, qint64 actualId);
+    Q_INVOKABLE void moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId);
     Q_INVOKABLE QVariantMap parseName(QString n);
     Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
     Q_INVOKABLE void removeBioLink(QObject* caller, qint64 id);

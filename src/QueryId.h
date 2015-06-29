@@ -56,6 +56,7 @@ public:
         FetchTeachers,
         FindDuplicates,
         LinkAyatsToTafsir,
+        MoveToSuite,
         PendingTransaction,
         PortIndividuals,
         RemoveBioLink,

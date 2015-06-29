@@ -117,6 +117,8 @@ Page
                     persist.showToast( qsTr("Tafsir page added!"), "images/menu/ic_add_suite_page.png" );
                     popToRoot();
                     listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                } else if (id == QueryId.MoveToSuite) {
+                    persist.showToast( qsTr("Suite page moved!"), "images/menu/ic_merge.png" );
                 } else if (id == QueryId.RemoveTafsirPage) {
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
                 } else if (id == QueryId.EditTafsirPage) {
@@ -159,6 +161,34 @@ Page
                 c.suitePageId = ListItemData.id;
                 c.focusable = true;
                 navigationPane.push(c);
+            }
+            
+            function onActualPicked(destination)
+            {
+                var pickedId = destination[0].id;
+                
+                if (pickedId != suiteId)
+                {
+                    busy.delegateActive = true;
+                    tafsirHelper.moveToSuite(listView, adm.value(editIndexPath).id, pickedId);
+                    
+                    adm.removeAt(editIndexPath[0]);
+                } else {
+                    persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
+                }
+                
+                popToRoot();
+            }
+            
+            function moveSuitePage(indexPath, ListItemData)
+            {
+                editIndexPath = indexPath;
+                definition.source = "TafsirPickerPage.qml";
+                var ipp = definition.createObject();
+                ipp.autoFocus = true;
+                ipp.tafsirPicked.connect(onActualPicked);
+                
+                navigationPane.push(ipp);
             }
             
             function setSuitePageMarker(ListItem)
@@ -242,6 +272,17 @@ Page
                                     onTriggered: {
                                         console.log("UserEvent: EditTafsirContentTriggered");
                                         rootItem.ListItem.view.editItem(rootItem.ListItem.indexPath, ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_bottom.png"
+                                    title: qsTr("Move") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: MoveSuitePage");
+                                        rootItem.ListItem.view.moveSuitePage(rootItem.ListItem.indexPath, ListItemData);
                                     }
                                 }
                                 
