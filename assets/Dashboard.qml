@@ -31,6 +31,17 @@ NavigationPane
                 }
             },
             
+            ActionItem
+            {
+                ActionBar.placement: ActionBarPlacement.OnBar
+                imageSource: "images/menu/ic_copy.png"
+                title: qsTr("Replicate") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    app.replicateEnglishDatabase();
+                }
+            },
+            
             InvokeActionItem
             {
                 imageSource: "images/menu/ic_share_db.png"

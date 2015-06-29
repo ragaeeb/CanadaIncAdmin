@@ -10,6 +10,8 @@ namespace admin {
 struct ThreadUtils
 {
     static QPair<QByteArray, QString> compressDatabase(QString const& tafsirPath);
+
+    static bool seedDatabase(QString const& source, QStringList const& languages);
 };
 
 } /* namespace quran */

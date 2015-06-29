@@ -62,6 +62,7 @@ private slots:
     void onCompressed();
     void onDirectoryChanged(QString const& path);
     void onFileChanged(QString const& path);
+    void onReplicated();
     void onRequestComplete(QVariant const& cookie, QByteArray const& data, bool error);
     void onSettingChanged(QString const& key);
 
@@ -75,6 +76,7 @@ public:
     Q_INVOKABLE QString databasePath();
     Q_INVOKABLE void geoLookup(QString const& location);
     Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);
+    Q_INVOKABLE void replicateEnglishDatabase();
 };
 
 }
