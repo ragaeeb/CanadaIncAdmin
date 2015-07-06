@@ -13,6 +13,29 @@ Page
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
+    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
+    {
+        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
+        
+        if (displayName.length > 0) {
+            obj["display_name"] = displayName;
+        }
+        
+        if (birth > 0) {
+            obj["birth"] = birth;
+        }
+        
+        if (death > 0) {
+            obj["death"] = death;
+        }
+        
+        if (location.length > 0) {
+            obj["location"] = location;
+        }
+        
+        return obj;
+    }
+    
     actions: [
         ActionItem
         {
@@ -31,25 +54,7 @@ Page
             {
                 id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
 
-                var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
-
-                if (displayName.length > 0) {
-                    obj["display_name"] = displayName;
-                }
-                
-                if (birth > 0) {
-                    obj["birth"] = birth;
-                }
-                
-                if (death > 0) {
-                    obj["death"] = death;
-                }
-                
-                if (location.length > 0) {
-                    obj["location"] = location;
-                }
-
-                adm.insert(0, obj);
+                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion) );
                 refresh();
             }
             

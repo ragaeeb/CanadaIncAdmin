@@ -20,25 +20,9 @@ NavigationPane
     {
         tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
         
-        var obj = {'id': id, 'name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
-        
-        if (displayName.length > 0) {
-            obj["name"] = displayName;
-        }
-        
-        if (birth > 0) {
-            obj["birth"] = birth;
-        }
-        
-        if (death > 0) {
-            obj["death"] = death;
-        }
-        
-        if (location > 0) {
-            obj["location"] = location;
-        }
-        
+        var obj = individualPicker.createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
         individualPicker.model.replace(individualPicker.editIndexPath[0], obj);
+
         popToRoot();
     }
     

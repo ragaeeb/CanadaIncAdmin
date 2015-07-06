@@ -11,7 +11,7 @@
 #define KEY_KUNYA "kunya"
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
-#define NAME_FIELD(var) QString("replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || %1.name || ' ' || coalesce(%1.kunya,'')))),\"'\",''), '%2', ''), '%3', '')").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
+#define NAME_FIELD(var) QString("replace( replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || coalesce(%1.kunya,'') || ' ' || %1.name))),\"'\",''), '%2', ''), '%3', ''), '  ', ' ' )").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
 #define NAME_SEARCH(var) QString("%1.name LIKE '%' || ? || '%' OR %1.displayName LIKE '%' || ? || '%' OR %1.kunya LIKE '%' || ? || '%'").arg(var)
 #define REPLACE_INDVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
 
