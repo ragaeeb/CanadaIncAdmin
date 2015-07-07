@@ -85,6 +85,7 @@ Page
             onTriggered: {
                 andConstraint.resetText();
                 tftk.textField.resetText();
+                tftk.textField..requestFocus();
             }
         }
     ]
