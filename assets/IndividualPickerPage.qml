@@ -85,7 +85,7 @@ Page
             onTriggered: {
                 andConstraint.resetText();
                 tftk.textField.resetText();
-                tftk.textField..requestFocus();
+                timer.restart();
             }
         }
     ]
@@ -263,6 +263,7 @@ Page
     
     attachedObjects: [
         Timer {
+            id: timer
             interval: 250
             repeat: false
             running: true

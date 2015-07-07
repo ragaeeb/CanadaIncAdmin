@@ -541,7 +541,10 @@ Page
         {
             visible: sites.visible
             scrollRole: ScrollRole.Main
-            maxHeight: deviceUtils.pixelSize/3.5
+            
+            onCreationCompleted: {
+                maxHeight = deviceUtils.pixelSize/3;
+            }
             
             dataModel: ArrayDataModel {
                 id: adm
