@@ -66,7 +66,7 @@ NavigationPane
                 id: portAction
                 imageSource: "images/menu/ic_preview.png"
                 title: qsTr("Port") + Retranslate.onLanguageChanged
-                ActionBar.placement: ActionBarPlacement.OnBar
+                ActionBar.placement: ActionBarPlacement.InOverflow
                 
                 onTriggered: {
                     console.log("UserEvent: Port");

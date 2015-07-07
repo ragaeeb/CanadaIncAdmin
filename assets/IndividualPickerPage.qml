@@ -78,6 +78,14 @@ Page
             input.onSubmitted: {
                 performSearch();
             }
+        },
+        
+        DeleteActionItem
+        {
+            onTriggered: {
+                andConstraint.resetText();
+                tftk.textField.resetText();
+            }
         }
     ]
     
