@@ -12,7 +12,8 @@
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
 #define NAME_FIELD(var) QString("replace( replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || coalesce(%1.kunya,'') || ' ' || %1.name))),\"'\",''), '%2', ''), '%3', ''), '  ', ' ' )").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
-#define NAME_SEARCH(var) QString("%1.name LIKE '%' || ? || '%' OR %1.displayName LIKE '%' || ? || '%' OR %1.kunya LIKE '%' || ? || '%'").arg(var)
+#define NAME_SEARCH_FLAGGED(var, startsWith) QString("%1.name LIKE %2 ? || '%' OR %1.displayName LIKE %2 ? || '%' OR %1.kunya LIKE %2 ? || '%'").arg(var).arg(startsWith ? "" : "'%' ||")
+#define NAME_SEARCH(var) NAME_SEARCH_FLAGGED(var, false)
 #define REPLACE_INDVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
 
 namespace ilm {
@@ -216,14 +217,14 @@ void IlmHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuit
 }
 
 
-void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint)
+void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint, bool startsWith)
 {
-    LOGGER(trimmedText);
+    LOGGER(trimmedText << andConstraint << startsWith);
 
     if ( andConstraint.isEmpty() ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
     } else {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%1)) ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
     }
 }
 

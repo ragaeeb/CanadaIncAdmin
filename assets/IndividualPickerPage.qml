@@ -103,6 +103,21 @@ Page
                 performSearch();
             }
         }
+        
+        acceptAction: [
+            ActionItem {
+                id: flagAction
+                property bool startsWith: false
+                imageSource: startsWith ? "images/toast/success_upload_local.png" : "images/menu/ic_search_rijaal.png"
+                title: startsWith ? qsTr("Starts With") + Retranslate.onLanguageChanged : qsTr("Contains") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    console.log("UserEvent: StartsWith");
+                    startsWith = !startsWith;
+                    tftk.textField.requestFocus();
+                }
+            }
+        ]
     }
     
     function performSearch()
@@ -114,7 +129,7 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim() );
+            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.startsWith );
         } else {
             tafsirHelper.fetchAllIndividuals(listView);
         }
