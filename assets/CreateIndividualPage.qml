@@ -6,8 +6,9 @@ import com.canadainc.data 1.0
 Page
 {
     id: createRijaal
+    property alias name: tftk.textField
     property variant individualId
-    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, bool companion)
+    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, int level)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
@@ -114,7 +115,16 @@ Page
             
             hidden.checked = data.hidden == 1;
             female.checked = data.female == 1;
-            companion.checked = data.is_companion == 1;
+            var levelValue = data.is_companion;
+            
+            for (var i = level.count()-1; i >= 0; i--)
+            {
+                if ( level.at(i).value == levelValue ) {
+                    level.selectedIndex = i;
+                    break;
+                }
+            }
+
             name.text = data.name;
             
             if (data.prefix) {
@@ -161,8 +171,61 @@ Page
     titleBar: TitleBar
     {
         title: location.focused ? location.hintText : individualId ? qsTr("Edit Individual") + Retranslate.onLanguageChanged : qsTr("New Individual") + Retranslate.onLanguageChanged
+        kind: TitleBarKind.TextField
+        kindProperties: TextFieldTitleBarKindProperties
+        {
+            id: tftk
+
+            textField {
+                hintText: qsTr("Name...") + Retranslate.onLanguageChanged
+                horizontalAlignment: HorizontalAlignment.Fill
+                content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                input.keyLayout: KeyLayout.Contact
+                inputMode: TextFieldInputMode.Text
+                input.submitKey: SubmitKey.Next
+                input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                
+                validator: Validator
+                {
+                    errorMessage: qsTr("Invalid name") + Retranslate.onLanguageChanged
+                    mode: ValidationMode.FocusLost
+                    
+                    onValidate: { 
+                        valid = name.text.trim().length > 3;
+                    }
+                }
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: IndividualNameDoubleTapped");
+                            var n = global.optimizeAndClean( persist.getClipboardText().replace(/,/g, "") );
+                            var x = tafsirHelper.parseName(n);
+                            
+                            if (x.name) {
+                                var nameValue = x.name;
+                                name.text = nameValue.charAt(0).toUpperCase() + nameValue.slice(1);
+                            }
+                            
+                            if (x.kunya) {
+                                kunya.text = x.kunya;
+                            }
+                            
+                            if (x.prefix) {
+                                prefix.text = x.prefix;
+                            }
+                            
+                            if (x.death) {
+                                death.text = x.death;
+                            }
+                        }
+                    }
+                ]
+            }
+        }
         
-        acceptAction: ActionItem
+        dismissAction: ActionItem
         {
             id: saveAction
             imageSource: "images/dropdown/ic_save_individual.png"
@@ -175,7 +238,7 @@ Page
                 location.validator.validate();
                 
                 if (name.validator.valid && location.validator.valid) {
-                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), companion.checked );
+                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), level.selectedValue );
                 } else if (!location.validator.valid) {
                     persist.showToast( qsTr("Invalid location specified!"), "images/toast/incomplete_field.png" );
                 } else {
@@ -201,6 +264,60 @@ Page
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
                 
+                SegmentedControl
+                {
+                    id: level
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    topMargin: 0; bottomMargin: 0
+                    
+                    Option {
+                        imageSource: "images/list/ic_individual.png"
+                        text: qsTr("None") + Retranslate.onLanguageChanged
+                        value: undefined
+                    }
+                    
+                    Option {
+                        imageSource: "images/list/ic_companion.png"
+                        text: qsTr("Companion") + Retranslate.onLanguageChanged
+                        value: 1
+                    }
+                    
+                    Option {
+                        imageSource: "images/list/ic_parent.png"
+                        text: qsTr("Tabi'ee") + Retranslate.onLanguageChanged
+                        value: 2
+                    }
+                    
+                    Option {
+                        imageSource: "images/list/ic_sibling.png"
+                        text: qsTr("Tabi' Tabi'een") + Retranslate.onLanguageChanged
+                        value: 3
+                    }
+                }
+                
+                TextField
+                {
+                    id: displayName
+                    hintText: qsTr("Display Name...") + Retranslate.onLanguageChanged
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                    input.keyLayout: KeyLayout.Contact
+                    inputMode: TextFieldInputMode.Text
+                    input.submitKey: SubmitKey.Next
+                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                    bottomMargin: 10; topMargin: 10
+                    
+                    gestureHandlers: [
+                        DoubleTapHandler {
+                            onDoubleTapped: {
+                                console.log("UserEvent: DisplayNameDoubleTapped");
+                                displayName.text = global.optimizeAndClean( persist.getClipboardText() );
+                            }
+                        }
+                    ]
+                }
+                
                 Container
                 {
                     leftPadding: 10; rightPadding: 10
@@ -217,8 +334,9 @@ Page
                         }
                         
                         CheckBox {
-                            id: companion
-                            text: qsTr("Companion") + Retranslate.onLanguageChanged
+                            id: hidden
+                            text: qsTr("Hidden") + Retranslate.onLanguageChanged
+                            verticalAlignment: VerticalAlignment.Center
                         }
                     }
                 }
@@ -274,54 +392,9 @@ Page
                     }
                 }
                 
-                TextField
-                {
-                    id: name
-                    hintText: qsTr("Name...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.keyLayout: KeyLayout.Contact
-                    inputMode: TextFieldInputMode.Text
-                    input.submitKey: SubmitKey.Next
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
-                    
-                    validator: Validator
-                    {
-                        errorMessage: qsTr("Invalid name") + Retranslate.onLanguageChanged
-                        mode: ValidationMode.FocusLost
-                        
-                        onValidate: { 
-                            valid = name.text.trim().length > 3;
-                        }
-                    }
-                    
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: IndividualNameDoubleTapped");
-                                var n = global.optimizeAndClean( persist.getClipboardText().replace(/,/g, "") );
-                                var x = tafsirHelper.parseName(n);
-
-                                if (x.name) {
-                                    var nameValue = x.name;
-                                    name.text = nameValue.charAt(0).toUpperCase() + nameValue.slice(1);
-                                }
-                                
-                                if (x.kunya) {
-                                    kunya.text = x.kunya;
-                                }
-                                
-                                if (x.prefix) {
-                                    prefix.text = x.prefix;
-                                }
-                                
-                                if (x.death) {
-                                    death.text = x.death;
-                                }
-                            }
-                        }
-                    ]
+                Header {
+                    topMargin: 10
+                    title: location.focused ? location.hintText : qsTr("Historical Information") + Retranslate.onLanguageChanged
                 }
                 
                 Container
@@ -372,43 +445,6 @@ Page
                                 }
                             }
                         ]
-                    }
-                }
-                
-                TextField
-                {
-                    id: displayName
-                    hintText: qsTr("Display Name...") + Retranslate.onLanguageChanged
-                    horizontalAlignment: HorizontalAlignment.Fill
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.keyLayout: KeyLayout.Contact
-                    inputMode: TextFieldInputMode.Text
-                    input.submitKey: SubmitKey.Next
-                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
-                    
-                    gestureHandlers: [
-                        DoubleTapHandler {
-                            onDoubleTapped: {
-                                console.log("UserEvent: DisplayNameDoubleTapped");
-                                displayName.text = global.optimizeAndClean( persist.getClipboardText() );
-                            }
-                        }
-                    ]
-                }
-                
-                Container
-                {
-                    leftPadding: 10; rightPadding: 10
-                    
-                    layout: StackLayout {
-                        orientation: LayoutOrientation.LeftToRight
-                    }
-                    
-                    CheckBox {
-                        id: hidden
-                        text: qsTr("Hidden") + Retranslate.onLanguageChanged
-                        verticalAlignment: VerticalAlignment.Center
                     }
                     
                     TextField
@@ -505,6 +541,7 @@ Page
         {
             visible: sites.visible
             scrollRole: ScrollRole.Main
+            maxHeight: deviceUtils.pixelSize/3.5
             
             dataModel: ArrayDataModel {
                 id: adm

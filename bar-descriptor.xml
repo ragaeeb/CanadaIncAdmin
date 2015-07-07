@@ -95,14 +95,6 @@
     <asset path="../canadainc/assets/EmptyDelegate.qml">assets/EmptyDelegate.qml</asset>
     <asset path="../canadainc/assets/PersistDropDown.qml">assets/PersistDropDown.qml</asset>
 	<asset path="../canadainc/assets/ProgressControl.qml">assets/ProgressControl.qml</asset>
-	
-	<invoke-target id="com.canadainc.CanadaIncAdmin.editIndividual">        
-		<invoke-target-type>card.composer</invoke-target-type>
-		<invoke-target-name>Canada Inc Admin</invoke-target-name>
-		<icon>
-			<image>icon.png</image>
-		</icon>
-	</invoke-target>
 
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>

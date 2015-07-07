@@ -221,9 +221,9 @@ void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, Q
     LOGGER(trimmedText);
 
     if ( andConstraint.isEmpty() ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
     } else {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden FROM individuals i WHERE ((%1) AND (%1)) ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%1)) ORDER BY display_name").arg( NAME_SEARCH("i") ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
     }
 }
 
@@ -458,9 +458,9 @@ void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 }
 
 
-void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, bool companion)
+void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level)
 {
-    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location );
+    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << level );
 
     QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, is_companion=? WHERE id=%1").arg(id);
 
@@ -474,7 +474,7 @@ void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix
     args << death;
     args << ( female ? 1 : QVariant() );
     args << location.toLongLong();
-    args << ( companion ? 1 : QVariant() );
+    args << level;
 
     m_sql->executeQuery(caller, query, QueryId::EditIndividual, args);
 }
@@ -505,7 +505,7 @@ void IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
 
 void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, bool orderByDeath)
 {
-    QString query = QString("SELECT i.id,%1 AS display_name,hidden,is_companion FROM individuals i").arg( NAME_FIELD("i") );
+    QString query = QString("SELECT i.id,%1 AS display_name,hidden,is_companion,female FROM individuals i").arg( NAME_FIELD("i") );
     QStringList tokens;
 
     if (orderByDeath) {
@@ -586,7 +586,7 @@ void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
 
 void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, QString const& field, int n)
 {
-    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2 AS display_name,is_companion FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
+    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2 AS display_name,is_companion,female FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
 }
 
 
@@ -640,9 +640,9 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, bool companion)
+qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level)
 {
-    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << companion );
+    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level );
 
     QMap<QString,QVariant> keyValues;
     qint64 id = QDateTime::currentMSecsSinceEpoch();
@@ -656,7 +656,7 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
     keyValues["death"] = death;
     keyValues["female"] = ( female ? 1 : QVariant() );
     keyValues["location"] = location.toLongLong();
-    keyValues["is_companion"] = ( companion ? 1 : QVariant() );
+    keyValues["is_companion"] = level;
 
     QString query = QString("INSERT INTO individuals (%1) VALUES (%2)").arg( QStringList( keyValues.keys() ).join(",") ).arg( TextUtils::getPlaceHolders( keyValues.size(), false ) );
 

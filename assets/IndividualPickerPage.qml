@@ -15,7 +15,7 @@ Page
     
     function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
     {
-        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion ? 1 : undefined};
+        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion};
         
         if (displayName.length > 0) {
             obj["display_name"] = displayName;
@@ -188,7 +188,7 @@ Page
                         StandardListItem
                         {
                             id: sli
-                            imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : "images/list/ic_individual.png"
+                            imageSource: ListItemData.hidden ? "images/list/ic_hidden.png" : ListItemData.is_companion ? "images/list/ic_companion.png" : ListItemData.female ? "images/list/ic_female.png" : "images/list/ic_individual.png"
                             title: ListItemData.display_name
                             
                             contextActions: [
