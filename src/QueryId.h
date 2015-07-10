@@ -52,6 +52,7 @@ public:
         FetchSiblings,
         FetchSimilarAyatContent,
         FetchStudents,
+        FetchSuitePageIntersection,
         FetchTafsirContent,
         FetchTafsirHeader,
         FetchTeachers,
@@ -83,7 +84,6 @@ public:
         TranslateSuitePage,
         UnlinkAyatsFromTafsir,
         UpdateIdWithIndex,
-        UpdatingIdWithIndex,
         UpdateTafsirLink
     };
 };

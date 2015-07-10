@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE void findDuplicateQuotes(QObject* caller, QString const& field);
     Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7);
     Q_INVOKABLE void fetchIndividualData(QObject* caller, qint64 individualId);
+    Q_INVOKABLE void fetchSuitePageIntersection(QObject* caller, QString other="arabic");
     Q_INVOKABLE void fetchStudents(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchChildren(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchTafsirMetadata(QObject* caller, qint64 suiteId);
@@ -71,7 +72,7 @@ public:
     Q_INVOKABLE QVariantMap parseName(QString n);
     Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
     Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
-    Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q);
+    Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
     Q_INVOKABLE void removeBioLink(QObject* caller, qint64 id);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);
     Q_INVOKABLE void removeLocation(QObject* caller, qint64 id);

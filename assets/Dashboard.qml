@@ -35,7 +35,6 @@ NavigationPane
             ActionItem
             {
                 id: reorder
-                ActionBar.placement: ActionBarPlacement.OnBar
                 imageSource: "images/menu/ic_top.png"
                 title: qsTr("Reorder") + Retranslate.onLanguageChanged
                 
@@ -50,7 +49,35 @@ NavigationPane
                 
                 onTriggered: {
                     console.log("UserEvent: Reorder")
+                    tafsirHelper.fetchAllIds(reorder, "locations");
+                    tafsirHelper.fetchAllIds(reorder, "individuals");
                     tafsirHelper.fetchAllIds(reorder, "mentions");
+                }
+            },
+            
+            ActionItem
+            {
+                id: reorderSuites
+                imageSource: "images/menu/ic_top.png"
+                title: qsTr("Reorder Suites") + Retranslate.onLanguageChanged
+                property variant intersection
+                
+                function onDataLoaded(id, data)
+                {
+                    if (id == QueryId.FetchSuitePageIntersection)
+                    {
+                        intersection = data;
+                        tafsirHelper.fetchAllIds(reorderSuites, "suites");
+                    } else if (id == QueryId.FetchAllIds) {
+                        tafsirHelper.setIndexAsId(reorderSuites, data, intersection);
+                    } else if (id == QueryId.UpdateIdWithIndex) {
+                        persist.showToast( qsTr("Successfully reordered suite pages!"), "images/menu/ic_top.png" );
+                    }
+                }
+                
+                onTriggered: {
+                    console.log("UserEvent: ReorderSuites")
+                    tafsirHelper.fetchSuitePageIntersection(reorderSuites, "arabic");
                 }
             },
             

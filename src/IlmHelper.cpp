@@ -25,17 +25,36 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 }
 
 
-void IlmHelper::fetchAllIds(QObject* caller, QString const& table) {
+void IlmHelper::fetchAllIds(QObject* caller, QString const& table)
+{
     LOGGER(table);
     m_sql->executeQuery(caller, QString("SELECT id,'%1' AS table_name FROM %1 ORDER BY id").arg(table), QueryId::FetchAllIds);
 }
 
 
-void IlmHelper::setIndexAsId(QObject* caller, QVariantList const& data)
+void IlmHelper::fetchSuitePageIntersection(QObject* caller, QString other)
 {
-    LOGGER( data.size() );
+    LOGGER(other);
+    other = QURAN_TAFSIR_FILE(other);
+    m_sql->attachIfNecessary(other, true);
+    m_sql->executeQuery(caller, QString("SELECT x.suite_id AS id FROM %1.suite_pages x INNER JOIN %2.suite_pages y ON x.id=y.id AND x.suite_id=y.suite_id").arg( databaseName() ).arg(other), QueryId::FetchSuitePageIntersection);
+    m_sql->detach(other);
+}
 
-    m_sql->startTransaction(caller, QueryId::UpdatingIdWithIndex);
+
+void IlmHelper::setIndexAsId(QObject* caller, QVariantList const& data, QVariantList const& intersection)
+{
+    LOGGER( data.size() << intersection.size() );
+
+    QSet<qint64> commonIds;
+
+    foreach (QVariant q, intersection) {
+        commonIds << q.toMap().value("id").toLongLong();
+    }
+
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+
+    QString dbName = databaseName();
 
     for (int i = 0; i < data.size(); i++)
     {
@@ -44,8 +63,8 @@ void IlmHelper::setIndexAsId(QObject* caller, QVariantList const& data)
         qint64 id = current.value("id").toLongLong();
         qint64 target = i+1;
 
-        if (id != target) {
-            m_sql->executeQuery(caller, QString("UPDATE %1 SET id=%3 WHERE id=%2").arg(table).arg(id).arg(target), QueryId::UpdatingIdWithIndex);
+        if ( id != target && !commonIds.contains(id) ) {
+            m_sql->executeQuery(caller, QString("UPDATE %4.%1 SET id=%3 WHERE id=%2").arg(table).arg(id).arg(target).arg(dbName), QueryId::PendingTransaction);
         }
     }
 
@@ -763,7 +782,7 @@ void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinat
 {
     LOGGER(quoteId << destinationLanguage);
 
-    destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
+    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
@@ -778,7 +797,7 @@ void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString 
 {
     LOGGER(suitePageId << destinationLanguage);
 
-    destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
+    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
@@ -795,7 +814,7 @@ void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString 
 void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
 {
     QString srcLanguage = databaseName();
-    destinationLanguage = QString("quran_tafsir_%1").arg(destinationLanguage);
+    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
