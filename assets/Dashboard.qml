@@ -1,5 +1,6 @@
 import bb.cascades 1.3
 import bb.system 1.0
+import com.canadainc.data 1.0
 
 NavigationPane
 {
@@ -28,6 +29,28 @@ NavigationPane
                     if (yes) {
                         app.compressIlmDatabase();
                     }
+                }
+            },
+            
+            ActionItem
+            {
+                id: reorder
+                ActionBar.placement: ActionBarPlacement.OnBar
+                imageSource: "images/menu/ic_top.png"
+                title: qsTr("Reorder") + Retranslate.onLanguageChanged
+                
+                function onDataLoaded(id, data)
+                {
+                    if (id == QueryId.FetchAllIds) {
+                        tafsirHelper.setIndexAsId(reorder, data);
+                    } else if (id == QueryId.UpdateIdWithIndex) {
+                        persist.showToast( qsTr("Successfully reordered!"), "images/menu/ic_top.png" );
+                    }
+                }
+                
+                onTriggered: {
+                    console.log("UserEvent: Reorder")
+                    tafsirHelper.fetchAllIds(reorder, "mentions");
                 }
             },
             

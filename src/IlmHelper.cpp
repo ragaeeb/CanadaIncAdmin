@@ -25,6 +25,34 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 }
 
 
+void IlmHelper::fetchAllIds(QObject* caller, QString const& table) {
+    LOGGER(table);
+    m_sql->executeQuery(caller, QString("SELECT id,'%1' AS table_name FROM %1 ORDER BY id").arg(table), QueryId::FetchAllIds);
+}
+
+
+void IlmHelper::setIndexAsId(QObject* caller, QVariantList const& data)
+{
+    LOGGER( data.size() );
+
+    m_sql->startTransaction(caller, QueryId::UpdatingIdWithIndex);
+
+    for (int i = 0; i < data.size(); i++)
+    {
+        QVariantMap current = data[i].toMap();
+        QString table = current.value("table_name").toString();
+        qint64 id = current.value("id").toLongLong();
+        qint64 target = i+1;
+
+        if (id != target) {
+            m_sql->executeQuery(caller, QString("UPDATE %1 SET id=%3 WHERE id=%2").arg(table).arg(id).arg(target), QueryId::UpdatingIdWithIndex);
+        }
+    }
+
+    m_sql->endTransaction(caller, QueryId::UpdateIdWithIndex);
+}
+
+
 qint64 IlmHelper::generateIndividualField(QObject* caller, QString const& value)
 {
     if ( QRegExp("\\d+").exactMatch(value) ) {

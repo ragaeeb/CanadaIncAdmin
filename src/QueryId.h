@@ -31,12 +31,11 @@ public:
         EditTafsir,
         EditTafsirPage,
         FetchAdjacentAyat,
+        FetchAllIds,
         FetchAllIndividuals,
         FetchAllLocations,
-        FetchParents,
         FetchAllQuotes,
         FetchAllRecitations,
-        FetchSiblings,
         FetchAllTafsir,
         FetchAllTafsirForSuite,
         FetchAllWebsites,
@@ -47,8 +46,10 @@ public:
         FetchChildren,
         FetchIndividualData,
         FetchPageNumbers,
+        FetchParents,
         FetchQuote,
         FetchRandomQuote,
+        FetchSiblings,
         FetchSimilarAyatContent,
         FetchStudents,
         FetchTafsirContent,
@@ -81,6 +82,8 @@ public:
         TranslateQuote,
         TranslateSuitePage,
         UnlinkAyatsFromTafsir,
+        UpdateIdWithIndex,
+        UpdatingIdWithIndex,
         UpdateTafsirLink
     };
 };

@@ -70,6 +70,8 @@ public:
     Q_INVOKABLE void moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId);
     Q_INVOKABLE QVariantMap parseName(QString n);
     Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
+    Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
+    Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q);
     Q_INVOKABLE void removeBioLink(QObject* caller, qint64 id);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);
     Q_INVOKABLE void removeLocation(QObject* caller, qint64 id);
