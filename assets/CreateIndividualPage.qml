@@ -44,12 +44,18 @@ Page
                 console.log("UserEvent: NewSite");
                 var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "http://", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
                 
-                if ( endsWith(uri, "/") ) {
-                    uri = uri.substring(0, uri.length-1);
-                }
-
                 if (uri.length > 0)
                 {
+                    if ( endsWith(uri, "/") ) {
+                        uri = uri.substring(0, uri.length-1);
+                    }
+                    
+                    if ( uri.indexOf("http://") == -1 && uri.indexOf("https://") == -1 ) {
+                        uri = "http://"+uri;
+                    }
+                    
+                    uri = uri.replace("//www.", "//");
+                    
                     if ( textUtils.isUrl(uri) ) {
                         tafsirHelper.addWebsite(createRijaal, individualId, uri);
                     } else {
