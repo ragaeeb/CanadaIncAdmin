@@ -1,4 +1,5 @@
 import bb.cascades 1.0
+import bb.system 1.0
 import com.canadainc.data 1.0
 
 Page
@@ -55,13 +56,47 @@ Page
         ActionItem
         {
             id: optimize
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "images/menu/ic_settings.png"
             title: qsTr("Optimize Text") + Retranslate.onLanguageChanged
             
             onTriggered: {
                 console.log("UserEvent: OptimizeContent");
                 bodyField.text = bodyField.text.replace(/\n/g, " ");
+            }
+        },
+        
+        ActionItem
+        {
+            id: findAction
+            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_search.png"
+            title: qsTr("Find") + Retranslate.onLanguageChanged
+            property variant indices: []
+            property string query
+            
+            onTriggered: {
+                console.log("UserEvent: SearchSuiteText");
+                focusable = true;
+
+                if (indices.length == 0)
+                {
+                    query = persist.showBlockingPrompt( qsTr("Enter query"), qsTr("Please enter search query:"), "", qsTr("Enter any non-empty value"), 60, false ).trim();
+                    
+                    if (query.length > 0) {
+                        indices = global.getIndicesOf(query, bodyField.text, false);
+                    }
+                }
+                
+                if (indices.length > 0)
+                {
+                    var allIndices = indices;
+                    var index = allIndices.pop();
+                    indices = allIndices;
+                    
+                    bodyField.editor.setSelection(index, index+query.length);
+                    bodyField.requestFocus();
+                }
             }
         }
     ]

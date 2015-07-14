@@ -14,7 +14,8 @@
 #define NAME_FIELD(var) QString("replace( replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || coalesce(%1.kunya,'') || ' ' || %1.name))),\"'\",''), '%2', ''), '%3', ''), '  ', ' ' )").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
 #define NAME_SEARCH_FLAGGED(var, startsWith) QString("%1.name LIKE %2 ? || '%' OR %1.displayName LIKE %2 ? || '%' OR %1.kunya LIKE %2 ? || '%'").arg(var).arg(startsWith ? "" : "'%' ||")
 #define NAME_SEARCH(var) NAME_SEARCH_FLAGGED(var, false)
-#define REPLACE_INDVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
+#define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
+#define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), QueryId::PendingTransaction);
 
 namespace ilm {
 
@@ -215,18 +216,28 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
         m_sql->attachIfNecessary(db, true);
 
         m_sql->startTransaction(caller, QueryId::PendingTransaction);
-        REPLACE_INDVIDUAL("UPDATE %3.mentions SET target=%1 WHERE target=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.quotes SET author=%1 WHERE author=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.suites SET explainer=%1 WHERE explainer=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.teachers SET teacher=%1 WHERE teacher=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.teachers SET individual=%1 WHERE individual=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.parents SET parent_id=%1 WHERE parent_id=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.parents SET individual=%1 WHERE individual=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.siblings SET sibling_id=%1 WHERE sibling_id=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.siblings SET individual=%1 WHERE individual=%2");
-        REPLACE_INDVIDUAL("UPDATE %3.websites SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.mentions SET target=%1 WHERE target=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.quotes SET author=%1 WHERE author=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.suites SET explainer=%1 WHERE explainer=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.teachers SET teacher=%1 WHERE teacher=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.teachers SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.parents SET parent_id=%1 WHERE parent_id=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.parents SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.siblings SET sibling_id=%1 WHERE sibling_id=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.siblings SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.websites SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL_FIELD("prefix");
+        REPLACE_INDIVIDUAL_FIELD("displayName");
+        REPLACE_INDIVIDUAL_FIELD("kunya");
+        REPLACE_INDIVIDUAL_FIELD("birth");
+        REPLACE_INDIVIDUAL_FIELD("death");
+        REPLACE_INDIVIDUAL_FIELD("female");
+        REPLACE_INDIVIDUAL_FIELD("location");
+        REPLACE_INDIVIDUAL_FIELD("is_companion");
+        REPLACE_INDIVIDUAL_FIELD("hidden");
+        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), QueryId::PendingTransaction);
         m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), QueryId::PendingTransaction);
         m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : QueryId::PendingTransaction);
 
