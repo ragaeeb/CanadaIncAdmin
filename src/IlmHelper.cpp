@@ -842,6 +842,7 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
 
     m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
     m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM %2.individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("DELETE FROM %1.individuals WHERE id NOT IN (SELECT id FROM %2.individuals)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
     m_sql->detach(destinationLanguage);
