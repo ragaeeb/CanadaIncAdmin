@@ -40,7 +40,6 @@ class ApplicationUI : public QObject
     Offloader m_offloader;
 
     void init(QString const& qml);
-    static void onErrorMessage(const char* msg);
 
 signals:
     void childCardFinished(QString const& message, QString const& cookie);
