@@ -55,7 +55,6 @@ signals:
 
 private slots:
     void childCardDone(bb::system::CardDoneMessage const& message=bb::system::CardDoneMessage());
-    void onError(QString const& message);
     void invoked(bb::system::InvokeRequest const& request);
     void lazyInit();
     void onCompressed();
