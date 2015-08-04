@@ -233,7 +233,7 @@ NavigationPane
                     
                     function translateQuote(indexPath, ListItemData)
                     {
-                        editItem(indexPath, ListItemData);
+                        //editItem(indexPath, ListItemData);
                         tafsirHelper.translateQuote(listView, ListItemData.id);
                     }
                     
