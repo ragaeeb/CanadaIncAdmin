@@ -8,7 +8,7 @@ Page
     id: createRijaal
     property alias name: tftk.textField
     property variant individualId
-    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, int level)
+    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, int level, string description)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
@@ -157,8 +157,12 @@ Page
                 location.text = data.location.toString();
             }
             
-            if  (data.city) {
+            if (data.city) {
                 location.hintText = data.city;
+            }
+            
+            if  (data.description) {
+                descriptionField.text = data.description;
             }
         } else if (id == QueryId.FetchAllWebsites) {
             sites.count = results.length;
@@ -244,7 +248,7 @@ Page
                 location.validator.validate();
                 
                 if (name.validator.valid && location.validator.valid) {
-                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), level.selectedValue );
+                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), level.selectedValue, descriptionField.text.trim() );
                 } else if (!location.validator.valid) {
                     persist.showToast( qsTr("Invalid location specified!"), "images/toast/incomplete_field.png" );
                 } else {
@@ -270,34 +274,59 @@ Page
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
                 
-                SegmentedControl
+                DropDown
                 {
                     id: level
                     horizontalAlignment: HorizontalAlignment.Fill
                     topMargin: 0; bottomMargin: 0
                     
                     Option {
+                        id: noneOption
                         imageSource: "images/list/ic_individual.png"
+                        description: qsTr("Unclassified") + Retranslate.onLanguageChanged
                         text: qsTr("None") + Retranslate.onLanguageChanged
                         value: undefined
+                        selected: true
                     }
                     
                     Option {
+                        id: companionOption
                         imageSource: "images/list/ic_companion.png"
-                        text: qsTr("Companion") + Retranslate.onLanguageChanged
+                        description: qsTr("Companion") + Retranslate.onLanguageChanged
+                        text: qsTr("Sahabah") + Retranslate.onLanguageChanged
                         value: 1
                     }
                     
                     Option {
+                        id: tabiOption
                         imageSource: "images/list/ic_parent.png"
+                        description: qsTr("Students of the Companions") + Retranslate.onLanguageChanged
                         text: qsTr("Tabi'ee") + Retranslate.onLanguageChanged
-                        value: 2
+                        value: companionOption.value+1
                     }
                     
                     Option {
+                        id: tabiTabiOption
                         imageSource: "images/list/ic_sibling.png"
+                        description: qsTr("Students of the Students of the Companions") + Retranslate.onLanguageChanged
                         text: qsTr("Tabi' Tabi'een") + Retranslate.onLanguageChanged
-                        value: 3
+                        value: tabiOption.value+1
+                    }
+                    
+                    Option {
+                        id: scholarOption
+                        imageSource: "images/list/ic_sibling.png"
+                        description: qsTr("Mashaykh") + Retranslate.onLanguageChanged
+                        text: qsTr("Scholar") + Retranslate.onLanguageChanged
+                        value: tabiTabiOption.value+1
+                    }
+                    
+                    Option {
+                        id: tullab
+                        imageSource: "images/list/ic_sibling.png"
+                        description: qsTr("Student of Knowledge") + Retranslate.onLanguageChanged
+                        text: qsTr("Taalib'ul Ilm") + Retranslate.onLanguageChanged
+                        value: scholarOption.value+1
                     }
                 }
                 
@@ -531,6 +560,24 @@ Page
                             }
                         ]
                     }
+                }
+                
+                TextArea {
+                    id: descriptionField
+                    hintText: qsTr("Description...") + Retranslate.onLanguageChanged
+                    minHeight: ui.sdu(18.75)
+                    inputMode: TextAreaInputMode.Text
+                    content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
+                    input.flags: TextInputFlag.AutoCapitalization | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
+                    
+                    gestureHandlers: [
+                        DoubleTapHandler {
+                            onDoubleTapped: {
+                                console.log("UserEvent: IndividualDescDoubleTapped");
+                                descriptionField.text = persist.getClipboardText();
+                            }
+                        }
+                    ]
                 }
             }
         }

@@ -72,9 +72,9 @@ Page
                 }
             ]
             
-            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
+            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
             {
-                tafsirHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
+                tafsirHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description);
                 
                 popToRoot();
                 reload();

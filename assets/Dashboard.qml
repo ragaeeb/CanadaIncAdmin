@@ -48,7 +48,7 @@ NavigationPane
                 }
                 
                 onTriggered: {
-                    console.log("UserEvent: Reorder")
+                    console.log("UserEvent: Reorder");
                     tafsirHelper.fetchAllIds(reorder, "locations");
                     tafsirHelper.fetchAllIds(reorder, "individuals");
                     tafsirHelper.fetchAllIds(reorder, "mentions");

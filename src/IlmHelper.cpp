@@ -517,11 +517,11 @@ void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 }
 
 
-void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level)
+void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description)
 {
-    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << level );
+    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << level << description.length() );
 
-    QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, is_companion=? WHERE id=%1").arg(id);
+    QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, is_companion=?, description=? WHERE id=%1").arg(id);
 
     QVariantList args;
     args << prefix;
@@ -534,6 +534,7 @@ void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix
     args << ( female ? 1 : QVariant() );
     args << location.toLongLong();
     args << level;
+    args << description;
 
     m_sql->executeQuery(caller, query, QueryId::EditIndividual, args);
 }
@@ -694,14 +695,14 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,city FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
+    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,city,description FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
     m_sql->executeQuery(caller, query, QueryId::FetchIndividualData);
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level)
+qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description)
 {
-    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level );
+    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
 
     QMap<QString,QVariant> keyValues;
     qint64 id = QDateTime::currentMSecsSinceEpoch();
@@ -716,6 +717,7 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
     keyValues["female"] = ( female ? 1 : QVariant() );
     keyValues["location"] = location.toLongLong();
     keyValues["is_companion"] = level;
+    keyValues["description"] = description;
 
     QString query = QString("INSERT INTO individuals (%1) VALUES (%2)").arg( QStringList( keyValues.keys() ).join(",") ).arg( TextUtils::getPlaceHolders( keyValues.size(), false ) );
 
@@ -797,7 +799,7 @@ void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinat
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes SELECT * FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes (english_id,author,body,reference,uri) SELECT id,author,body,reference,uri FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::TranslateQuote);
 
     m_sql->detach(destinationLanguage);

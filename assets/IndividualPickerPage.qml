@@ -13,9 +13,9 @@ Page
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
-    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
+    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
     {
-        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion};
+        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion, 'description': description};
         
         if (displayName.length > 0) {
             obj["display_name"] = displayName;
@@ -50,11 +50,11 @@ Page
                 }
             ]
             
-            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion)
+            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
             {
-                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion);
+                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description);
 
-                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion) );
+                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description) );
                 refresh();
             }
             
