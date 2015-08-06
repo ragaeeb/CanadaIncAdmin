@@ -40,7 +40,7 @@ Page
                 bodyField.text = d.body;
             }
             
-            if (d.reference) {
+            if (d.suite_pages_reference) {
                 referenceField.text = d.reference;
             }
         }
