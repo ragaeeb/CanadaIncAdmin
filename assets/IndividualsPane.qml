@@ -16,11 +16,11 @@ NavigationPane
         }
     }
     
-    function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
+    function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
     {
-        tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description);
+        tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
         
-        var obj = individualPicker.createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description);
+        var obj = individualPicker.createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
         individualPicker.model.replace(individualPicker.editIndexPath[0], obj);
 
         popToRoot();

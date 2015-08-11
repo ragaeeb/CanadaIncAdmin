@@ -2,7 +2,6 @@
 
 #include "InvokeHelper.h"
 #include "CardUtils.h"
-#include "DeviceUtils.h"
 #include "Logger.h"
 #include "QueryId.h"
 

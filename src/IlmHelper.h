@@ -39,14 +39,14 @@ public:
     Q_INVOKABLE qint64 addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference);
     Q_INVOKABLE void addTeacher(QObject* caller, qint64 studentId, qint64 teacherId);
     Q_INVOKABLE void addWebsite(QObject* caller, qint64 individualId, QString const& address);
-    Q_INVOKABLE qint64 createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description);
+    Q_INVOKABLE qint64 createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE void editBioLink(QObject* caller, qint64 id, QVariant const& points);
-    Q_INVOKABLE void editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description);
+    Q_INVOKABLE void editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE void editLocation(QObject* caller, qint64 id, QString const& city);
     Q_INVOKABLE void editQuote(QObject* caller, qint64 quoteId, QString const& author, QString const& body, QString const& reference, QString const& suiteId, QString const& uri);
     Q_INVOKABLE void editTafsir(QObject* caller, qint64 suiteId, QString const& author, QString const& translator, QString const& explainer, QString const& title, QString const& description, QString const& reference);
     Q_INVOKABLE void editTafsirPage(QObject* caller, qint64 suitePageId, QString const& body, QString const& heading, QString const& reference);
-    Q_INVOKABLE void fetchAllIndividuals(QObject* caller, bool companionsOnly=false, bool orderByDeath=false);
+    Q_INVOKABLE void fetchAllIndividuals(QObject* caller, bool companionsOnly=false, QVariant const& knownLocations=QVariant());
     Q_INVOKABLE void fetchAllLocations(QObject* caller, QString const& city=QString());
     Q_INVOKABLE void fetchAllWebsites(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchBioMetadata(QObject* caller, qint64 suitePageId);

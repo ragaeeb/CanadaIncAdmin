@@ -13,7 +13,7 @@ Page
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
-    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
+    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
     {
         var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion, 'description': description};
         
@@ -33,6 +33,10 @@ Page
             obj["location"] = location;
         }
         
+        if (currentLocation.length > 0) {
+            obj["current_location"] = currentLocation;
+        }
+        
         return obj;
     }
     
@@ -50,11 +54,11 @@ Page
                 }
             ]
             
-            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description)
+            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
             {
-                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description);
+                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
 
-                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, companion, description) );
+                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description) );
                 refresh();
             }
             
@@ -108,13 +112,36 @@ Page
         acceptAction: [
             ActionItem {
                 id: flagAction
-                property bool startsWith: false
-                imageSource: startsWith ? "images/toast/success_upload_local.png" : "images/menu/ic_search_rijaal.png"
-                title: startsWith ? qsTr("Starts With") + Retranslate.onLanguageChanged : qsTr("Contains") + Retranslate.onLanguageChanged
+                property int flag: 0
+                
+                onCreationCompleted: {
+                    update();
+                }
+                
+                function update()
+                {
+                    if (flag == 0) {
+                        imageSource = "images/menu/ic_search_rijaal.png"; // standard contains
+                    } else if (flag == 1) {
+						imageSource = "images/toast/success_upload_local.png"; // starts with
+                    } else if (flag == 2) {
+                        imageSource = "images/list/ic_location.png"; // includes location only
+                    } else if (flag == 3) {
+                        imageSource = "images/menu/ic_remove_location.png"; // no locations
+                    } else if (flag == 4) {
+                        imageSource = "images/list/ic_companion.png"; // companions only
+                    }
+                }
                 
                 onTriggered: {
                     console.log("UserEvent: StartsWith");
-                    startsWith = !startsWith;
+                    if (flag == 4) {
+                        flag = 0;
+                    } else {
+                        ++flag;
+                    }
+                    
+                    update();
                     tftk.textField.requestFocus();
                 }
             }
@@ -130,9 +157,9 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.startsWith );
+            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.flag == 1 );
         } else {
-            tafsirHelper.fetchAllIndividuals(listView);
+            tafsirHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
         }
     }
     

@@ -8,7 +8,7 @@ Page
     id: createRijaal
     property alias name: tftk.textField
     property variant individualId
-    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, int level, string description)
+    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, variant currentLocation, int level, string description)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
@@ -133,6 +133,8 @@ Page
 
             name.text = data.name;
             
+            deviceUtils.log(data);
+            
             if (data.prefix) {
                 prefix.text = data.prefix;
             }
@@ -161,6 +163,14 @@ Page
                 location.hintText = data.city;
             }
             
+            if (data.current_location) {
+                currentLocation.text = data.current_location.toString();
+            }
+            
+            if (data.current_city) {
+                currentLocation.hintText = data.current_city;
+            }
+            
             if  (data.description) {
                 descriptionField.text = data.description;
             }
@@ -180,7 +190,7 @@ Page
     
     titleBar: TitleBar
     {
-        title: location.focused ? location.hintText : individualId ? qsTr("Edit Individual") + Retranslate.onLanguageChanged : qsTr("New Individual") + Retranslate.onLanguageChanged
+        title: individualId ? qsTr("Edit Individual") + Retranslate.onLanguageChanged : qsTr("New Individual") + Retranslate.onLanguageChanged
         kind: TitleBarKind.TextField
         kindProperties: TextFieldTitleBarKindProperties
         {
@@ -248,7 +258,7 @@ Page
                 location.validator.validate();
                 
                 if (name.validator.valid && location.validator.valid) {
-                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), level.selectedValue, descriptionField.text.trim() );
+                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), currentLocation.text.trim(), level.selectedValue, descriptionField.text.trim() );
                 } else if (!location.validator.valid) {
                     persist.showToast( qsTr("Invalid location specified!"), "images/toast/incomplete_field.png" );
                 } else {
@@ -429,7 +439,7 @@ Page
                 
                 Header {
                     topMargin: 10
-                    title: location.focused ? location.hintText : qsTr("Historical Information") + Retranslate.onLanguageChanged
+                    title: location.focused ? location.hintText : currentLocation.focused ? currentLocation.hintText : qsTr("Historical Information") + Retranslate.onLanguageChanged
                 }
                 
                 Container
@@ -449,6 +459,10 @@ Page
                         maximumLength: 4
                         input.submitKey: SubmitKey.Next
                         input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
+                        
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.2
+                        }
                         
                         gestureHandlers: [
                             DoubleTapHandler {
@@ -472,6 +486,10 @@ Page
                         input.submitKey: SubmitKey.Next
                         input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
                         
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.2
+                        }
+                        
                         gestureHandlers: [
                             DoubleTapHandler {
                                 onDoubleTapped: {
@@ -482,83 +500,26 @@ Page
                         ]
                     }
                     
-                    TextField
+                    LocationField
                     {
                         id: location
                         hintText: qsTr("City of birth...") + Retranslate.onLanguageChanged
-                        horizontalAlignment: HorizontalAlignment.Fill
-                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                        input.submitKey: SubmitKey.Search
-                        input.keyLayout: KeyLayout.Text
-                        inputMode: TextFieldInputMode.Text
+                        userEvent: "CityOfBirthSubmit"
                         
-                        input.onSubmitted: {
-                            console.log("UserEvent: CityOfBirthSubmit");
-                            location.validator.validate();
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.3
                         }
+                    }
+                    
+                    LocationField
+                    {
+                        id: currentLocation
+                        hintText: qsTr("Current Location...") + Retranslate.onLanguageChanged
+                        userEvent: "CurrentLocation"
                         
-                        validator: Validator
-                        {
-                            errorMessage: qsTr("No locations found...") + Retranslate.onLanguageChanged;
-                            mode: ValidationMode.Custom
-                            
-                            function parseCoordinate(input)
-                            {
-                                var tokens = input.trim().split(" ");
-                                var value = parseFloat( tokens[0].trim() );
-                                
-                                if ( tokens[1].trim() == "S" || tokens[1].trim() == "W") {
-                                    value *= -1;
-                                }
-                                
-                                return value;
-                            }
-                            
-                            onValidate: {
-                                var trimmed = location.text.trim();
-                                
-                                if (trimmed.length == 0) {
-                                    valid = true;
-                                } else {
-                                    if ( trimmed.match("\\d.+\\s[NS]{1},\\s+\\d.+\\s[EW]{1}") )
-                                    {
-                                        createLocationPicker();
-                                        var tokens = trimmed.split(",");
-                                        app.geoLookup( parseCoordinate(tokens[0]), parseCoordinate(tokens[1]) );
-                                    } else if ( trimmed.match("-{0,1}\\d.+,\\s+-{0,1}\\d.+") ) {
-                                        createLocationPicker();
-                                        var tokens = trimmed.split(",");
-                                        app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
-                                    } else if ( trimmed.match("\\d+$") ) {
-                                        valid = true;
-                                    } else {
-                                        createLocationPicker();
-                                        app.geoLookup(trimmed);
-                                    }
-                                }
-                            }
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.3
                         }
-                        
-                        gestureHandlers: [
-                            DoubleTapHandler
-                            {
-                                id: dth
-                                
-                                function onPicked(id, name)
-                                {
-                                    location.text = id.toString();
-                                    location.hintText = name;
-                                    navigationPane.pop();
-                                }
-                                
-                                onDoubleTapped: {
-                                    console.log("UserEvent: LocationFieldDoubleTapped");
-                                    var p = createLocationPicker();
-                                    p.performSearch();
-                                }
-                            }
-                        ]
                     }
                 }
                 
@@ -574,7 +535,16 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: IndividualDescDoubleTapped");
-                                descriptionField.text = persist.getClipboardText();
+                                descriptionField.text = textUtils.optimize( persist.getClipboardText() );
+                            }
+                        },
+                        
+                        PinchHandler {
+                            onPinchEnded: {
+                                if (event.pinchRatio < 1) {
+                                    console.log("UserEvent: PasteDescription");
+                                    descriptionField.text = descriptionField.text+"\n\n"+textUtils.optimize( persist.getClipboardText() );
+                                }
                             }
                         }
                     ]
@@ -711,7 +681,7 @@ Page
         }
     }
     
-    function createLocationPicker()
+    function createLocationPicker(dth)
     {
         definition.source = "LocationPickerPage.qml";
         var p = definition.createObject();

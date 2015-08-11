@@ -517,11 +517,11 @@ void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 }
 
 
-void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description)
+void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
 {
-    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << level << description.length() );
+    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << currentLocation << level << description.length() );
 
-    QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, is_companion=?, description=? WHERE id=%1").arg(id);
+    QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, current_location=?, is_companion=?, description=? WHERE id=%1").arg(id);
 
     QVariantList args;
     args << prefix;
@@ -533,6 +533,7 @@ void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix
     args << death;
     args << ( female ? 1 : QVariant() );
     args << location.toLongLong();
+    args << currentLocation.toLongLong();
     args << level;
     args << description;
 
@@ -563,22 +564,31 @@ void IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
 }
 
 
-void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, bool orderByDeath)
+void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, QVariant const& knownLocations)
 {
+    LOGGER(companionsOnly << knownLocations);
+
     QString query = QString("SELECT i.id,%1 AS display_name,hidden,is_companion,female FROM individuals i").arg( NAME_FIELD("i") );
-    QStringList tokens;
-
-    if (orderByDeath) {
-        tokens << "death";
-    }
-
-    tokens << "display_name";
+    QStringList restrictions;
 
     if (companionsOnly) {
-        query += " WHERE is_companion=1";
+        restrictions << "is_companion=1";
     }
 
-    query += QString(" ORDER BY %1").arg( tokens.join(",") );
+    if ( knownLocations.isValid() )
+    {
+        bool knownFlag = knownLocations.toBool();
+
+        if (knownFlag) {
+            restrictions << "location > 0";
+        } else {
+            restrictions << "location ISNULL";
+        }
+    }
+
+    if ( !restrictions.isEmpty() ) {
+        query += QString(" WHERE %1").arg( restrictions.join(" AND ") );
+    }
 
     m_sql->executeQuery(caller, query, QueryId::FetchAllIndividuals);
 }
@@ -695,12 +705,12 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,city,description FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
+    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,x.city,description,current_location,y.city AS current_city FROM individuals LEFT JOIN locations x ON individuals.location=x.id LEFT JOIN locations y ON individuals.current_location=y.id WHERE individuals.id=%1").arg(individualId);
     m_sql->executeQuery(caller, query, QueryId::FetchIndividualData);
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, int level, QString const& description)
+qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
 {
     LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
 
@@ -716,6 +726,7 @@ qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QStri
     keyValues["death"] = death;
     keyValues["female"] = ( female ? 1 : QVariant() );
     keyValues["location"] = location.toLongLong();
+    keyValues["current_location"] = currentLocation.toLongLong();
     keyValues["is_companion"] = level;
     keyValues["description"] = description;
 
