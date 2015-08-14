@@ -18,10 +18,8 @@ NavigationPane
     
     function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
     {
-        tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
-        
-        var obj = individualPicker.createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
-        individualPicker.model.replace(individualPicker.editIndexPath[0], obj);
+        var result = tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+        individualPicker.model.replace(individualPicker.editIndexPath[0], result);
 
         popToRoot();
     }

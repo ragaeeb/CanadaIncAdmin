@@ -5,7 +5,9 @@
 #include "Logger.h"
 #include "QueryId.h"
 #include "TextUtils.h"
+#include "TokenHelper.h"
 
+#define SET_KEY_VALUE_ID if (id) keyValues["id"] = id;
 #define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
 #define KEY_DEATH "death"
 #define KEY_KUNYA "kunya"
@@ -517,27 +519,16 @@ void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 }
 
 
-void IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
+QVariantMap IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
 {
     LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << currentLocation << level << description.length() );
 
-    QString query = QString("UPDATE individuals SET prefix=?, name=?, kunya=?, displayName=?, hidden=?, birth=?, death=?, female=?, location=?, current_location=?, is_companion=?, description=? WHERE id=%1").arg(id);
+    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
+    m_sql->executeUpdate(caller, "individuals", keyValues, QueryId::EditIndividual, id);
+    keyValues["display_name"] = displayName;
+    SET_KEY_VALUE_ID;
 
-    QVariantList args;
-    args << prefix;
-    args << name;
-    args << kunya;
-    args << displayName;
-    args << ( hidden ? 1 : QVariant() );
-    args << birth;
-    args << death;
-    args << ( female ? 1 : QVariant() );
-    args << location.toLongLong();
-    args << currentLocation.toLongLong();
-    args << level;
-    args << description;
-
-    m_sql->executeQuery(caller, query, QueryId::EditIndividual, args);
+    return keyValues;
 }
 
 
@@ -710,31 +701,16 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-qint64 IlmHelper::createIndividual(QObject* caller, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
+QVariantMap IlmHelper::createIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
 {
     LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
 
-    QMap<QString,QVariant> keyValues;
-    qint64 id = QDateTime::currentMSecsSinceEpoch();
-    keyValues["id"] = id;
-    keyValues["prefix"] = prefix;
-    keyValues["name"] = name;
-    keyValues["kunya"] = kunya;
-    keyValues["displayName"] = displayName;
-    keyValues["hidden"] = ( hidden ? 1 : QVariant() );
-    keyValues["birth"] = birth;
-    keyValues["death"] = death;
-    keyValues["female"] = ( female ? 1 : QVariant() );
-    keyValues["location"] = location.toLongLong();
-    keyValues["current_location"] = currentLocation.toLongLong();
-    keyValues["is_companion"] = level;
-    keyValues["description"] = description;
+    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
+    qint64 id = m_sql->executeInsert("individuals", keyValues);
+    keyValues["display_name"] = !displayName.isEmpty() ? displayName : name;
+    SET_KEY_VALUE_ID;
 
-    QString query = QString("INSERT INTO individuals (%1) VALUES (%2)").arg( QStringList( keyValues.keys() ).join(",") ).arg( TextUtils::getPlaceHolders( keyValues.size(), false ) );
-
-    m_sql->executeQuery( caller, query, QueryId::AddIndividual, keyValues.values() );
-
-    return id;
+    return keyValues;
 }
 
 

@@ -13,33 +13,6 @@ Page
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
-    function createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
-    {
-        var obj = {'id': id, 'display_name': name, 'hidden': hidden ? 1 : undefined, 'female': female ? 1 : undefined, 'is_companion': companion, 'description': description};
-        
-        if (displayName.length > 0) {
-            obj["display_name"] = displayName;
-        }
-        
-        if (birth > 0) {
-            obj["birth"] = birth;
-        }
-        
-        if (death > 0) {
-            obj["death"] = death;
-        }
-        
-        if (location.length > 0) {
-            obj["location"] = location;
-        }
-        
-        if (currentLocation.length > 0) {
-            obj["current_location"] = currentLocation;
-        }
-        
-        return obj;
-    }
-    
     actions: [
         ActionItem
         {
@@ -56,10 +29,20 @@ Page
             
             function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
             {
-                id = tafsirHelper.createIndividual(listView, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                var result = tafsirHelper.createIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                
+                if (result.id)
+                {
+                    adm.insert(0, result);
+                    refresh();
+                    
+                    persist.showToast( qsTr("Successfully added individual"), "images/menu/ic_select_individuals.png" );
+                    listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
 
-                adm.insert( 0, createObject(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description) );
-                refresh();
+                    while (navigationPane.top != individualPage) {
+                        navigationPane.pop();
+                    }
+                }
             }
             
             onTriggered: {
@@ -263,13 +246,6 @@ Page
                         adm.append(data);
                         
                         refresh();
-                    } else if (id == QueryId.AddIndividual) {
-                        persist.showToast( qsTr("Successfully added individual"), "images/menu/ic_select_individuals.png" );
-                        scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                        
-                        while (navigationPane.top != individualPage) {
-                            navigationPane.pop();
-                        }
                     }
                 }
                 
