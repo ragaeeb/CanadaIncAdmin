@@ -133,8 +133,6 @@ Page
 
             name.text = data.name;
             
-            deviceUtils.log(data);
-            
             if (data.prefix) {
                 prefix.text = data.prefix;
             }
@@ -171,8 +169,8 @@ Page
                 currentLocation.hintText = data.current_city;
             }
             
-            if  (data.description) {
-                descriptionField.text = data.description;
+            if (data.notes) {
+                descriptionField.text = data.notes;
             }
         } else if (id == QueryId.FetchAllWebsites) {
             sites.count = results.length;

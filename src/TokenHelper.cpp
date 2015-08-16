@@ -8,7 +8,7 @@ QVariantMap TokenHelper::getTokensForIndividual(QString const& prefix, QString c
     keyValues["birth"] = birth;
     keyValues["current_location"] = currentLocation.toLongLong();
     keyValues["death"] = death;
-    keyValues["description"] = description;
+    keyValues["notes"] = description;
     keyValues["displayName"] = displayName;
     keyValues["female"] = ( female ? 1 : QVariant() );
     keyValues["hidden"] = ( hidden ? 1 : QVariant() );
