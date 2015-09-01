@@ -93,7 +93,6 @@ public:
     Q_INVOKABLE void translateSuitePage(QObject* caller, qint64 suitePageId, QString destinationLanguage="arabic");
 
     void lazyInit();
-    static QStringList setupTableStatements();
     void setDatabaseName(QString const& name);
     QString databaseName() const;
 };
