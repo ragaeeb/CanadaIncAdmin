@@ -203,6 +203,15 @@ Page
                 tafsirHelper.translateSuitePage(listView, ListItemData.id);
             }
             
+            function quiz(indexPath, ListItemData)
+            {
+                definition.source = "SuitePageQuestionsPage.qml";
+                var page = definition.createObject();
+                page.suitePageId = ListItemData.id;
+                
+                navigationPane.push(page);
+            }
+            
             onTriggered: {
                 console.log("UserEvent: TafsirContentTriggered");
                 definition.source = "TafsirAyats.qml";
@@ -283,6 +292,17 @@ Page
                                     onTriggered: {
                                         console.log("UserEvent: MoveSuitePage");
                                         rootItem.ListItem.view.moveSuitePage(rootItem.ListItem.indexPath, ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_update_link.png"
+                                    title: qsTr("Quiz") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: Quiz");
+                                        rootItem.ListItem.view.quiz(rootItem.ListItem.indexPath, ListItemData);
                                     }
                                 }
                                 
