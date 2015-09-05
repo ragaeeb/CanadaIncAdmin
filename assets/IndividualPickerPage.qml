@@ -69,7 +69,12 @@ Page
         
         DeleteActionItem
         {
+            imageSource: "images/menu/ic_reset_fields.png"
+            title: qsTr("Reset") + Retranslate.onLanguageChanged
+            
             onTriggered: {
+                console.log("UserEvent: ResetFields");
+                
                 andConstraint.resetText();
                 tftk.textField.resetText();
                 timer.restart();
@@ -84,11 +89,11 @@ Page
         {
             id: tftk
             textField.hintText: qsTr("Enter text to search...") + Retranslate.onLanguageChanged
-            textField.input.submitKey: SubmitKey.Search
+            textField.input.submitKey: SubmitKey.Next
             textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
             textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
             textField.input.onSubmitted: {
-                performSearch();
+                andConstraint.requestFocus();
             }
         }
         

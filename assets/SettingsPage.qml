@@ -39,11 +39,13 @@ Page
                     key: "translation"
                     
                     Option {
+                        imageSource: "images/dropdown/flags/ic_arabic.png"
                         text: qsTr("Arabic") + Retranslate.onLanguageChanged
                         value: "arabic"
                     }
                     
                     Option {
+                        imageSource: "images/dropdown/flags/ic_english.png"
                         text: qsTr("English") + Retranslate.onLanguageChanged
                         value: "english"
                     }
@@ -51,32 +53,32 @@ Page
                     Option {
                         text: qsTr("French") + Retranslate.onLanguageChanged
                         value: "french"
-                        imageSource: "images/dropdown/ic_translation.png"
+                        imageSource: "images/dropdown/flags/ic_french.png"
                     }
                     
                     Option {
                         text: qsTr("Indonesian") + Retranslate.onLanguageChanged
                         value: "indo"
-                        imageSource: "images/dropdown/ic_translation.png"
+                        imageSource: "images/dropdown/flags/ic_indo.png"
                     }
                     
                     Option {
                         text: qsTr("Spanish") + Retranslate.onLanguageChanged
                         value: "spanish"
-                        imageSource: "images/dropdown/ic_translation.png"
+                        imageSource: "images/dropdown/flags/ic_spanish.png"
                     }
                     
                     Option {
                         id: thai
                         text: qsTr("Thai") + Retranslate.onLanguageChanged
                         value: "thai"
-                        imageSource: "images/dropdown/ic_translation.png"
+                        imageSource: "images/dropdown/flags/ic_thai.png"
                     }
                     
                     Option {
                         text: qsTr("Urdu") + Retranslate.onLanguageChanged
                         value: "urdu"
-                        imageSource: "images/dropdown/ic_translation.png"
+                        imageSource: "images/dropdown/flags/ic_urdu.png"
                     }
                     
                     onValueChanged: {

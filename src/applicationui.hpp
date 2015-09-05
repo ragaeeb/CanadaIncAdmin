@@ -1,4 +1,4 @@
-    #ifndef ApplicationUI_HPP_
+#ifndef ApplicationUI_HPP_
 #define ApplicationUI_HPP_
 
 #include "DatabaseHelper.h"

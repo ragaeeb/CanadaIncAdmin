@@ -38,57 +38,103 @@ config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/CreateIndividualPage.qml) \
         $$quote($$BASEDIR/assets/CreateQuotePage.qml) \
+        $$quote($$BASEDIR/assets/CreateSuitePage.qml) \
         $$quote($$BASEDIR/assets/CreateTafsirPage.qml) \
         $$quote($$BASEDIR/assets/Dashboard.qml) \
+        $$quote($$BASEDIR/assets/GlobalProperties.qml) \
         $$quote($$BASEDIR/assets/IndividualPickerPage.qml) \
         $$quote($$BASEDIR/assets/IndividualTextField.qml) \
         $$quote($$BASEDIR/assets/IndividualsPane.qml) \
+        $$quote($$BASEDIR/assets/LocationField.qml) \
         $$quote($$BASEDIR/assets/LocationPickerPage.qml) \
+        $$quote($$BASEDIR/assets/ProfilePage.qml) \
         $$quote($$BASEDIR/assets/QuotesPane.qml) \
+        $$quote($$BASEDIR/assets/QuranSurahPicker.qml) \
         $$quote($$BASEDIR/assets/SettingsPage.qml) \
+        $$quote($$BASEDIR/assets/SuitePageQuestionsPage.qml) \
         $$quote($$BASEDIR/assets/TafsirAyats.qml) \
         $$quote($$BASEDIR/assets/TafsirContentsPage.qml) \
         $$quote($$BASEDIR/assets/TafsirPane.qml) \
         $$quote($$BASEDIR/assets/TafsirPickerPage.qml) \
+        $$quote($$BASEDIR/assets/images/bugs/ic_bugs_submit.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_arabic.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_english.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_french.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_indo.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_spanish.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_thai.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/flags/ic_urdu.png) \
         $$quote($$BASEDIR/assets/images/dropdown/ic_accept_new_suite.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_companion.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_individual_none.png) \
         $$quote($$BASEDIR/assets/images/dropdown/ic_save_individual.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_scholar.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_student_knowledge.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_tabi_tabiee.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/ic_tabiee.png) \
         $$quote($$BASEDIR/assets/images/dropdown/save_bio.png) \
         $$quote($$BASEDIR/assets/images/dropdown/save_quote.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_author.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_body.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/search_description.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_quote_body.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_quote_reference.png) \
+        $$quote($$BASEDIR/assets/images/dropdown/search_quotes_author.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_reference.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_title.png) \
         $$quote($$BASEDIR/assets/images/dropdown/search_translator.png) \
         $$quote($$BASEDIR/assets/images/dropdown/suite_changes_accept.png) \
         $$quote($$BASEDIR/assets/images/dropdown/suite_changes_cancel.png) \
         $$quote($$BASEDIR/assets/images/list/ic_bio.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_child.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_child_female.png) \
         $$quote($$BASEDIR/assets/images/list/ic_companion.png) \
         $$quote($$BASEDIR/assets/images/list/ic_dislike.png) \
         $$quote($$BASEDIR/assets/images/list/ic_email.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_female.png) \
         $$quote($$BASEDIR/assets/images/list/ic_geo_result.png) \
         $$quote($$BASEDIR/assets/images/list/ic_geo_search.png) \
         $$quote($$BASEDIR/assets/images/list/ic_hidden.png) \
         $$quote($$BASEDIR/assets/images/list/ic_individual.png) \
         $$quote($$BASEDIR/assets/images/list/ic_like.png) \
         $$quote($$BASEDIR/assets/images/list/ic_location.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_parent.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_parent_female.png) \
         $$quote($$BASEDIR/assets/images/list/ic_phone.png) \
         $$quote($$BASEDIR/assets/images/list/ic_quote.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_sibling.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_sibling_female.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_student.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_student_female.png) \
         $$quote($$BASEDIR/assets/images/list/ic_tafsir.png) \
         $$quote($$BASEDIR/assets/images/list/ic_tafsir_ayat.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_teacher.png) \
+        $$quote($$BASEDIR/assets/images/list/ic_teacher_female.png) \
+        $$quote($$BASEDIR/assets/images/list/site_facebook.png) \
+        $$quote($$BASEDIR/assets/images/list/site_link.png) \
+        $$quote($$BASEDIR/assets/images/list/site_linkedin.png) \
+        $$quote($$BASEDIR/assets/images/list/site_soundcloud.png) \
+        $$quote($$BASEDIR/assets/images/list/site_tumblr.png) \
+        $$quote($$BASEDIR/assets/images/list/site_twitter.png) \
+        $$quote($$BASEDIR/assets/images/list/site_wordpress.png) \
+        $$quote($$BASEDIR/assets/images/list/site_youtube.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_accept.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_bio.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_add_child.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_email.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_location.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_add_parent.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_phone.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_quote.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_rijaal.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_search.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_add_sibling.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_site.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_student.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_suite.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_suite_page.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_add_teacher.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_bio_link_edit.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_bottom.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_capture_ayats.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_copy.png) \
@@ -96,32 +142,52 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/menu/ic_delete_quote.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_delete_suite_page.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_bio.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_edit_link.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_location.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_quote.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_rijaal.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_suite.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_edit_suite_page.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_find_duplicate_quotes.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_help.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_link_ayat_to_tafsir.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_merge.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_merge_into.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_move.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_port.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_preview.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_bio.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_remove_child.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_companions.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_email.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_location.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_remove_parent.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_phone.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_remove_sibling.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_site.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_student.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_suite.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_remove_teacher.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_reorder.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_reorder_suites.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_replace_individual.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_replicate.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_reset_fields.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_search.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_search_action.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_search_individual.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_search_location.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_search_rijaal.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_select_individuals.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_select_more.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_set_companions.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_set_marker.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_settings.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_share_db.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_switch_to_english.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_top.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_translate.png) \
+        $$quote($$BASEDIR/assets/images/menu/ic_translate_quote.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_unlink_tafsir_ayat.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_update_link.png) \
         $$quote($$BASEDIR/assets/images/menu/ic_upload_local.png) \
@@ -170,8 +236,10 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/CommonConstants.cpp) \
         $$quote($$BASEDIR/src/IlmHelper.cpp) \
         $$quote($$BASEDIR/src/InvokeHelper.cpp) \
+        $$quote($$BASEDIR/src/Offloader.cpp) \
         $$quote($$BASEDIR/src/QuranHelper.cpp) \
         $$quote($$BASEDIR/src/ThreadUtils.cpp) \
+        $$quote($$BASEDIR/src/TokenHelper.cpp) \
         $$quote($$BASEDIR/src/applicationui.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
@@ -179,9 +247,11 @@ config_pri_source_group1 {
         $$quote($$BASEDIR/src/CommonConstants.h) \
         $$quote($$BASEDIR/src/IlmHelper.h) \
         $$quote($$BASEDIR/src/InvokeHelper.h) \
+        $$quote($$BASEDIR/src/Offloader.h) \
         $$quote($$BASEDIR/src/QueryId.h) \
         $$quote($$BASEDIR/src/QuranHelper.h) \
         $$quote($$BASEDIR/src/ThreadUtils.h) \
+        $$quote($$BASEDIR/src/TokenHelper.h) \
         $$quote($$BASEDIR/src/applicationui.hpp)
 }
 
@@ -202,9 +272,15 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../assets/images/*.qml) \
         $$quote($$BASEDIR/../assets/images/*.js) \
         $$quote($$BASEDIR/../assets/images/*.qs) \
+        $$quote($$BASEDIR/../assets/images/bugs/*.qml) \
+        $$quote($$BASEDIR/../assets/images/bugs/*.js) \
+        $$quote($$BASEDIR/../assets/images/bugs/*.qs) \
         $$quote($$BASEDIR/../assets/images/dropdown/*.qml) \
         $$quote($$BASEDIR/../assets/images/dropdown/*.js) \
         $$quote($$BASEDIR/../assets/images/dropdown/*.qs) \
+        $$quote($$BASEDIR/../assets/images/dropdown/flags/*.qml) \
+        $$quote($$BASEDIR/../assets/images/dropdown/flags/*.js) \
+        $$quote($$BASEDIR/../assets/images/dropdown/flags/*.qs) \
         $$quote($$BASEDIR/../assets/images/list/*.qml) \
         $$quote($$BASEDIR/../assets/images/list/*.js) \
         $$quote($$BASEDIR/../assets/images/list/*.qs) \
@@ -235,4 +311,7 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../src/*.hxx)
 }
 
-TRANSLATIONS = $$quote($${TARGET}.ts)
+TRANSLATIONS = $$quote($${TARGET}_ar.ts) \
+    $$quote($${TARGET}_fr.ts) \
+    $$quote($${TARGET}_id.ts) \
+    $$quote($${TARGET}.ts)

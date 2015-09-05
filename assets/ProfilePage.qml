@@ -252,7 +252,7 @@ Page
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         } else if (id == QueryId.ReplaceSuite) {
-            persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge.png" );
+            persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge_into.png" );
             popToRoot();
             reload();
             return;
@@ -567,7 +567,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_merge.png"
+                                    imageSource: "images/menu/ic_merge_into.png"
                                     title: qsTr("Merge Into") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
@@ -628,7 +628,7 @@ Page
                     StandardListItem
                     {
                         id: studentSli
-                        imageSource: ListItemData.female ? "images/list/ic_female.png" : "images/list/ic_student.png"
+                        imageSource: ListItemData.female ? "images/list/ic_student_female.png" : "images/list/ic_student.png"
                         title: ListItemData.student
                         
                         contextActions: [
@@ -715,7 +715,7 @@ Page
                     StandardListItem
                     {
                         id: siblingSli
-                        imageSource: ListItemData.female ? "images/list/ic_female.png" : "images/list/ic_sibling.png"
+                        imageSource: ListItemData.female ? "images/list/ic_sibling_female.png" : "images/list/ic_sibling.png"
                         title: ListItemData.sibling
                         
                         contextActions: [

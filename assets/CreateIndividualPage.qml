@@ -290,7 +290,7 @@ Page
                     
                     Option {
                         id: noneOption
-                        imageSource: "images/list/ic_individual.png"
+                        imageSource: "images/dropdown/ic_individual_none.png"
                         description: qsTr("Unclassified") + Retranslate.onLanguageChanged
                         text: qsTr("None") + Retranslate.onLanguageChanged
                         value: undefined
@@ -299,7 +299,7 @@ Page
                     
                     Option {
                         id: companionOption
-                        imageSource: "images/list/ic_companion.png"
+                        imageSource: "images/dropdown/ic_companion.png"
                         description: qsTr("Companion") + Retranslate.onLanguageChanged
                         text: qsTr("Sahabah") + Retranslate.onLanguageChanged
                         value: 1
@@ -307,7 +307,7 @@ Page
                     
                     Option {
                         id: tabiOption
-                        imageSource: "images/list/ic_parent.png"
+                        imageSource: "images/dropdown/ic_tabiee.png"
                         description: qsTr("Students of the Companions") + Retranslate.onLanguageChanged
                         text: qsTr("Tabi'ee") + Retranslate.onLanguageChanged
                         value: companionOption.value+1
@@ -315,7 +315,7 @@ Page
                     
                     Option {
                         id: tabiTabiOption
-                        imageSource: "images/list/ic_sibling.png"
+                        imageSource: "images/dropdown/ic_tabi_tabiee.png"
                         description: qsTr("Students of the Students of the Companions") + Retranslate.onLanguageChanged
                         text: qsTr("Tabi' Tabi'een") + Retranslate.onLanguageChanged
                         value: tabiOption.value+1
@@ -323,7 +323,7 @@ Page
                     
                     Option {
                         id: scholarOption
-                        imageSource: "images/list/ic_sibling.png"
+                        imageSource: "images/dropdown/ic_scholar.png"
                         description: qsTr("Mashaykh") + Retranslate.onLanguageChanged
                         text: qsTr("Scholar") + Retranslate.onLanguageChanged
                         value: tabiTabiOption.value+1
@@ -331,7 +331,7 @@ Page
                     
                     Option {
                         id: tullab
-                        imageSource: "images/list/ic_sibling.png"
+                        imageSource: "images/dropdown/ic_student_knowledge.png"
                         description: qsTr("Student of Knowledge") + Retranslate.onLanguageChanged
                         text: qsTr("Taalib'ul Ilm") + Retranslate.onLanguageChanged
                         value: scholarOption.value+1

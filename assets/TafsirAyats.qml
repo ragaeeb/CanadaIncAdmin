@@ -243,10 +243,10 @@ Page
                     popToRoot();
                     busy.delegateActive = false;
                 } else if (id == QueryId.UpdateTafsirLink) {
-                    persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_update_link.png" );
+                    persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_edit_link.png" );
                     busy.delegateActive = false;
                 } else if (id == QueryId.EditBioLink) {
-                    persist.showToast( qsTr("Biography link updated"), "images/menu/ic_update_link.png" );
+                    persist.showToast( qsTr("Biography link updated"), "images/menu/ic_bio_link_edit.png" );
                     busy.delegateActive = false;
                 } else if (id == QueryId.RemoveBioLink) {
                     persist.showToast( qsTr("Biography unlinked!"), "images/menu/ic_remove_bio.png" );
@@ -363,7 +363,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_update_link.png"
+                                    imageSource: "images/menu/ic_bio_link_edit.png"
                                     title: qsTr("Edit") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
@@ -406,7 +406,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_update_link.png"
+                                    imageSource: "images/menu/ic_edit_link.png"
                                     title: qsTr("Edit") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {

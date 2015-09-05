@@ -185,7 +185,8 @@ Page
                 scrollRole: ScrollRole.Main
 
                 multiSelectAction: MultiSelectActionItem {
-                    enabled: allowMultiple                    
+                    enabled: allowMultiple    
+                    imageSource: "images/menu/ic_select_more.png"                
                 }
                 
                 onSelectionChanged: {
@@ -199,7 +200,7 @@ Page
                     {
                         id: selectMulti
                         enabled: false
-                        imageSource: "images/menu/ic_update_link.png"
+                        imageSource: "images/menu/ic_accept.png"
                         title: qsTr("Select") + Retranslate.onLanguageChanged
                         
                         onTriggered: {

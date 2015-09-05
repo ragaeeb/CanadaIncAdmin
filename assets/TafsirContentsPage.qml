@@ -125,7 +125,7 @@ Page
                     persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
                     popToRoot();
                 } else if (id == QueryId.TranslateSuitePage) {
-                    persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_edit_bio.png" );
+                    persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_translate.png" );
                     persist.saveValueFor("translation", "arabic");
                 }
                 
@@ -286,7 +286,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_bottom.png"
+                                    imageSource: "images/menu/ic_move.png"
                                     title: qsTr("Move") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
@@ -297,7 +297,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_update_link.png"
+                                    imageSource: "images/menu/ic_help.png"
                                     title: qsTr("Quiz") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
@@ -319,7 +319,7 @@ Page
                                 
                                 ActionItem
                                 {
-                                    imageSource: "images/menu/ic_merge.png"
+                                    imageSource: "images/menu/ic_translate.png"
                                     title: qsTr("Translate") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {

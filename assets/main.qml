@@ -34,8 +34,10 @@ TabbedPane
                     
                     if (newValue == "english") {
                         title = qsTr("Arabic");
+                        imageSource = "images/menu/ic_validate_location.png";
                     } else {
                         title = qsTr("English");
+                        imageSource = "images/menu/ic_switch_to_english.png";
                     }
                 }
                 

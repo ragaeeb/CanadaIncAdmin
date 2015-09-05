@@ -35,7 +35,7 @@ NavigationPane
             ActionItem
             {
                 id: reorder
-                imageSource: "images/menu/ic_top.png"
+                imageSource: "images/menu/ic_reorder.png"
                 title: qsTr("Reorder") + Retranslate.onLanguageChanged
                 
                 function onDataLoaded(id, data)
@@ -58,7 +58,7 @@ NavigationPane
             ActionItem
             {
                 id: reorderSuites
-                imageSource: "images/menu/ic_top.png"
+                imageSource: "images/menu/ic_reorder_suites.png"
                 title: qsTr("Reorder Suites") + Retranslate.onLanguageChanged
                 property variant intersection
                 
@@ -84,7 +84,7 @@ NavigationPane
             ActionItem
             {
                 ActionBar.placement: ActionBarPlacement.OnBar
-                imageSource: "images/menu/ic_copy.png"
+                imageSource: "images/menu/ic_replicate.png"
                 title: qsTr("Replicate") + Retranslate.onLanguageChanged
                 
                 onTriggered: {

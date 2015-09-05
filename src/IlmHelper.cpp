@@ -281,7 +281,9 @@ void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, Q
 {
     LOGGER(trimmedText << andConstraint << startsWith);
 
-    if ( andConstraint.isEmpty() ) {
+    if ( QRegExp("\\d+$").exactMatch(trimmedText) ) {
+        m_sql->executeQuery(caller, QString("SELECT id,%1 AS display_name,is_companion,hidden,female FROM individuals i WHERE death=? ORDER BY display_name").arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText);
+    } else if ( andConstraint.isEmpty() ) {
         m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
     } else {
         m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);

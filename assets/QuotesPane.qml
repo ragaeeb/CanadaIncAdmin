@@ -67,7 +67,7 @@ NavigationPane
             
             ActionItem
             {
-                imageSource: "images/menu/ic_search_rijaal.png"
+                imageSource: "images/menu/ic_find_duplicate_quotes.png"
                 title: qsTr("Find Duplicates") + Retranslate.onLanguageChanged
                 ActionBar.placement: ActionBarPlacement.OnBar
                 
@@ -291,7 +291,7 @@ NavigationPane
                                         
                                         ActionItem
                                         {
-                                            imageSource: "images/menu/ic_preview.png"
+                                            imageSource: "images/menu/ic_translate_quote.png"
                                             title: qsTr("Translate") + Retranslate.onLanguageChanged
                                             
                                             onTriggered: {

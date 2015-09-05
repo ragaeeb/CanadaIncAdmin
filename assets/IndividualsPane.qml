@@ -62,7 +62,7 @@ NavigationPane
         actions: [
             ActionItem {
                 id: portAction
-                imageSource: "images/menu/ic_preview.png"
+                imageSource: "images/menu/ic_port.png"
                 title: qsTr("Port") + Retranslate.onLanguageChanged
                 ActionBar.placement: ActionBarPlacement.InOverflow
                 
