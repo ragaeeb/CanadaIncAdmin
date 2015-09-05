@@ -93,7 +93,11 @@ Page
             textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
             textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
             textField.input.onSubmitted: {
-                andConstraint.requestFocus();
+                if (textField.text.length > 0) {
+                    andConstraint.requestFocus();
+                } else {
+                    performSearch();
+                }
             }
         }
         

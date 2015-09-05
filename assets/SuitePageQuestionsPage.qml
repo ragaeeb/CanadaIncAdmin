@@ -8,8 +8,8 @@ Page
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onSuitePageIdChanged: {
-        if (suitePageId)
-        {
+        if (suitePageId) {
+            ilmTest.fetchQuestionsForSuitePage(listView, suitePageId);
         }
     }
     
@@ -24,9 +24,6 @@ Page
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(questionsPage, listView);
-        adm.append("LJK");
-        adm.append("LJK33");
-        adm.append("LJK44");
     }
     
     Container
@@ -46,49 +43,40 @@ Page
             
             function onDataLoaded(id, data)
             {
-                
+                adm.clear();
+                adm.append(data);
             }
             
             listItemComponents: [
                 ListItemComponent
                 {
-                    Container
+                    StandardListItem
                     {
-                        horizontalAlignment: HorizontalAlignment.Fill
-                        verticalAlignment: VerticalAlignment.Fill
-                        
-                        Header {
-                            title: "Questions"
-                            horizontalAlignment: HorizontalAlignment.Fill
-                        }
-                        
-                        TextField {
-                            id: standardBody
-                            hintText: qsTr("Standard Body") + Retranslate.onLanguageChanged
-                        }
-                        
-                        TextField {
-                            id: orderedBody
-                            hintText: qsTr("Ordered Body") + Retranslate.onLanguageChanged
-                        }
-                        
-                        TextField {
-                            id: countBody
-                            hintText: qsTr("Count Body") + Retranslate.onLanguageChanged
-                        }
-                        
-                        TextField {
-                            id: beforeBody
-                            hintText: qsTr("Before Body") + Retranslate.onLanguageChanged
-                        }
-                        
-                        TextField {
-                            id: afterBody
-                            hintText: qsTr("After Body") + Retranslate.onLanguageChanged
-                        }
+                        imageSource: ListItemData.source_id ? "images/list/ic_question_alias.png" : "images/list/ic_question.png"
+                        status: ListItemData.difficulty ? ListItemData.difficulty.toString() : ""
+                        title: ListItemData.standard_body ? ListItemData.standard_body : ""
+                        description: ListItemData.count_body ? ListItemData.count_body : ""
                     }
                 }
             ]
         }
     }
+    
+    attachedObjects: [
+        Dialog
+        {
+            Container
+            {
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+                
+                Header {
+                    title: ListItemData.id ? ListItemData.id.toString() : ""
+                    horizontalAlignment: HorizontalAlignment.Fill
+                }
+                
+
+            }
+        }
+    ]
 }

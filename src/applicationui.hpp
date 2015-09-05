@@ -3,6 +3,7 @@
 
 #include "DatabaseHelper.h"
 #include "IlmHelper.h"
+#include "IlmTestHelper.h"
 #include "InvokeHelper.h"
 #include "NetworkProcessor.h"
 #include "Offloader.h"
@@ -30,6 +31,7 @@ class ApplicationUI : public QObject
     Persistance m_persistance;
     NetworkProcessor m_network;
     ilm::IlmHelper m_ilm;
+    ilmtest::IlmTestHelper m_ilmTest;
     quran::QuranHelper m_quran;
     QFileSystemWatcher m_watcher;
     QFile m_source;

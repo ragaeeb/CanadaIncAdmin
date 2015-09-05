@@ -29,6 +29,7 @@ Page
             imageSource: "images/menu/ic_add_site.png"
             title: qsTr("Add Website") + Retranslate.onLanguageChanged
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            enabled: individualId != undefined
             
             shortcuts: [
                 SystemShortcut {
@@ -72,6 +73,7 @@ Page
             imageSource: "images/menu/ic_add_email.png"
             title: qsTr("Add Email") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
+            enabled: individualId != undefined
             
             onTriggered: {
                 console.log("UserEvent: NewEmail");
@@ -95,6 +97,7 @@ Page
             imageSource: "images/menu/ic_add_phone.png"
             title: qsTr("Add Phone") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
+            enabled: individualId != undefined
             
             onTriggered: {
                 console.log("UserEvent: NewPhone");
@@ -188,7 +191,6 @@ Page
     
     titleBar: TitleBar
     {
-        title: individualId ? qsTr("Edit Individual") + Retranslate.onLanguageChanged : qsTr("New Individual") + Retranslate.onLanguageChanged
         kind: TitleBarKind.TextField
         kindProperties: TextFieldTitleBarKindProperties
         {

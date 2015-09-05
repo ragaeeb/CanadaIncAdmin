@@ -47,6 +47,7 @@ public:
         FetchIndividualData,
         FetchPageNumbers,
         FetchParents,
+        FetchQuestionsForSuitePage,
         FetchQuote,
         FetchRandomQuote,
         FetchSiblings,
