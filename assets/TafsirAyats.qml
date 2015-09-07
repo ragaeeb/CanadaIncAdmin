@@ -99,10 +99,36 @@ Page
         
         ActionItem
         {
+            imageSource: "images/menu/ic_add_question.png"
+            title: qsTr("Add Question") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            
+            function onQuestionSaved(id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
+            {
+                var result = ilmTest.addQuestion(suitePageId, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                adm.insert(0, result);
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                
+                popToRoot();
+                
+                persist.showToast( qsTr("Question added!"), "images/menu/ic_add_question.png" );
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddQuestion");
+
+                definition.source = "CreateQuestionPage.qml";
+                var page = definition.createObject();
+                page.saveQuestion.connect(onQuestionSaved);
+                navigationPane.push(page);
+            }
+        },
+        
+        ActionItem
+        {
             id: extractAyats
             imageSource: "images/menu/ic_capture_ayats.png"
             title: qsTr("Capture Ayats") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
             
             function onDataLoaded(id, data)
             {
@@ -255,13 +281,15 @@ Page
                 } else if (id == QueryId.RemoveBioLink) {
                     persist.showToast( qsTr("Biography unlinked!"), "images/menu/ic_remove_bio.png" );
                     busy.delegateActive = false;
+                } else if (id == QueryId.RemoveQuestion) {
+                    persist.showToast( qsTr("Question removed!"), "images/menu/ic_remove_question.png" );
+                    busy.delegateActive = false;
                 } else if (id == QueryId.AddBioLink) {
                     persist.showToast( qsTr("Biography linked!"), "images/dropdown/save_bio.png" );
                     suitePageIdChanged();
                     busy.delegateActive = false;
                 } else if (id == QueryId.UpdateSortOrder) {
                     persist.showToast( qsTr("Sort order updated!"), "images/dropdown/save_bio.png" );
-                    suitePageIdChanged();
                     busy.delegateActive = false;
                 }
                 
@@ -279,7 +307,8 @@ Page
             
             function onQuestionSaved(id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
             {
-                ilmTest.editQuestion(listView, id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                var edited = ilmTest.editQuestion(listView, id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                adm.replace(prompt.indexPath[0], edited);
                 
                 if (choices.length > 0 && orderedBody.length > 0) {
                     ilmTest.updateSortOrders(listView, choices);
@@ -308,6 +337,7 @@ Page
                     var page = definition.createObject();
                     page.questionId = d.source_id ? d.source_id : d.id;
                     page.saveQuestion.connect(onQuestionSaved);
+                    prompt.indexPath = indexPath;
                     navigationPane.push(page);
                 } else {
                     definition.source = "ProfilePage.qml";
@@ -323,6 +353,13 @@ Page
             {
                 busy.delegateActive = true;
                 tafsirHelper.removeBioLink(listView, ListItem.data.id);
+                adm.removeAt(ListItem.indexPath[0]);
+            }
+            
+            function removeQuestion(ListItem, ListItemData)
+            {
+                busy.delegateActive = true;
+                ilmTest.removeQuestion(listView, ListItemData.id);
                 adm.removeAt(ListItem.indexPath[0]);
             }
             
@@ -429,7 +466,7 @@ Page
                         contextActions: [
                             ActionSet
                             {
-                                title: rootItem.id
+                                title: rootItem.title
                                 subtitle: rootItem.status
                                 
                                 ActionItem
@@ -464,9 +501,28 @@ Page
                     
                     StandardListItem
                     {
+                        id: qsli
                         imageSource: ListItemData.source_id ? "images/list/ic_question_alias.png" : "images/list/ic_question.png"
                         status: ListItemData.difficulty ? ListItemData.difficulty.toString() : ""
                         title: ListItemData.standard_body ? ListItemData.standard_body : ""
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: qsli.title
+                                subtitle: qsli.status
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_remove_question.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveQuestion");
+                                        qsli.ListItem.view.removeQuestion(qsli.ListItem, ListItemData);
+                                    }
+                                }
+                            }
+                        ]
                     }
                 }
             ]

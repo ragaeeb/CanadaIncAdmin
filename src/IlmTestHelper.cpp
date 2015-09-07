@@ -119,7 +119,8 @@ void IlmTestHelper::fetchQuestionsForSuitePage(QObject* caller, qint64 suitePage
         fields[i] = QString("q.%1").arg(fields[i]);
     }
 
-    m_sql->executeQuery(caller, QString("SELECT %2 FROM questions q LEFT JOIN questions x ON q.source_id=x.id WHERE q.suite_page_id=%1 OR x.suite_page_id=%1").arg(suitePageId).arg( fields.join(",") ), QueryId::FetchQuestionsForSuitePage);
+    //m_sql->executeQuery(caller, QString("SELECT %2 FROM questions q LEFT JOIN questions x ON q.source_id=x.id WHERE q.suite_page_id=%1 OR x.suite_page_id=%1").arg(suitePageId).arg( fields.join(",") ), QueryId::FetchQuestionsForSuitePage);
+    m_sql->executeQuery(caller, QString("SELECT %2 FROM questions q WHERE q.suite_page_id=%1").arg(suitePageId).arg( fields.join(",") ), QueryId::FetchQuestionsForSuitePage);
 }
 
 
@@ -135,16 +136,21 @@ void IlmTestHelper::fetchChoicesForQuestion(QObject* caller, qint64 questionId)
 void IlmTestHelper::removeAnswer(QObject* caller, qint64 id)
 {
     LOGGER(id);
-    QString query = QString("DELETE FROM answers WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveAnswer);
+    m_sql->executeDelete(caller, "answers", QueryId::RemoveAnswer, id);
 }
 
 
 void IlmTestHelper::removeChoice(QObject* caller, qint64 id)
 {
     LOGGER(id);
-    QString query = QString("DELETE FROM choices WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveChoice);
+    m_sql->executeDelete(caller, "choices", QueryId::RemoveChoice, id);
+}
+
+
+void IlmTestHelper::removeQuestion(QObject* caller, qint64 id)
+{
+    LOGGER(id);
+    m_sql->executeDelete(caller, "questions", QueryId::RemoveQuestion, id);
 }
 
 

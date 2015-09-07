@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE void fetchQuestionsForSuitePage(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void removeAnswer(QObject* caller, qint64 id);
     Q_INVOKABLE void removeChoice(QObject* caller, qint64 id);
+    Q_INVOKABLE void removeQuestion(QObject* caller, qint64 id);
     Q_INVOKABLE void updateSortOrders(QObject* caller, QVariantList const& qvl);
 
     void lazyInit();

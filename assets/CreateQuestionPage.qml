@@ -165,6 +165,28 @@ Page
             {
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
+                opacity: 0
+                
+                animations: [
+                    FadeTransition
+                    {
+                        fromOpacity: 0
+                        toOpacity: 1
+                        easingCurve: StockCurve.BackOut
+                        duration: 1000
+                        delay: 15
+                        
+                        onCreationCompleted: {
+                            play();
+                        }
+                        
+                        onEnded: {
+                            if (deviceUtils.isPhysicalKeyboardDevice) {
+                                tftk.textField.requestFocus();
+                            }
+                        }
+                    }
+                ]
                 
                 ToggleTextArea
                 {
@@ -244,6 +266,7 @@ Page
                 }
                 
                 layoutProperties: StackLayoutProperties {
+                    id: slp
                     spaceQuota: 0.5
                 }
             }
@@ -253,6 +276,7 @@ Page
         {
             id: listView
             scrollRole: ScrollRole.Main
+            visible: questionId > 0
             
             dataModel: ArrayDataModel {
                 id: adm
@@ -265,12 +289,16 @@ Page
                 if ( orderedBody.text.trim().length > 0 ) {
                     rearrangeHandler.active = true;
                 }
+                
+                visible = !adm.isEmpty();
             }
             
             function removeAnswer(ListItem, ListItemData)
             {
                 ilmTest.removeAnswer(createPage, ListItemData.id);
                 adm.removeAt(ListItem.indexPath[0]);
+                
+                refresh();
             }
             
             listItemComponents: [
