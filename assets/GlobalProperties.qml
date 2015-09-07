@@ -32,6 +32,19 @@ QtObject
 
         return indices;
     }
+    
+    
+    function extractADM(adm)
+    {
+        var result = [];
+        var n = adm.size();
+        
+        for (var i = 0; i < n; i++) {
+            result.push( adm.value(i) );
+        }
+        
+        return result;
+    }
 
     
     function optimizeAndClean(input)

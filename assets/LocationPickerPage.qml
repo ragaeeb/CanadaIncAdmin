@@ -311,7 +311,7 @@ Page
         ProgressControl
         {
             id: busy
-            asset: "images/progress/loading_individuals.png"
+            asset: "images/progress/loading_locations.png"
         }
     }
     

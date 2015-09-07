@@ -1,13 +1,13 @@
 #include "precompiled.h"
 
 #include "IlmHelper.h"
+#include "CommonConstants.h"
 #include "DatabaseHelper.h"
 #include "Logger.h"
 #include "QueryId.h"
 #include "TextUtils.h"
 #include "TokenHelper.h"
 
-#define SET_KEY_VALUE_ID if (id) keyValues["id"] = id;
 #define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
 #define KEY_DEATH "death"
 #define KEY_KUNYA "kunya"

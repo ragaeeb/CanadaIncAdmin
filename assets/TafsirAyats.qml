@@ -13,6 +13,7 @@ Page
         {
             quran.fetchAyatsForTafsir(listView, suitePageId);
             tafsirHelper.fetchBioMetadata(listView, suitePageId);
+            ilmTest.fetchQuestionsForSuitePage(listView, suitePageId);
         }
     }
     
@@ -221,7 +222,7 @@ Page
             
             function onDataLoaded(id, data)
             {
-                if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchBioMetadata)
+                if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchBioMetadata || id == QueryId.FetchQuestionsForSuitePage)
                 {
                     if ( adm.isEmpty() )
                     {
@@ -248,11 +249,18 @@ Page
                 } else if (id == QueryId.EditBioLink) {
                     persist.showToast( qsTr("Biography link updated"), "images/menu/ic_bio_link_edit.png" );
                     busy.delegateActive = false;
+                } else if (id == QueryId.EditQuestion) {
+                    persist.showToast( qsTr("Question updated"), "images/toast/ic_question_edited.png" );
+                    busy.delegateActive = false;
                 } else if (id == QueryId.RemoveBioLink) {
                     persist.showToast( qsTr("Biography unlinked!"), "images/menu/ic_remove_bio.png" );
                     busy.delegateActive = false;
                 } else if (id == QueryId.AddBioLink) {
                     persist.showToast( qsTr("Biography linked!"), "images/dropdown/save_bio.png" );
+                    suitePageIdChanged();
+                    busy.delegateActive = false;
+                } else if (id == QueryId.UpdateSortOrder) {
+                    persist.showToast( qsTr("Sort order updated!"), "images/dropdown/save_bio.png" );
                     suitePageIdChanged();
                     busy.delegateActive = false;
                 }
@@ -269,13 +277,25 @@ Page
                 bioTypeDialog.show();
             }
             
+            function onQuestionSaved(id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
+            {
+                ilmTest.editQuestion(listView, id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                
+                if (choices.length > 0 && orderedBody.length > 0) {
+                    ilmTest.updateSortOrders(listView, choices);
+                }
+                
+                popToRoot();
+            }
+            
             onTriggered: {
                 console.log("UserEvent: TafsirAyatTriggered");
                 
 				var d = dataModel.data(indexPath);
+                var t = itemType(d, indexPath);
 				definition.source = "AyatPage.qml";
 
-                if ( itemType(d, indexPath) == "ayat" )
+                if (t == "ayat")
                 {
                     if (d.from_verse_number) {
                         persist.invoke( "com.canadainc.Quran10.previewer", "", "", "quran://%1/%2".arg(d.surah_id).arg(d.from_verse_number) );
@@ -283,6 +303,12 @@ Page
                         persist.invoke( "com.canadainc.Quran10.ayat.picker", "ayatPicked", "", "", d.surah_id );
                         prompt.indexPath = indexPath;
                     }
+                } else if (t == "question") {
+                    definition.source = "CreateQuestionPage.qml";
+                    var page = definition.createObject();
+                    page.questionId = d.source_id ? d.source_id : d.id;
+                    page.saveQuestion.connect(onQuestionSaved);
+                    navigationPane.push(page);
                 } else {
                     definition.source = "ProfilePage.qml";
                     var page = definition.createObject();
@@ -340,6 +366,8 @@ Page
             {
                 if (data.surah_id) {
                     return "ayat";
+                } else if (data.standard_body) {
+                    return "question"
                 } else {
                     return "bio";
                 }
@@ -427,6 +455,18 @@ Page
                                 }
                             }
                         ]
+                    }
+                },
+                
+                ListItemComponent
+                {
+                    type: "question"
+                    
+                    StandardListItem
+                    {
+                        imageSource: ListItemData.source_id ? "images/list/ic_question_alias.png" : "images/list/ic_question.png"
+                        status: ListItemData.difficulty ? ListItemData.difficulty.toString() : ""
+                        title: ListItemData.standard_body ? ListItemData.standard_body : ""
                     }
                 }
             ]

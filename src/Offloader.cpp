@@ -101,6 +101,11 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
 }
 
 
+QString Offloader::toTitleCase(QString const& input) {
+    return TextUtils::toTitleCase(input);
+}
+
+
 Offloader::~Offloader()
 {
 }
