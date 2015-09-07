@@ -143,8 +143,8 @@ Page
                 var element = ilmTest.addAnswer(questionId, id, yes);
                 element.value_text = value;
                 
-                adm.insert(0, element);
-                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                adm.append(element);
+                listView.scrollToPosition(ScrollPosition.End, ScrollAnimation.Smooth);
                 listView.refresh();
             }
             
