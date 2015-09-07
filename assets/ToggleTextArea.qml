@@ -7,7 +7,6 @@ TextField
     content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
     input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
     input.keyLayout: KeyLayout.Text
-    clearButtonVisible: false
     
     validator: Validator
     {
