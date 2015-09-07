@@ -1,3 +1,4 @@
+import QtQuick 1.0
 import bb.cascades 1.3
 import bb.system 1.2
 import com.canadainc.data 1.0
@@ -42,6 +43,15 @@ Page
                         valid = tftk.textField.text.trim().length > 10;
                     }
                 }
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: DoubleTappedStandardBody");
+                            tftk.textField.text = tftk.textField.text + persist.getClipboardText();
+                        }
+                    }
+                ]
             }
         }
         
@@ -135,6 +145,7 @@ Page
                 
                 adm.insert(0, element);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                listView.refresh();
             }
             
             onTriggered: {
@@ -165,28 +176,6 @@ Page
             {
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
-                opacity: 0
-                
-                animations: [
-                    FadeTransition
-                    {
-                        fromOpacity: 0
-                        toOpacity: 1
-                        easingCurve: StockCurve.BackOut
-                        duration: 1000
-                        delay: 15
-                        
-                        onCreationCompleted: {
-                            play();
-                        }
-                        
-                        onEnded: {
-                            if (deviceUtils.isPhysicalKeyboardDevice) {
-                                tftk.textField.requestFocus();
-                            }
-                        }
-                    }
-                ]
                 
                 ToggleTextArea
                 {
@@ -334,4 +323,19 @@ Page
     }
     
     function cleanUp() {}
+    
+    attachedObjects: [
+        Timer
+        {
+            repeat: false
+            running: true
+            interval: 100
+            
+            onTriggered: {
+                if (deviceUtils.isPhysicalKeyboardDevice) {
+                    tftk.textField.requestFocus();
+                }
+            }
+        }
+    ]
 }

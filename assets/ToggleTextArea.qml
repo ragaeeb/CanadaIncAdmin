@@ -7,13 +7,14 @@ TextField
     content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
     input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
     input.keyLayout: KeyLayout.Text
+    clearButtonVisible: false
     
     validator: Validator
     {
         errorMessage: qsTr("Invalid entry for %1").arg(name) + Retranslate.onLanguageChanged
         
         onValidate: {
-            valid = text.trim().length == 0 || text.trim().length < 10;
+            valid = text.trim().length == 0 || text.trim().length > 10;
         }
     }
     
@@ -21,7 +22,14 @@ TextField
         DoubleTapHandler {
             onDoubleTapped: {
                 console.log("UserEvent: DoubleTapped"+name);
-                text = text+" %1 ";
+                text = text+persist.getClipboardText();
+            }
+        },
+        
+        LongPressHandler {
+            onLongPressed: {
+                console.log("UserEvent: Tapped"+name);
+                text = text+"%1";
             }
         }
     ]
