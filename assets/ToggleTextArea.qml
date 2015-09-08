@@ -1,35 +1,59 @@
 import bb.cascades 1.3
 
-TextField
+Container
 {
-    id: textArea
+    property alias text: textArea.text
+    property alias hintText: textArea.hintText
+    horizontalAlignment: HorizontalAlignment.Fill
+    verticalAlignment: VerticalAlignment.Fill
     property string name
-    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-    input.keyLayout: KeyLayout.Text
+
+    layout: StackLayout {
+        orientation: LayoutOrientation.LeftToRight
+    }
     
-    validator: Validator
+    ImageButton
     {
-        errorMessage: qsTr("Invalid entry for %1").arg(name) + Retranslate.onLanguageChanged
+        defaultImageSource: "images/menu/ic_copy.png"
+        pressedImageSource: defaultImageSource
         
-        onValidate: {
-            valid = text.trim().length == 0 || text.trim().length > 10;
+        onClicked: {
+            console.log("UserEvent: ArgButtonClicked");
+            
+            if ( text.charAt(text.length-1) == ' ' ) {
+                text = text+"%1 ";
+            } else {
+                text = text+" %1 ";
+            }
         }
     }
     
-    gestureHandlers: [
-        DoubleTapHandler {
-            onDoubleTapped: {
-                console.log("UserEvent: DoubleTapped"+name);
-                text = text+persist.getClipboardText();
-            }
-        },
+    TextField
+    {
+        id: textArea
+        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+        input.keyLayout: KeyLayout.Text
+        leftMargin: 0; bottomMargin: 0; topMargin: 0; leftPadding: 0;
+        backgroundVisible: false
+        verticalAlignment: VerticalAlignment.Center
         
-        LongPressHandler {
-            onLongPressed: {
-                console.log("UserEvent: Tapped"+name);
-                text = text+"%1";
+        validator: Validator
+        {
+            errorMessage: qsTr("Invalid entry for %1").arg(name) + Retranslate.onLanguageChanged
+            
+            onValidate: {
+                valid = text.trim().length == 0 || text.trim().length > 10;
             }
         }
-    ]
+        
+        gestureHandlers: [
+            DoubleTapHandler {
+                onDoubleTapped: {
+                    console.log("UserEvent: DoubleTapped"+name);
+                    text = text+persist.getClipboardText();
+                }
+            }
+        ]
+    }
 }

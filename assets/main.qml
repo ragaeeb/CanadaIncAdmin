@@ -130,6 +130,23 @@ TabbedPane
         }
     }
     
+    Tab
+    {
+        id: questionsTab
+        title: qsTr("Questions") + Retranslate.onLanguageChanged
+        description: qsTr("Quiz") + Retranslate.onLanguageChanged
+        imageSource: "images/tabs/ic_rijaal.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        
+        onTriggered: {
+            console.log("UserEvent: QuestionsTab");
+        }
+        
+        delegate: Delegate {
+            source: "QuestionsPane.qml"
+        }
+    }
+    
     onCreationCompleted: {
         app.lazyInitComplete.connect(spd.onReady);
     }

@@ -261,6 +261,10 @@ Page
             }
         }
         
+        Divider {
+            topMargin: 0; bottomMargin: 0
+        }
+        
         OrderedListView
         {
             id: listView

@@ -102,6 +102,23 @@ void IlmTestHelper::fetchAllChoices(QObject* caller, QString const& choice)
 }
 
 
+void IlmTestHelper::fetchAllQuestions(QObject* caller, QString const& query)
+{
+    LOGGER(query);
+    QString q = "SELECT * FROM questions";
+    QVariantList args;
+
+    if ( !query.isEmpty() ) {
+        q += " WHERE standard_body LIKE '%' || ? || '%'";
+        args << query;
+    }
+
+    q += " ORDER BY id DESC";
+
+    m_sql->executeQuery(caller, q, QueryId::FetchAllQuestions, args);
+}
+
+
 void IlmTestHelper::fetchQuestion(QObject* caller, qint64 questionId)
 {
     LOGGER(questionId);

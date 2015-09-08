@@ -57,13 +57,15 @@ Page
                         performSearch();
                     } else {
                         value = offloader.toTitleCase(value);
-                        var useCustom = persist.showBlockingDialog( qsTr("New Choice"), qsTr("Do you want to add '%1' to the database?").arg(value) );
+                        var x = ilmTest.addChoice(value);
+                        picked(x.id, x.value_text);
+                        /*var useCustom = persist.showBlockingDialog( qsTr("New Choice"), qsTr("Do you want to add '%1' to the database?").arg(value) );
 
                         if (useCustom)
                         {
                             var x = ilmTest.addChoice(value);
                             picked(x.id, x.value_text);
-                        }
+                        } */
                     }
                 }
                 
