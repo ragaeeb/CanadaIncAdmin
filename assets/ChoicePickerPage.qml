@@ -122,6 +122,20 @@ Page
                 adm.removeAt(ListItem.indexPath[0]);
             }
             
+            function sourceChoice(ListItem, ListItemData)
+            {
+                var value = ListItemData.value_text;
+                var aliasValue = persist.showBlockingPrompt( qsTr("Enter choice text"), qsTr("Please enter an alias for this choice:"), "", qsTr("Enter value"), 100, true, qsTr("Save"), qsTr("Cancel") ).trim();
+                aliasValue = offloader.toTitleCase(aliasValue);
+
+                if (value != aliasValue) {
+                    var copy = ilmTest.sourceChoice(ListItemData.id, aliasValue);
+                    adm.insert(ListItem.indexPath[0], copy);
+                } else {
+                    persist.showToast( qsTr("Alias cannot be the same as the original!"), "images/toast/invalid_entry.png" );
+                }
+            }
+            
             listItemComponents: [
                 ListItemComponent
                 {
@@ -137,6 +151,29 @@ Page
                             {
                                 title: sli.title
                                 subtitle: sli.status
+                                
+                                ActionItem
+                                {
+                                    title: qsTr("Edit") + Retranslate.onLanguageChanged
+                                    imageSource: "images/menu/ic_edit_choice.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: EditChoice");
+                                        sli.ListItem.view.editChoice(sli.ListItem, ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_source_choice.png"
+                                    enabled: sli.enabled
+                                    title: qsTr("Create Alias") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: SourceChoice");
+                                        sli.ListItem.view.sourceChoice(sli.ListItem, ListItemData);
+                                    }
+                                }
                                 
                                 DeleteActionItem
                                 {

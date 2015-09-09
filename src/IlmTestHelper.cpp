@@ -7,8 +7,9 @@
 #include "QueryId.h"
 #include "TokenHelper.h"
 
-#define FIELD_VALUE_TEXT "value_text"
 #define FIELD_SORT_ORDER "sort_order"
+#define FIELD_SOURCE_ID "source_id"
+#define FIELD_VALUE_TEXT "value_text"
 
 namespace ilmtest {
 
@@ -130,7 +131,7 @@ void IlmTestHelper::fetchQuestion(QObject* caller, qint64 questionId)
 void IlmTestHelper::fetchQuestionsForSuitePage(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
-    QStringList fields = QStringList() << "id" << "source_id" << "standard_body" << "difficulty";
+    QStringList fields = QStringList() << "id" << FIELD_SOURCE_ID << "standard_body" << "difficulty";
 
     for (int i = fields.size()-1; i >= 0; i--) {
         fields[i] = QString("q.%1").arg(fields[i]);
@@ -168,6 +169,19 @@ void IlmTestHelper::removeQuestion(QObject* caller, qint64 id)
 {
     LOGGER(id);
     m_sql->executeDelete(caller, "questions", QueryId::RemoveQuestion, id);
+}
+
+
+QVariantMap IlmTestHelper::sourceChoice(qint64 originalChoiceId, QString const& value)
+{
+    LOGGER(value);
+
+    QVariantMap keyValues = TokenHelper::getTokensForChoice(value);
+    keyValues[FIELD_SOURCE_ID] = originalChoiceId;
+    qint64 id = m_sql->executeInsert("choices", keyValues);
+    SET_KEY_VALUE_ID;
+
+    return keyValues;
 }
 
 

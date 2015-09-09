@@ -14,7 +14,7 @@ Container
     
     ImageButton
     {
-        defaultImageSource: "images/menu/ic_copy.png"
+        defaultImageSource: "images/ic_percent.png"
         pressedImageSource: defaultImageSource
         
         onClicked: {
