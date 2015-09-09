@@ -20,11 +20,18 @@ Container
         onClicked: {
             console.log("UserEvent: ArgButtonClicked");
             
+            var toAppend = " %1";
+            
             if ( text.charAt(text.length-1) == ' ' ) {
-                text = text+"%1 ";
-            } else {
-                text = text+" %1 ";
+                toAppend = "%1";
             }
+            
+            if (text.length < 4) { // for example, Is %1, then we would want to put a space after
+                toAppend += " ";
+            }
+            
+            text = text+toAppend;
+            textArea.requestFocus();
         }
     }
     
