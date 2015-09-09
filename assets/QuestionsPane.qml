@@ -11,7 +11,7 @@ NavigationPane
     
     function popToRoot()
     {
-        while (navigationPane.top != individualPicker) {
+        while (navigationPane.top != questionsPage) {
             navigationPane.pop();
         }
     }
@@ -22,6 +22,7 @@ NavigationPane
     
     Page
     {
+        id: questionsPage
         actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
         
         titleBar: TitleBar
