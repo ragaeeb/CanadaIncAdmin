@@ -9,15 +9,6 @@ NavigationPane
         deviceUtils.cleanUpAndDestroy(page);
     }
     
-    function onDataLoaded(id, data)
-    {
-        if (id == QueryId.AddTafsir)
-        {
-            persist.showToast( qsTr("Tafsir added!"), "images/menu/ic_add_suite.png" );
-            tafsirPicker.reload();
-        }
-    }
-    
     TafsirPickerPage
     {
         id: tafsirPicker

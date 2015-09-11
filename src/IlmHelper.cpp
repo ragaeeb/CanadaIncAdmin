@@ -13,7 +13,6 @@
 #define KEY_KUNYA "kunya"
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
-#define NAME_FIELD(var) QString("replace( replace( replace( replace( coalesce(%1.displayName, TRIM((coalesce(%1.prefix,'') || ' ' || coalesce(%1.kunya,'') || ' ' || %1.name))),\"'\",''), '%2', ''), '%3', ''), '  ', ' ' )").arg(var).arg( QChar(8217) ).arg( QChar(8216) )
 #define NAME_SEARCH_FLAGGED(var, startsWith) QString("%1.name LIKE %2 ? || '%' OR %1.displayName LIKE %2 ? || '%' OR %1.kunya LIKE %2 ? || '%'").arg(var).arg(startsWith ? "" : "'%' ||")
 #define NAME_SEARCH(var) NAME_SEARCH_FLAGGED(var, false)
 #define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
@@ -32,16 +31,6 @@ void IlmHelper::fetchAllIds(QObject* caller, QString const& table)
 {
     LOGGER(table);
     m_sql->executeQuery(caller, QString("SELECT id,'%1' AS table_name FROM %1 ORDER BY id").arg(table), QueryId::FetchAllIds);
-}
-
-
-void IlmHelper::fetchSuitePageIntersection(QObject* caller, QString other)
-{
-    LOGGER(other);
-    other = QURAN_TAFSIR_FILE(other);
-    m_sql->attachIfNecessary(other, true);
-    m_sql->executeQuery(caller, QString("SELECT x.suite_id AS id FROM %1.suite_pages x INNER JOIN %2.suite_pages y ON x.id=y.id AND x.suite_id=y.suite_id").arg( databaseName() ).arg(other), QueryId::FetchSuitePageIntersection);
-    m_sql->detach(other);
 }
 
 
@@ -97,14 +86,6 @@ void IlmHelper::removeBioLink(QObject* caller, qint64 id)
 }
 
 
-void IlmHelper::removeQuote(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    QString query = QString("DELETE FROM quotes WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveQuote);
-}
-
-
 void IlmHelper::removeWebsite(QObject* caller, qint64 id)
 {
     LOGGER(id);
@@ -126,15 +107,6 @@ void IlmHelper::removeLocation(QObject* caller, qint64 id)
     LOGGER(id);
     QString query = QString("DELETE FROM locations WHERE id=%1").arg(id);
     m_sql->executeQuery(caller, query, QueryId::RemoveLocation);
-}
-
-
-void IlmHelper::removeTafsir(QObject* caller, qint64 suiteId)
-{
-    LOGGER(suiteId);
-
-    QString query = QString("DELETE FROM suites WHERE id=%1").arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveTafsir);
 }
 
 
@@ -181,15 +153,6 @@ void IlmHelper::removeStudent(QObject* caller, qint64 individual, qint64 student
 
     QString query = QString("DELETE FROM teachers WHERE teacher=%1 AND individual=%2").arg(individual).arg(studentId);
     m_sql->executeQuery(caller, query, QueryId::RemoveStudent);
-}
-
-
-void IlmHelper::removeTafsirPage(QObject* caller, qint64 suitePageId)
-{
-    LOGGER(suitePageId);
-
-    QString query = QString("DELETE FROM suite_pages WHERE id=%1").arg(suitePageId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveTafsirPage);
 }
 
 
@@ -250,33 +213,6 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 }
 
 
-void IlmHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds, qint64 actualId)
-{
-    LOGGER(toReplaceIds << actualId);
-
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-
-    foreach (QVariant const& q, toReplaceIds)
-    {
-        qint64 toReplaceId = q.toLongLong();
-
-        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1,heading=(SELECT title FROM suites WHERE id=%2),reference=(SELECT reference FROM suites WHERE id=%2) WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), QueryId::PendingTransaction);
-    }
-
-    m_sql->endTransaction(caller, QueryId::ReplaceSuite);
-}
-
-
-void IlmHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId)
-{
-    LOGGER(suitePageId << destSuiteId);
-
-    m_sql->executeQuery(caller, "UPDATE suite_pages SET suite_id=? WHERE id=?", QueryId::MoveToSuite, QVariantList() << destSuiteId << suitePageId);
-}
-
-
 void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint, bool startsWith)
 {
     LOGGER(trimmedText << andConstraint << startsWith);
@@ -288,50 +224,6 @@ void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, Q
     } else {
         m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
     }
-}
-
-
-void IlmHelper::searchQuote(QObject* caller, QString fieldName, QString const& searchTerm)
-{
-    LOGGER(fieldName << searchTerm);
-
-    QString query;
-    QVariantList args = QVariantList() << searchTerm;
-
-    if (fieldName == "author") {
-        query = QString("SELECT quotes.id,%1 AS author,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author WHERE %2 ORDER BY quotes.id DESC").arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") );
-        args << searchTerm << searchTerm;
-    } else {
-        query = QString("SELECT quotes.id,%2 AS author,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i") );
-    }
-
-    m_sql->executeQuery(caller, query, QueryId::SearchQuote, args);
-}
-
-
-void IlmHelper::searchTafsir(QObject* caller, QString const& fieldName, QString const& searchTerm)
-{
-    LOGGER(fieldName << searchTerm);
-
-    QString query;
-    QVariantList args = QVariantList() << searchTerm;
-
-    if (fieldName == "author" || fieldName == "explainer" || fieldName == "translator")
-    {
-        if (fieldName == "author") {
-            query = QString("SELECT suites.id,%1 AS author,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") );
-            args << searchTerm << searchTerm;
-        } else {
-            query = QString("SELECT suites.id,%2 AS author,title FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN individuals t ON t.id=suites.%1 WHERE %3 ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") );
-            args << searchTerm << searchTerm;
-        }
-    } else if (fieldName == "body") {
-        query = QString("SELECT suites.id,%1 AS author,title FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suites.id=suite_pages.suite_id WHERE body LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg( NAME_FIELD("i") );
-    } else {
-        query = QString("SELECT suites.id,%2 AS author,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %1 LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i") );
-    }
-
-    m_sql->executeQuery(caller, query, QueryId::SearchTafsir, args);
 }
 
 
@@ -369,63 +261,6 @@ qint64 IlmHelper::addLocation(QObject* caller, QString const& city, qreal latitu
     m_sql->executeQuery(caller, query, QueryId::AddLocation, QVariantList() << now << city << latitude << longitude);
 
     return now;
-}
-
-
-void IlmHelper::addQuote(QObject* caller, QString const& author, QString const& body, QString const& reference, QString const& suiteId, QString const& uri)
-{
-    LOGGER(author << body << reference << suiteId << uri);
-
-    qint64 authorId = generateIndividualField(caller, author);
-    QString query = QString("INSERT INTO quotes (author,body,reference,suite_id,uri) VALUES(%1,?,?,?,?)").arg(authorId);
-    QVariantList args = QVariantList() << body << reference;
-    args <<  suiteId.toLongLong();
-    args << uri;
-
-    m_sql->executeQuery(caller, query, QueryId::AddQuote, args);
-}
-
-
-void IlmHelper::addTafsir(QObject* caller, QString const& author, QString const& translator, QString const& explainer, QString const& title, QString const& description, QString const& reference)
-{
-    LOGGER(author << translator << explainer << title << description << reference);
-
-    QStringList fields = QStringList() << "id" << "title" << "description" << "reference";
-    QVariantList args = QVariantList() << QDateTime::currentMSecsSinceEpoch() << title << description << reference;
-
-    if ( !author.isEmpty() )
-    {
-        fields << "author";
-        args << generateIndividualField(caller, author);
-    }
-
-    if ( !translator.isEmpty() )
-    {
-        fields << "translator";
-        args << generateIndividualField(caller, translator);
-    }
-
-    if ( !explainer.isEmpty() )
-    {
-        fields << "explainer";
-        args << generateIndividualField(caller, explainer);
-    }
-
-    QString query = QString("INSERT OR IGNORE INTO suites (%1) VALUES(%2)").arg( fields.join(",") ).arg( TextUtils::getPlaceHolders( args.size(), false ) );
-    m_sql->executeQuery(caller, query, QueryId::AddTafsir, args);
-}
-
-
-qint64 IlmHelper::addTafsirPage(QObject* caller, qint64 suiteId, QString const& body, QString const& heading, QString const& reference)
-{
-    LOGGER( suiteId << body.length() << reference.length() );
-
-    qint64 id = QDateTime::currentMSecsSinceEpoch();
-
-    QString query = QString("INSERT OR IGNORE INTO suite_pages (id,suite_id,body,heading,reference) VALUES(?,?,?,?,?)").arg(id).arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::AddTafsirPage, QVariantList() << id << suiteId << body << heading << reference );
-
-    return id;
 }
 
 
@@ -474,43 +309,6 @@ void IlmHelper::addSibling(QObject* caller, qint64 individualId, qint64 siblingI
 }
 
 
-void IlmHelper::editTafsir(QObject* caller, qint64 suiteId, QString const& author, QString const& translator, QString const& explainer, QString const& title, QString const& description, QString const& reference)
-{
-    LOGGER(suiteId << author << translator << explainer << title << description << reference);
-
-    QStringList fields = QStringList() << "author=?" << "title=?" << "description=?" << "reference=?" << "translator=?" << "explainer=?";
-    QVariantList args = QVariantList() << generateIndividualField(caller, author);
-    args << title;
-    args << description;
-    args << reference;
-
-    if ( translator.isEmpty() ) {
-        args << QVariant();
-    } else {
-        args << generateIndividualField(caller, translator);
-    }
-
-    if ( explainer.isEmpty() ) {
-        args << QVariant();
-    } else {
-        args << generateIndividualField(caller, explainer);
-    }
-
-    QString query = QString("UPDATE suites SET %2 WHERE id=%1").arg(suiteId).arg( fields.join(",") );
-    m_sql->executeQuery(caller, query, QueryId::EditTafsir, args);
-}
-
-
-void IlmHelper::editTafsirPage(QObject* caller, qint64 suitePageId, QString const& body, QString const& heading, QString const& reference)
-{
-    LOGGER( suitePageId << body.length() << heading.length() << reference.length() );
-
-    QString query = QString("UPDATE suite_pages SET body=?, heading=?, reference=? WHERE id=%1").arg(suitePageId);
-    m_sql->executeQuery( caller, query, QueryId::EditTafsirPage, QVariantList() << body << heading << reference );
-}
-
-
-
 void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 {
     LOGGER(id << points);
@@ -531,20 +329,6 @@ QVariantMap IlmHelper::editIndividual(QObject* caller, qint64 id, QString const&
     SET_KEY_VALUE_ID;
 
     return keyValues;
-}
-
-
-void IlmHelper::editQuote(QObject* caller, qint64 quoteId, QString const& author, QString const& body, QString const& reference, QString const& suiteId, QString const& uri)
-{
-    LOGGER(quoteId << author << body << reference << suiteId << uri);
-
-    qint64 authorId = generateIndividualField(caller, author);
-    QString query = QString("UPDATE quotes SET author=%2,body=?,reference=?,suite_id=?,uri=? WHERE id=%1").arg(quoteId).arg(authorId);
-    QVariantList args = QVariantList() << body << reference;
-    args << suiteId.toLongLong();
-    args << uri;
-
-    m_sql->executeQuery(caller, query, QueryId::EditQuote, args);
 }
 
 
@@ -660,40 +444,6 @@ void IlmHelper::fetchAllWebsites(QObject* caller, qint64 individualId)
 }
 
 
-void IlmHelper::fetchAllTafsir(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-
-    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1 AS author,title FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i") );
-
-    if (individualId) {
-        queryParams << QString("WHERE (author=%1 OR translator=%1 OR explainer=%1)").arg(individualId);
-    }
-
-    queryParams << "ORDER BY id DESC";
-
-    m_sql->executeQuery(caller, queryParams.join(" "), QueryId::FetchAllTafsir);
-}
-
-
-void IlmHelper::findDuplicateSuites(QObject* caller, QString const& field)
-{
-    LOGGER(field);
-
-    QString query = QString("SELECT suites.id AS id,%1 AS author,title,COUNT(*) c FROM suites LEFT JOIN individuals i ON i.id=suites.author GROUP BY %2 HAVING c > 1").arg( NAME_FIELD("i") ).arg(field);
-    m_sql->executeQuery(caller, query, QueryId::FindDuplicates);
-}
-
-
-void IlmHelper::fetchTafsirMetadata(QObject* caller, qint64 suiteId)
-{
-    LOGGER(suiteId);
-
-    QString query = QString("SELECT author,translator,explainer,title,description,reference FROM suites WHERE id=%1").arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::FetchTafsirHeader);
-}
-
-
 void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
@@ -716,15 +466,6 @@ QVariantMap IlmHelper::createIndividual(QString const& prefix, QString const& na
 }
 
 
-void IlmHelper::fetchTafsirContent(QObject* caller, qint64 suitePageId)
-{
-    LOGGER(suitePageId);
-    QString query = QString("SELECT %2 AS author,x.id AS author_id,x.hidden AS author_hidden,x.birth AS author_birth,x.death AS author_death,%3 AS translator,y.id AS translator_id,y.hidden AS translator_hidden,y.birth AS translator_birth,y.death AS translator_death,%4 AS explainer,z.id AS explainer_id,z.hidden AS explainer_hidden,z.birth AS explainer_birth,z.death AS explainer_death,title,suites.description,suites.reference AS reference,suite_pages.reference AS suite_pages_reference,body,heading FROM suites INNER JOIN suite_pages ON suites.id=suite_pages.suite_id LEFT JOIN individuals x ON suites.author=x.id LEFT JOIN individuals y ON suites.translator=y.id LEFT JOIN individuals z ON suites.explainer=z.id WHERE suite_pages.id=%1").arg(suitePageId).arg( NAME_FIELD("x") ).arg( NAME_FIELD("y") ).arg( NAME_FIELD("z") );
-
-    m_sql->executeQuery(caller, query, QueryId::FetchTafsirContent);
-}
-
-
 void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
@@ -732,84 +473,9 @@ void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
     m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS author,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchBio);
 }
 
-void IlmHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId << m_name);
-
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1 AS author,body,reference FROM %2.quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i") ).arg(m_name);
-
-    if (individualId) {
-        queryParams << QString("WHERE quotes.author=%1").arg(individualId);
-    }
-
-    queryParams << "ORDER BY id DESC";
-
-    m_sql->executeQuery(caller, queryParams.join(" "), QueryId::FetchAllQuotes);
-}
-
-
-void IlmHelper::findDuplicateQuotes(QObject* caller, QString const& field)
-{
-    LOGGER(field);
-
-    QString query = QString("SELECT quotes.id AS id,%1 AS author,body,reference,COUNT(*) c FROM quotes INNER JOIN individuals i ON i.id=quotes.author GROUP BY %2 HAVING c > 1").arg( NAME_FIELD("i") ).arg(field);
-    m_sql->executeQuery(caller, query, QueryId::FindDuplicates);
-}
-
-
-void IlmHelper::fetchAllTafsirForSuite(QObject* caller, qint64 suiteId)
-{
-    LOGGER(suiteId);
-
-    QString query = QString("SELECT id,body,heading,reference FROM suite_pages WHERE suite_id=%1 ORDER BY id DESC").arg(suiteId);
-    m_sql->executeQuery(caller, query, QueryId::FetchAllTafsirForSuite);
-}
-
-
-void IlmHelper::fetchQuote(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-
-    QString query = QString("SELECT quotes.author AS author_id, body,reference,suite_id,uri FROM quotes INNER JOIN individuals ON individuals.id=quotes.author WHERE quotes.id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::FetchQuote);
-}
-
 
 void IlmHelper::lazyInit()
 {
-}
-
-
-void IlmHelper::translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage)
-{
-    LOGGER(quoteId << destinationLanguage);
-
-    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
-    m_sql->attachIfNecessary(destinationLanguage, true);
-
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes (english_id,author,body,reference,uri) SELECT id,author,body,reference,uri FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::PendingTransaction);
-    m_sql->endTransaction(caller, QueryId::TranslateQuote);
-
-    m_sql->detach(destinationLanguage);
-}
-
-
-void IlmHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QString destinationLanguage)
-{
-    LOGGER(suitePageId << destinationLanguage);
-
-    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
-    m_sql->attachIfNecessary(destinationLanguage, true);
-
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction); // don't port the translator
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
-    m_sql->endTransaction(caller, QueryId::TranslateSuitePage);
-
-    m_sql->detach(destinationLanguage);
 }
 
 
@@ -840,8 +506,7 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
 }
 
 
-void IlmHelper::setDatabaseName(QString const& name)
-{
+void IlmHelper::setDatabaseName(QString const& name) {
     m_name = name;
 }
 

@@ -23,7 +23,12 @@ Page
             
             function onCreate(id, author, translator, explainer, title, description, reference)
             {
-                tafsirHelper.addTafsir(navigationPane, author, translator, explainer, title, description, reference);
+                var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference);
+                adm.insert(0, x); // add the latest value to avoid refreshing entire list
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                navigationPane.parent.unreadContentCount += 1;
+                
+                persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
                 
                 while (navigationPane.top != tafsirPickerPage) {
                     navigationPane.pop();
@@ -224,13 +229,7 @@ Page
                 function onEdit(id, author, translator, explainer, title, description, reference)
                 {
                     busy.delegateActive = true;
-                    tafsirHelper.editTafsir(listView, id, author, translator, explainer, title, description, reference);
-                    
-                    var current = dataModel.data(editIndexPath);
-                    current["title"] = title;
-                    current["description"] = description;
-                    current["reference"] = reference;
-                    
+                    var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference);
                     dataModel.replace(editIndexPath[0], current);
                     
                     popToRoot();
@@ -293,7 +292,7 @@ Page
                 
                 function removeItem(ListItemData) {
                     busy.delegateActive = true;
-                    tafsirHelper.removeTafsir(listView, ListItemData.id);
+                    tafsirHelper.removeSuite(listView, ListItemData.id);
                 }
                 
                 listItemComponents: [
@@ -319,7 +318,7 @@ Page
                                         title: qsTr("Edit") + Retranslate.onLanguageChanged
                                         
                                         onTriggered: {
-                                            console.log("UserEvent: EditTafsirTriggered");
+                                            console.log("UserEvent: EditSuite");
                                             rootItem.ListItem.view.editItem(rootItem.ListItem.indexPath, ListItemData);
                                         }
                                     }
@@ -366,18 +365,12 @@ Page
                 {
                     if (id == QueryId.FetchAllTafsir && data.length > 0)
                     {
-                        if ( adm.isEmpty() ) {
-                            adm.append(data);
-                        } else {
-                            adm.insert(0, data[0]); // add the latest value to avoid refreshing entire list
-                            listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                        }
-                        
+                        adm.append(data);
                         navigationPane.parent.unreadContentCount = data.length;
-                    } else if (id == QueryId.RemoveTafsir) {
-                        persist.showToast( qsTr("Tafsir removed!"), "images/menu/ic_remove_suite.png" );
-                    } else if (id == QueryId.EditTafsir) {
-                        persist.showToast( qsTr("Tafsir updated!"), "images/menu/ic_edit_suite.png" );
+                    } else if (id == QueryId.RemoveSuite) {
+                        persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
+                    } else if (id == QueryId.EditSuite) {
+                        persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_suite.png" );
                     } else if (id == QueryId.SearchTafsir || id == QueryId.FindDuplicates) {
                         adm.clear();
                         adm.append(data);

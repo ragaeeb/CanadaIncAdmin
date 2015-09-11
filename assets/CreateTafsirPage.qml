@@ -5,7 +5,7 @@ Page
 {
     id: createPage
     property variant suiteId
-    signal createTafsir(variant id, string author, string translator, string explainer, string title, string description, string reference)
+    signal createTafsir(variant id, variant author, variant translator, variant explainer, string title, string description, string reference)
     signal deleteTafsir(variant id)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     

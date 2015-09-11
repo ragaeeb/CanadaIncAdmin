@@ -256,13 +256,13 @@ Page
             popToRoot();
             reload();
             return;
-        } else if (id == QueryId.EditTafsirPage) {
+        } else if (id == QueryId.EditSuitePage) {
             persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
             popToRoot();
-        } else if (id == QueryId.EditTafsir) {
+        } else if (id == QueryId.EditSuite) {
             persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_bio.png" );
             popToRoot();
-        } else if (id == QueryId.RemoveTafsir) {
+        } else if (id == QueryId.RemoveSuite) {
             persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
             popToRoot();
         } else if (id == QueryId.AddBioLink) {
@@ -409,23 +409,18 @@ Page
                 x["reference"] = reference;
                 bioModel.updateItem(editIndexPath, x);
                 
-                tafsirHelper.editTafsirPage(bioPage, id, body, header, reference);
+                tafsirHelper.editSuitePage(bioPage, id, body, header, reference);
             }
             
-            function onEditTafsir(id, author, translator, explainer, title, description, reference)
+            function onEditSuite(id, author, translator, explainer, title, description, reference)
             {
-                tafsirHelper.editTafsir(bioPage, id, author, translator, explainer, title, description, reference);
-                
-                var current = dataModel.data(editIndexPath);
-                current["title"] = title;
-                current["reference"] = reference;
-                
+                var current = tafsirHelper.editSuite(bioPage, id, author, translator, explainer, title, description, reference);
                 bioModel.updateItem(editIndexPath, current);
             }
             
             function onDelete(id)
             {
-                tafsirHelper.removeTafsir(bioPage, id);
+                tafsirHelper.removeSuite(bioPage, id);
                 bioModel.removeAt(editIndexPath);
             }
             
@@ -435,7 +430,7 @@ Page
                 
                 definition.source = "CreateTafsirPage.qml";
                 var ipp = definition.createObject();
-                ipp.createTafsir.connect(onEditTafsir);
+                ipp.createTafsir.connect(onEditSuite);
                 ipp.suiteId = ListItemData.suite_id;
                 ipp.deleteTafsir.connect(onDelete);
                 

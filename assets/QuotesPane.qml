@@ -49,7 +49,13 @@ NavigationPane
                 
                 function onCreate(id, author, body, reference, suiteId, uri)
                 {
-                    tafsirHelper.addQuote( listView, author, body, reference, suiteId, uri );
+                    var x = tafsirHelper.addQuote(author, body, reference, suiteId, uri);
+                    
+                    adm.insert(0, x); // add the latest value to avoid refreshing entire list
+                    listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                    navigationPane.parent.unreadContentCount += 1;
+                    
+                    persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );
                     
                     while (navigationPane.top != quotePickerPage) {
                         navigationPane.pop();
@@ -167,21 +173,12 @@ NavigationPane
                     {
                         if (id == QueryId.FetchAllQuotes && data.length > 0)
                         {
-                            if ( adm.isEmpty() ) {
-                                adm.append(data);
-                            } else {
-                                adm.insert(0, data[0]); // add the latest value to avoid refreshing entire list
-                                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                            }
-
+                            adm.append(data);
                             navigationPane.parent.unreadContentCount = data.length;
                         } else if (id == QueryId.RemoveQuote) {
                             persist.showToast( qsTr("Quote removed!"), "images/menu/ic_delete_quote.png" );
                         } else if (id == QueryId.EditQuote) {
                             persist.showToast( qsTr("Quote updated!"), "images/menu/ic_edit_quote.png" );
-                        } else if (id == QueryId.AddQuote) {
-                            persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );
-                            reload();
                         } else if (id == QueryId.TranslateQuote) {
                             persist.showToast( qsTr("Quote translated!"), "images/menu/ic_preview.png" );
                             persist.saveValueFor("translation", "arabic");

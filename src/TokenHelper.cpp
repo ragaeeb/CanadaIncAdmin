@@ -13,6 +13,45 @@ QVariantMap TokenHelper::getTokensForAnswer(qint64 questionId, qint64 choiceId, 
 }
 
 
+QVariantMap TokenHelper::getTokensForSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference)
+{
+    QVariantMap keyValues;
+    keyValues["author"] = author;
+    keyValues["translator"] = translator;
+    keyValues["explainer"] = explainer;
+    keyValues["title"] = title;
+    keyValues["description"] = description;
+    keyValues["reference"] = reference;
+
+    return keyValues;
+}
+
+
+QVariantMap TokenHelper::getTokensForSuitePage(qint64 suiteId, QString const& body, QString const& heading, QString const& reference)
+{
+    QVariantMap keyValues;
+    keyValues["suite_id"] = suiteId;
+    keyValues["body"] = body;
+    keyValues["heading"] = heading;
+    keyValues["reference"] = reference;
+
+    return keyValues;
+}
+
+
+QVariantMap TokenHelper::getTokensForQuote(qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
+{
+    QVariantMap keyValues;
+    keyValues["author"] = author;
+    keyValues["body"] = body;
+    keyValues["reference"] = reference;
+    keyValues["suite_id"] = suiteId;
+    keyValues["uri"] = uri;
+
+    return keyValues;
+}
+
+
 QVariantMap TokenHelper::getTokensForChoice(QString const& value)
 {
     QVariantMap keyValues;

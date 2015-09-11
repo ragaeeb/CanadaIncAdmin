@@ -67,10 +67,13 @@ Page
             
             function onCreateSuitePage(id, body, header, reference)
             {
-                id = tafsirHelper.addTafsirPage(listView, suiteId, body, header, reference);
+                var x = tafsirHelper.addSuitePage(suiteId, body, header, reference);
+                adm.insert(0,x);
                 
-                var x = {'id': id, 'body': body, 'header': header, 'reference': reference};
-                adm.insert(0, x);
+                persist.showToast( qsTr("Suite page added!"), "images/menu/ic_add_suite_page.png" );
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                
+                popToRoot();
             }
             
             onTriggered: {
@@ -106,22 +109,16 @@ Page
             {
                 if (id == QueryId.FetchAllTafsirForSuite)
                 {
-                    if ( adm.isEmpty() ) {
-                        adm.append(data);
-                    }
+                    adm.append(data);
                     
                     if ( adm.isEmpty() ) {
                         addAction.triggered();
                     }
-                } else if (id == QueryId.AddTafsirPage) {
-                    persist.showToast( qsTr("Tafsir page added!"), "images/menu/ic_add_suite_page.png" );
-                    popToRoot();
-                    listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 } else if (id == QueryId.MoveToSuite) {
                     persist.showToast( qsTr("Suite page moved!"), "images/menu/ic_merge.png" );
-                } else if (id == QueryId.RemoveTafsirPage) {
+                } else if (id == QueryId.RemoveSuitePage) {
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
-                } else if (id == QueryId.EditTafsirPage) {
+                } else if (id == QueryId.EditSuitePage) {
                     persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
                     popToRoot();
                 } else if (id == QueryId.TranslateSuitePage) {
@@ -136,7 +133,7 @@ Page
             
             function removeItem(ListItemData)
             {
-                tafsirHelper.removeTafsirPage(listView, ListItemData.id);
+                tafsirHelper.removeSuitePage(listView, ListItemData.id);
                 busy.delegateActive = true;
             }
             
@@ -148,7 +145,7 @@ Page
                 x["reference"] = reference;
                 adm.replace(editIndexPath[0], x);
                 
-                tafsirHelper.editTafsirPage(listView, id, body, header, reference);
+                tafsirHelper.editSuitePage(listView, id, body, header, reference);
             }
             
             function editItem(indexPath, ListItemData)
@@ -279,7 +276,7 @@ Page
                                     title: qsTr("Edit") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
-                                        console.log("UserEvent: EditTafsirContentTriggered");
+                                        console.log("UserEvent: EditSuitePageContent");
                                         rootItem.ListItem.view.editItem(rootItem.ListItem.indexPath, ListItemData);
                                     }
                                 }
@@ -333,7 +330,7 @@ Page
                                     imageSource: "images/menu/ic_delete_suite_page.png"
                                     
                                     onTriggered: {
-                                        console.log("UserEvent: RemoveTafsirPageTriggered");
+                                        console.log("UserEvent: RemoveSuitePage");
                                         rootItem.ListItem.view.removeItem(ListItemData);
                                         rootItem.ListItem.view.dataModel.removeAt(rootItem.ListItem.indexPath[0]);
                                     }
