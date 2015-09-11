@@ -14,13 +14,10 @@ public:
     enum Type {
         AddBioLink,
         AddChild,
-        AddIndividual,
-        AddLocation,
         AddParent,
         AddSibling,
         AddStudent,
         AddTeacher,
-        AddWebsite,
         EditBioLink,
         EditChoice,
         EditIndividual,

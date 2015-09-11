@@ -10,13 +10,17 @@ class Offloader : public QObject
 {
     Q_OBJECT
 
+    QSet<QString> m_prefixes;
+    QSet<QString> m_kunyas;
+
 public:
     Offloader();
     virtual ~Offloader();
 
-    Q_INVOKABLE QVariantList decorateWebsites(QVariantList input);
-    Q_INVOKABLE QVariantList fillType(QVariantList input, int queryId);
-    Q_INVOKABLE QString toTitleCase(QString const& input);
+    Q_INVOKABLE static QVariantList decorateWebsites(QVariantList input);
+    Q_INVOKABLE static QVariantList fillType(QVariantList input, int queryId);
+    Q_INVOKABLE QVariantMap parseName(QString const& n);
+    Q_INVOKABLE static QString toTitleCase(QString const& input);
 };
 
 } /* namespace quran */

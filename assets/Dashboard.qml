@@ -41,7 +41,7 @@ NavigationPane
                 function onDataLoaded(id, data)
                 {
                     if (id == QueryId.FetchAllIds) {
-                        tafsirHelper.setIndexAsId(reorder, data);
+                        sql.setIndexAsId(reorder, data);
                     } else if (id == QueryId.UpdateIdWithIndex) {
                         persist.showToast( qsTr("Successfully reordered!"), "images/menu/ic_top.png" );
                     }
@@ -49,9 +49,9 @@ NavigationPane
                 
                 onTriggered: {
                     console.log("UserEvent: Reorder");
-                    tafsirHelper.fetchAllIds(reorder, "locations");
-                    tafsirHelper.fetchAllIds(reorder, "individuals");
-                    tafsirHelper.fetchAllIds(reorder, "mentions");
+                    sql.fetchAllIds(reorder, "locations");
+                    sql.fetchAllIds(reorder, "individuals");
+                    sql.fetchAllIds(reorder, "mentions");
                 }
             },
             
@@ -67,9 +67,9 @@ NavigationPane
                     if (id == QueryId.FetchSuitePageIntersection)
                     {
                         intersection = data;
-                        tafsirHelper.fetchAllIds(reorderSuites, "suites");
+                        sql.fetchAllIds(reorderSuites, "suites");
                     } else if (id == QueryId.FetchAllIds) {
-                        tafsirHelper.setIndexAsId(reorderSuites, data, intersection);
+                        sql.setIndexAsId(reorderSuites, data, intersection);
                     } else if (id == QueryId.UpdateIdWithIndex) {
                         persist.showToast( qsTr("Successfully reordered suite pages!"), "images/menu/ic_top.png" );
                     }

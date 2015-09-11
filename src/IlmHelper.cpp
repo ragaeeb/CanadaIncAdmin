@@ -5,16 +5,11 @@
 #include "DatabaseHelper.h"
 #include "Logger.h"
 #include "QueryId.h"
+#include "SharedConstants.h"
 #include "TextUtils.h"
 #include "TokenHelper.h"
 
 #define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
-#define KEY_DEATH "death"
-#define KEY_KUNYA "kunya"
-#define KEY_NAME "name"
-#define KEY_PREFIX "prefix"
-#define NAME_SEARCH_FLAGGED(var, startsWith) QString("%1.name LIKE %2 ? || '%' OR %1.displayName LIKE %2 ? || '%' OR %1.kunya LIKE %2 ? || '%'").arg(var).arg(startsWith ? "" : "'%' ||")
-#define NAME_SEARCH(var) NAME_SEARCH_FLAGGED(var, false)
 #define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
 #define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), QueryId::PendingTransaction);
 
@@ -26,87 +21,23 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 {
 }
 
-
-void IlmHelper::fetchAllIds(QObject* caller, QString const& table)
-{
-    LOGGER(table);
-    m_sql->executeQuery(caller, QString("SELECT id,'%1' AS table_name FROM %1 ORDER BY id").arg(table), QueryId::FetchAllIds);
+void IlmHelper::removeBioLink(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("mentions", QueryId::RemoveBioLink);
 }
 
 
-void IlmHelper::setIndexAsId(QObject* caller, QVariantList const& data, QVariantList const& intersection)
-{
-    LOGGER( data.size() << intersection.size() );
-
-    QSet<qint64> commonIds;
-
-    foreach (QVariant q, intersection) {
-        commonIds << q.toMap().value("id").toLongLong();
-    }
-
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-
-    QString dbName = databaseName();
-
-    for (int i = 0; i < data.size(); i++)
-    {
-        QVariantMap current = data[i].toMap();
-        QString table = current.value("table_name").toString();
-        qint64 id = current.value("id").toLongLong();
-        qint64 target = i+1;
-
-        if ( id != target && !commonIds.contains(id) ) {
-            m_sql->executeQuery(caller, QString("UPDATE %4.%1 SET id=%3 WHERE id=%2").arg(table).arg(id).arg(target).arg(dbName), QueryId::PendingTransaction);
-        }
-    }
-
-    m_sql->endTransaction(caller, QueryId::UpdateIdWithIndex);
+void IlmHelper::removeWebsite(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("websites", QueryId::RemoveWebsite);
 }
 
 
-qint64 IlmHelper::generateIndividualField(QObject* caller, QString const& value)
-{
-    if ( QRegExp("\\d+").exactMatch(value) ) {
-        return value.toLongLong();
-    } else {
-        qint64 id = QDateTime::currentMSecsSinceEpoch();
-        QVariantMap parsed = parseName(value);
-
-        m_sql->executeQuery(caller, QString("INSERT INTO individuals (id,prefix,kunya,name) VALUES (?,?,?,?)"), QueryId::AddIndividual, QVariantList() << id << parsed.value(KEY_PREFIX) << parsed.value(KEY_KUNYA) << parsed.value(KEY_NAME));
-        return id;
-    }
+void IlmHelper::removeIndividual(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("individuals", QueryId::RemoveIndividual);
 }
 
 
-void IlmHelper::removeBioLink(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    QString query = QString("DELETE FROM mentions WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveBioLink);
-}
-
-
-void IlmHelper::removeWebsite(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    QString query = QString("DELETE FROM websites WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveWebsite);
-}
-
-
-void IlmHelper::removeIndividual(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    QString query = QString("DELETE FROM individuals WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveIndividual);
-}
-
-
-void IlmHelper::removeLocation(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    QString query = QString("DELETE FROM locations WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::RemoveLocation);
+void IlmHelper::removeLocation(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("locations", QueryId::RemoveLocation);
 }
 
 
@@ -200,6 +131,7 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
         REPLACE_INDIVIDUAL_FIELD("death");
         REPLACE_INDIVIDUAL_FIELD("female");
         REPLACE_INDIVIDUAL_FIELD("location");
+        REPLACE_INDIVIDUAL_FIELD("current_location");
         REPLACE_INDIVIDUAL_FIELD("is_companion");
         REPLACE_INDIVIDUAL_FIELD("hidden");
         m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), QueryId::PendingTransaction);
@@ -243,24 +175,36 @@ void IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, QVariantList con
 }
 
 
-void IlmHelper::addWebsite(QObject* caller, qint64 individualId, QString const& address)
+QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
 {
-    LOGGER(individualId << address);
-    QString query = QString("INSERT INTO websites (individual,uri) VALUES(%1,?)").arg(individualId);
-    m_sql->executeQuery(caller, query, QueryId::AddWebsite, QVariantList() << address);
+    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
+
+    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
+    qint64 id = m_sql->executeInsert("individuals", keyValues);
+    keyValues["display_name"] = !displayName.isEmpty() ? displayName : name;
+    SET_KEY_VALUE_ID;
+
+    return keyValues;
 }
 
 
-qint64 IlmHelper::addLocation(QObject* caller, QString const& city, qreal latitude, qreal longitude)
+QVariantMap IlmHelper::addWebsite(qint64 individualId, QString const& address)
+{
+    LOGGER(individualId << address);
+
+    QVariantMap keyValues = TokenHelper::getTokensForWebsite(individualId, address);
+    qint64 id = m_sql->executeInsert("websites", keyValues);
+    SET_AND_RETURN;
+}
+
+
+QVariantMap IlmHelper::addLocation(QString const& city, qreal latitude, qreal longitude)
 {
     LOGGER(city << latitude << longitude);
 
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-
-    QString query = "INSERT INTO locations (id,city,latitude,longitude) VALUES(?,?,?,?)";
-    m_sql->executeQuery(caller, query, QueryId::AddLocation, QVariantList() << now << city << latitude << longitude);
-
-    return now;
+    QVariantMap keyValues = TokenHelper::getTokensForLocation(city, latitude, longitude);
+    qint64 id = m_sql->executeInsert("locations", keyValues);
+    SET_AND_RETURN;
 }
 
 
@@ -309,13 +253,15 @@ void IlmHelper::addSibling(QObject* caller, qint64 individualId, qint64 siblingI
 }
 
 
-void IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
+QVariantMap IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
 {
     LOGGER(id << points);
 
-    QString query = "UPDATE mentions SET points=? WHERE id=?";
+    QVariantMap keyValues;
+    keyValues["points"] = points;
 
-    m_sql->executeQuery( caller, query, QueryId::EditBioLink, QVariantList() << points << id );
+    m_sql->executeUpdate(caller, "mentions", keyValues, QueryId::EditBioLink, id);
+    SET_AND_RETURN;
 }
 
 
@@ -326,18 +272,19 @@ QVariantMap IlmHelper::editIndividual(QObject* caller, qint64 id, QString const&
     QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
     m_sql->executeUpdate(caller, "individuals", keyValues, QueryId::EditIndividual, id);
     keyValues["display_name"] = displayName;
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
-void IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
+QVariantMap IlmHelper::editLocation(QObject* caller, qint64 id, QString const& city)
 {
     LOGGER(id << city);
 
-    QString query = QString("UPDATE locations SET city=? WHERE id=%1").arg(id);
-    m_sql->executeQuery(caller, query, QueryId::EditLocation, QVariantList() << city);
+    QVariantMap keyValues;
+    keyValues["city"] = city;
+
+    m_sql->executeUpdate(caller, "locations", keyValues, QueryId::EditLocation, id);
+    SET_AND_RETURN;
 }
 
 
@@ -453,23 +400,9 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-QVariantMap IlmHelper::createIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
-{
-    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
-
-    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
-    qint64 id = m_sql->executeInsert("individuals", keyValues);
-    keyValues["display_name"] = !displayName.isEmpty() ? displayName : name;
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
-}
-
-
 void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-
     m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS author,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchBio);
 }
 
@@ -495,6 +428,7 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "death") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "female") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "location") )
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "current_location") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "is_companion") ), QueryId::PendingTransaction);
 
     m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
@@ -513,99 +447,6 @@ void IlmHelper::setDatabaseName(QString const& name) {
 
 QString IlmHelper::databaseName() const {
     return m_name;
-}
-
-
-QVariantMap IlmHelper::parseName(QString n)
-{
-    if ( m_prefixes.isEmpty() )
-    {
-        QStringList prefixes = QStringList() << "Shaykh-ul" << "ash-Shaykh" << "ash-Sheikh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Al-Allaamah" << "Al-Allamah" << "Al-Allama" << "Al-Allaama" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King" << "al-Faqeeh" << "al-Faqih";
-
-        foreach (QString const& p, prefixes) {
-            m_prefixes << p.toLower();
-        }
-    }
-
-    if ( m_kunyas.isEmpty() )
-    {
-        QStringList kunyas = QStringList() << "Abu" << "Aboo";
-
-        foreach (QString const& p, kunyas) {
-            m_kunyas << p.toLower();
-        }
-    }
-
-    QStringList prefix;
-    QStringList kunya;
-    int death = 0;
-    QStringList all = n.split(" ");
-    QVariantMap result;
-
-    if ( all.size() > 1 )
-    {
-        QString last = all.last().toLower();
-        QString secondLast = all.at( all.size()-2 ).toLower();
-
-        if ( QRegExp("[\\(\\[]{0,1}died|[\\(\\[]{0,1}d\\.{0,1}$").exactMatch(secondLast) )
-        {
-            last.remove( QRegExp("\\D") ); // remove all non numeric values
-            death = last.toInt();
-
-            if (death > 0)
-            {
-                all.takeLast();
-                all.takeLast();
-            }
-        }
-    }
-
-    while ( !all.isEmpty() )
-    {
-        QString current = all.first();
-        LOGGER(current);
-
-        if ( m_prefixes.contains( current.toLower() ) ) {
-            prefix << all.takeFirst();
-        } else if ( m_kunyas.contains( current.toLower() ) ) {
-            kunya << all.takeFirst() << all.takeFirst(); // take the abu as well as the next word
-
-            if ( !all.isEmpty() )
-            {
-                QString next = all.first().toLower();
-
-                if (next == "abdur" || next == "abdul" || next == "abdi") { // it's part of a two-word kunya
-                    kunya << all.takeFirst();
-                }
-            }
-        } else {
-            break;
-        }
-    }
-
-    if ( all.isEmpty() && !kunya.isEmpty() ) // if there was only a kunya
-    {
-        all = kunya;
-        kunya.clear();
-    }
-
-    if ( !kunya.isEmpty() ) {
-        result[KEY_KUNYA] = kunya.join(" ");
-    }
-
-    if ( !prefix.isEmpty() ) {
-        result[KEY_PREFIX] = prefix.join(" ");
-    }
-
-    if ( !all.isEmpty() ) {
-        result[KEY_NAME] = all.join(" ");
-    }
-
-    if (death > 0) {
-        result[KEY_DEATH] = death;
-    }
-
-    return result;
 }
 
 

@@ -9,6 +9,7 @@
 #include "Offloader.h"
 #include "Persistance.h"
 #include "QuranHelper.h"
+#include "TafsirHelper.h"
 #include "TextUtils.h"
 
 #include <bb/system/CardDoneMessage>
@@ -33,6 +34,7 @@ class ApplicationUI : public QObject
     ilm::IlmHelper m_ilm;
     ilmtest::IlmTestHelper m_ilmTest;
     quran::QuranHelper m_quran;
+    TafsirHelper m_tafsir;
     QFileSystemWatcher m_watcher;
     QFile m_source;
     QFile m_target;
@@ -40,6 +42,7 @@ class ApplicationUI : public QObject
     TextUtils m_textUtils;
     QFutureWatcher< QPair<QByteArray, QString> > m_compressor;
     Offloader m_offloader;
+    QString m_dbFile;
 
     void init(QString const& qml);
 

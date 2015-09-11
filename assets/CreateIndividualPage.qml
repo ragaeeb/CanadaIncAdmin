@@ -15,8 +15,8 @@ Page
     onIndividualIdChanged: {
         if (individualId)
         {
-            tafsirHelper.fetchIndividualData(createRijaal, individualId);
-            tafsirHelper.fetchAllWebsites(createRijaal, individualId);
+            ilmHelper.fetchIndividualData(createRijaal, individualId);
+            ilmHelper.fetchAllWebsites(createRijaal, individualId);
         }
     }
     
@@ -58,7 +58,10 @@ Page
                     uri = uri.replace("//www.", "//");
                     
                     if ( textUtils.isUrl(uri) ) {
-                        tafsirHelper.addWebsite(createRijaal, individualId, uri);
+                        var x = ilmHelper.addWebsite(individualId, uri);
+                        adm.append(x);
+                        persist.showToast( qsTr("Website added!"), "asset:///images/menu/ic_add_site.png" );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
                         console.log("FailedRegex", uri);
@@ -82,7 +85,10 @@ Page
                 if (email.length > 0)
                 {
                     if ( textUtils.isEmail(email) ) {
-                        tafsirHelper.addWebsite(createRijaal, individualId, email);
+                        var x = ilmHelper.addWebsite(individualId, email);
+                        adm.append(x);
+                        persist.showToast( qsTr("Email added!"), "asset:///images/menu/ic_add_email.png" );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_email.png" );
                         console.log("FailedRegex", email);
@@ -106,7 +112,10 @@ Page
                 if (phone.length > 0)
                 {
                     if ( textUtils.isPhoneNumber(phone) ) {
-                        tafsirHelper.addWebsite(createRijaal, individualId, phone);
+                        var x = ilmHelper.addWebsite(individualId, phone);
+                        adm.append(x);
+                        persist.showToast( qsTr("Phone Number added!"), "asset:///images/menu/ic_add_phone.png" );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_phone.png" );
                         console.log("FailedRegex", phone);
@@ -180,12 +189,9 @@ Page
             results = offloader.fillType(results, id);
             adm.clear();
             adm.append(results);
-        } else if (id == QueryId.AddWebsite) {
-            persist.showToast( qsTr("Website added!"), "asset:///images/menu/ic_add_site.png" );
-            tafsirHelper.fetchAllWebsites(createRijaal, individualId);
         } else if (id == QueryId.RemoveWebsite) {
             persist.showToast( qsTr("Entry removed!"), "asset:///images/menu/ic_remove_site.png" );
-            tafsirHelper.fetchAllWebsites(createRijaal, individualId);
+            ilmHelper.fetchAllWebsites(createRijaal, individualId);
         }
     }
     
@@ -221,7 +227,7 @@ Page
                         onDoubleTapped: {
                             console.log("UserEvent: IndividualNameDoubleTapped");
                             var n = global.optimizeAndClean( persist.getClipboardText().replace(/,/g, "") );
-                            var x = tafsirHelper.parseName(n);
+                            var x = offloader.parseName(n);
                             
                             if (x.name) {
                                 var nameValue = x.name;
@@ -562,6 +568,7 @@ Page
         
         ListView
         {
+            id: listView
             visible: sites.visible
             scrollRole: ScrollRole.Main
             
@@ -579,7 +586,7 @@ Page
             
             function deleteSite(ListItemData)
             {
-                tafsirHelper.removeWebsite(createRijaal, ListItemData.id);
+                ilmHelper.removeWebsite(createRijaal, ListItemData.id);
                 
                 if (ListItemData.type == "email") {
                     persist.showToast( qsTr("Email address removed!"), "images/menu/ic_remove_email.png" );

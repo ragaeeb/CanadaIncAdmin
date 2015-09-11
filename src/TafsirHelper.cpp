@@ -2,8 +2,10 @@
 
 #include "TafsirHelper.h"
 #include "CommonConstants.h"
+#include "DatabaseHelper.h"
 #include "Logger.h"
 #include "QueryId.h"
+#include "SharedConstants.h"
 #include "TokenHelper.h"
 
 namespace admin {
@@ -17,13 +19,11 @@ TafsirHelper::TafsirHelper(DatabaseHelper* sql) : m_sql(sql)
 
 QVariantMap TafsirHelper::addQuote(qint64 authorId, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
-    LOGGER(author << body << reference << suiteId << uri);
+    LOGGER(authorId << body << reference << suiteId << uri);
 
     QVariantMap keyValues = TokenHelper::getTokensForQuote(authorId, body, reference, suiteId, uri);
     qint64 id = m_sql->executeInsert("quotes", keyValues);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -33,9 +33,7 @@ QVariantMap TafsirHelper::addSuite(qint64 author, qint64 translator, qint64 expl
 
     QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference);
     qint64 id = m_sql->executeInsert("suites", keyValues);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -45,9 +43,7 @@ QVariantMap TafsirHelper::addSuitePage(qint64 suiteId, QString const& body, QStr
 
     QVariantMap keyValues = TokenHelper::getTokensForSuitePage(suiteId, body, heading, reference);
     qint64 id = m_sql->executeInsert("suite_pages", keyValues);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -57,9 +53,7 @@ QVariantMap TafsirHelper::editSuite(QObject* caller, qint64 id, qint64 author, q
 
     QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference);
     m_sql->executeUpdate(caller, "suites", keyValues, QueryId::EditSuite, id);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -69,21 +63,17 @@ QVariantMap TafsirHelper::editSuitePage(QObject* caller, qint64 id, QString cons
 
     QVariantMap keyValues = TokenHelper::getTokensForSuitePage(id, body, heading, reference);
     m_sql->executeUpdate(caller, "suite_pages", keyValues, QueryId::EditSuitePage, id);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
 QVariantMap TafsirHelper::editQuote(QObject* caller, qint64 id, qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
-    LOGGER(quoteId << author << body << reference << suiteId << uri);
+    LOGGER(id << author << body << reference << suiteId << uri);
 
     QVariantMap keyValues = TokenHelper::getTokensForQuote(author, body, reference, suiteId, uri);
     m_sql->executeUpdate(caller, "quotes", keyValues, QueryId::EditQuote, id);
-    SET_KEY_VALUE_ID;
-
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -142,9 +132,9 @@ void TafsirHelper::fetchTafsirContent(QObject* caller, qint64 suitePageId)
 
 void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
 {
-    LOGGER(individualId << m_name);
+    LOGGER(individualId);
 
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1 AS author,body,reference FROM %2.quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i") ).arg(m_name);
+    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1 AS author,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i") );
 
     if (individualId) {
         queryParams << QString("WHERE quotes.author=%1").arg(individualId);
@@ -210,24 +200,18 @@ void TafsirHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destS
 }
 
 
-void TafsirHelper::removeQuote(QObject* caller, qint64 id)
-{
-    LOGGER(id);
-    m_sql->executeDelete(caller, "quotes", QueryId::RemoveQuote, id);
+void TafsirHelper::removeQuote(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("quotes", QueryId::RemoveQuote);
 }
 
 
-void TafsirHelper::removeSuite(QObject* caller, qint64 suiteId)
-{
-    LOGGER(suiteId);
-    m_sql->executeDelete(caller, "suites", QueryId::RemoveSuite, id);
+void TafsirHelper::removeSuite(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("suites", QueryId::RemoveSuite);
 }
 
 
-void TafsirHelper::removeSuitePage(QObject* caller, qint64 suitePageId)
-{
-    LOGGER(suitePageId);
-    m_sql->executeDelete(caller, "suite_pages", QueryId::RemoveSuitePage, suitePageId);
+void TafsirHelper::removeSuitePage(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("suite_pages", QueryId::RemoveSuitePage);
 }
 
 
@@ -306,6 +290,17 @@ void TafsirHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QStri
 
     m_sql->detach(destinationLanguage);
 }
+
+
+void TafsirHelper::setDatabaseName(QString const& name) {
+    m_name = name;
+}
+
+
+QString TafsirHelper::databaseName() const {
+    return m_name;
+}
+
 
 
 TafsirHelper::~TafsirHelper()

@@ -126,13 +126,17 @@ Page
             {
                 var value = ListItemData.value_text;
                 var aliasValue = persist.showBlockingPrompt( qsTr("Enter choice text"), qsTr("Please enter an alias for this choice:"), "", qsTr("Enter value"), 100, true, qsTr("Save"), qsTr("Cancel") ).trim();
-                aliasValue = offloader.toTitleCase(aliasValue);
-
-                if (value != aliasValue) {
-                    var copy = ilmTest.sourceChoice(ListItemData.id, aliasValue);
-                    adm.insert(ListItem.indexPath[0], copy);
-                } else {
-                    persist.showToast( qsTr("Alias cannot be the same as the original!"), "images/toast/invalid_entry.png" );
+                
+                if (aliasValue.length > 0)
+                {
+                    aliasValue = offloader.toTitleCase(aliasValue);
+                    
+                    if (value != aliasValue) {
+                        var copy = ilmTest.sourceChoice(ListItemData.id, aliasValue);
+                        adm.insert(ListItem.indexPath[0], copy);
+                    } else {
+                        persist.showToast( qsTr("Alias cannot be the same as the original!"), "images/toast/invalid_entry.png" );
+                    }
                 }
             }
             

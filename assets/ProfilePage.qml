@@ -18,7 +18,7 @@ Page
             
             function onPicked(student, name)
             {
-                tafsirHelper.addStudent(bioPage, individualId, student);
+                ilmHelper.addStudent(bioPage, individualId, student);
                 checkForDuplicate( {'id': student, 'student': name, 'type': "student"} );
             }
             
@@ -28,7 +28,7 @@ Page
                 
                 var p = definition.createObject();
                 p.picked.connect(onPicked);
-                tafsirHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "individual");
+                ilmHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "individual");
                 
                 navigationPane.push(p);
             }
@@ -43,7 +43,7 @@ Page
             
             function onPicked(teacher, name)
             {
-                tafsirHelper.addTeacher(bioPage, individualId, teacher);
+                ilmHelper.addTeacher(bioPage, individualId, teacher);
                 checkForDuplicate( {'id': teacher, 'teacher': name, 'type': "teacher"} );
             }
             
@@ -53,7 +53,7 @@ Page
                 
                 var p = definition.createObject();
                 p.picked.connect(onPicked);
-                tafsirHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "teacher");
+                ilmHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "teacher");
                 
                 navigationPane.push(p);
             }
@@ -74,7 +74,7 @@ Page
             
             function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
             {
-                tafsirHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                ilmHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
                 
                 popToRoot();
                 reload();
@@ -102,7 +102,7 @@ Page
             
             function onPicked(parentId, name)
             {
-                tafsirHelper.addParent(bioPage, individualId, parentId);
+                ilmHelper.addParent(bioPage, individualId, parentId);
                 checkForDuplicate( {'id': parentId, 'parent': name, 'type': "parent"} );
             }
             
@@ -126,7 +126,7 @@ Page
             
             function onPicked(siblingId, name)
             {
-                tafsirHelper.addSibling(bioPage, individualId, siblingId);
+                ilmHelper.addSibling(bioPage, individualId, siblingId);
                 checkForDuplicate( {'id': siblingId, 'sibling': name, 'type': "sibling"} );
             }
             
@@ -150,7 +150,7 @@ Page
             
             function onPicked(child, name)
             {
-                tafsirHelper.addChild(bioPage, individualId, child);
+                ilmHelper.addChild(bioPage, individualId, child);
                 checkForDuplicate( {'id': child, 'child': name, 'type': "child"} );
             }
             
@@ -169,13 +169,13 @@ Page
     onIndividualIdChanged: {
         if (individualId)
         {
-            tafsirHelper.fetchBio(bioPage, individualId);
-            tafsirHelper.fetchIndividualData(bioPage, individualId);
-            tafsirHelper.fetchTeachers(bioPage, individualId);
-            tafsirHelper.fetchStudents(bioPage, individualId);
-            tafsirHelper.fetchParents(bioPage, individualId);
-            tafsirHelper.fetchSiblings(bioPage, individualId);
-            tafsirHelper.fetchChildren(bioPage, individualId);
+            ilmHelper.fetchBio(bioPage, individualId);
+            ilmHelper.fetchIndividualData(bioPage, individualId);
+            ilmHelper.fetchTeachers(bioPage, individualId);
+            ilmHelper.fetchStudents(bioPage, individualId);
+            ilmHelper.fetchParents(bioPage, individualId);
+            ilmHelper.fetchSiblings(bioPage, individualId);
+            ilmHelper.fetchChildren(bioPage, individualId);
         }
     }
     
@@ -247,8 +247,6 @@ Page
             persist.showToast( qsTr("Parent added!"), "images/menu/ic_add_parent.png" );
         } else if (id == QueryId.AddSibling) {
             persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_sibling.png" );
-        } else if (id == QueryId.AddChild) {
-            persist.showToast( qsTr("Child added!"), "images/menu/ic_add_child.png" );
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         } else if (id == QueryId.ReplaceSuite) {
@@ -288,7 +286,7 @@ Page
             
             function onSuitePicked(suites)
             {
-                tafsirHelper.addBioLink(navigationPane, suites[0]);
+                ilmHelper.addBioLink(navigationPane, suites[0]);
                 popToRoot();
             }
             
@@ -439,31 +437,31 @@ Page
             
             function removeStudent(ListItem)
             {
-                tafsirHelper.removeStudent(bioPage, individualId, ListItem.data.id);
+                ilmHelper.removeStudent(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             
             function removeChild(ListItem)
             {
-                tafsirHelper.removeChild(bioPage, individualId, ListItem.data.id);
+                ilmHelper.removeChild(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             
             function removeTeacher(ListItem)
             {
-                tafsirHelper.removeTeacher(bioPage, individualId, ListItem.data.id);
+                ilmHelper.removeTeacher(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             
             function removeSibling(ListItem)
             {
-                tafsirHelper.removeSibling(bioPage, individualId, ListItem.data.id);
+                ilmHelper.removeSibling(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             
             function removeParent(ListItem)
             {
-                tafsirHelper.removeParent(bioPage, individualId, ListItem.data.id);
+                ilmHelper.removeParent(bioPage, individualId, ListItem.data.id);
                 bioModel.removeAt(ListItem.indexPath);
             }
             

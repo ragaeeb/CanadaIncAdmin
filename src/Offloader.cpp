@@ -6,6 +6,10 @@
 
 #define ATTRIBUTE_TYPE_BIO "bio"
 #define KEY_ATTRIBUTE_TYPE "type"
+#define KEY_DEATH "death"
+#define KEY_KUNYA "kunya"
+#define KEY_NAME "name"
+#define KEY_PREFIX "prefix"
 
 namespace admin {
 
@@ -103,6 +107,98 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
 
 QString Offloader::toTitleCase(QString const& input) {
     return TextUtils::toTitleCase(input);
+}
+
+
+QVariantMap Offloader::parseName(QString const& n)
+{
+    if ( m_prefixes.isEmpty() )
+    {
+        QStringList prefixes = QStringList() << "Shaykh-ul" << "ash-Shaykh" << "ash-Sheikh" << "Dr." << "Doctor" << "Shaykh" << "Sheikh" << "Shaikh" << "Imam" << "Imaam" << "Al-Imaam" << "Imâm" << "Imām" << "al-’Allaamah" << "Al-‘Allaamah" << "Al-Allaamah" << "Al-Allamah" << "Al-Allama" << "Al-Allaama" << "Allaama" << "Muhaddith" << "Al-Haafidh" << "Al-Hafith" << "Al-Hafidh" << "Al-Haafidh" << "Hafidh" << "Ustadh" << "Prince" << "King" << "al-Faqeeh" << "al-Faqih";
+
+        foreach (QString const& p, prefixes) {
+            m_prefixes << p.toLower();
+        }
+    }
+
+    if ( m_kunyas.isEmpty() )
+    {
+        QStringList kunyas = QStringList() << "Abu" << "Aboo";
+
+        foreach (QString const& p, kunyas) {
+            m_kunyas << p.toLower();
+        }
+    }
+
+    QStringList prefix;
+    QStringList kunya;
+    int death = 0;
+    QStringList all = n.split(" ");
+    QVariantMap result;
+
+    if ( all.size() > 1 )
+    {
+        QString last = all.last().toLower();
+        QString secondLast = all.at( all.size()-2 ).toLower();
+
+        if ( QRegExp("[\\(\\[]{0,1}died|[\\(\\[]{0,1}d\\.{0,1}$").exactMatch(secondLast) )
+        {
+            last.remove( QRegExp("\\D") ); // remove all non numeric values
+            death = last.toInt();
+
+            if (death > 0)
+            {
+                all.takeLast();
+                all.takeLast();
+            }
+        }
+    }
+
+    while ( !all.isEmpty() )
+    {
+        QString current = all.first();
+
+        if ( m_prefixes.contains( current.toLower() ) ) {
+            prefix << all.takeFirst();
+        } else if ( m_kunyas.contains( current.toLower() ) ) {
+            kunya << all.takeFirst() << all.takeFirst(); // take the abu as well as the next word
+
+            if ( !all.isEmpty() )
+            {
+                QString next = all.first().toLower();
+
+                if (next == "abdur" || next == "abdul" || next == "abdi") { // it's part of a two-word kunya
+                    kunya << all.takeFirst();
+                }
+            }
+        } else {
+            break;
+        }
+    }
+
+    if ( all.isEmpty() && !kunya.isEmpty() ) // if there was only a kunya
+    {
+        all = kunya;
+        kunya.clear();
+    }
+
+    if ( !kunya.isEmpty() ) {
+        result[KEY_KUNYA] = kunya.join(" ");
+    }
+
+    if ( !prefix.isEmpty() ) {
+        result[KEY_PREFIX] = prefix.join(" ");
+    }
+
+    if ( !all.isEmpty() ) {
+        result[KEY_NAME] = all.join(" ");
+    }
+
+    if (death > 0) {
+        result[KEY_DEATH] = death;
+    }
+
+    return result;
 }
 
 

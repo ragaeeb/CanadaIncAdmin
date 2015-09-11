@@ -17,29 +17,23 @@ class IlmHelper : public QObject
 
     DatabaseHelper* m_sql;
     QString m_name;
-    QSet<QString> m_prefixes;
-    QSet<QString> m_kunyas;
-
-    qint64 generateIndividualField(QObject* caller, QString const& value);
 
 public:
     IlmHelper(DatabaseHelper* sql);
     virtual ~IlmHelper();
 
-    Q_INVOKABLE qint64 addLocation(QObject* caller, QString const& city, qreal latitude, qreal longitude);
-    Q_INVOKABLE QVariantMap createIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
+    Q_INVOKABLE QVariantMap addLocation(QString const& city, qreal latitude, qreal longitude);
+    Q_INVOKABLE QVariantMap addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE QVariantMap editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
-    Q_INVOKABLE QVariantMap parseName(QString n);
     Q_INVOKABLE void addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points);
     Q_INVOKABLE void addChild(QObject* caller, qint64 parentId, qint64 childId);
     Q_INVOKABLE void addParent(QObject* caller, qint64 childId, qint64 parentId);
     Q_INVOKABLE void addSibling(QObject* caller, qint64 childId, qint64 siblingId);
     Q_INVOKABLE void addStudent(QObject* caller, qint64 teacherId, qint64 studentId);
     Q_INVOKABLE void addTeacher(QObject* caller, qint64 studentId, qint64 teacherId);
-    Q_INVOKABLE void addWebsite(QObject* caller, qint64 individualId, QString const& address);
-    Q_INVOKABLE void editBioLink(QObject* caller, qint64 id, QVariant const& points);
-    Q_INVOKABLE void editLocation(QObject* caller, qint64 id, QString const& city);
-    Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
+    Q_INVOKABLE QVariantMap addWebsite(qint64 individualId, QString const& address);
+    Q_INVOKABLE QVariantMap editBioLink(QObject* caller, qint64 id, QVariant const& points);
+    Q_INVOKABLE QVariantMap editLocation(QObject* caller, qint64 id, QString const& city);
     Q_INVOKABLE void fetchAllIndividuals(QObject* caller, bool companionsOnly=false, QVariant const& knownLocations=QVariant());
     Q_INVOKABLE void fetchAllLocations(QObject* caller, QString const& city=QString());
     Q_INVOKABLE void fetchAllWebsites(QObject* caller, qint64 individualId);
@@ -49,7 +43,6 @@ public:
     Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7);
     Q_INVOKABLE void fetchIndividualData(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchParents(QObject* caller, qint64 individualId);
-    Q_INVOKABLE void fetchQuote(QObject* caller, qint64 id);
     Q_INVOKABLE void fetchSiblings(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchStudents(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchTeachers(QObject* caller, qint64 individualId);
@@ -65,7 +58,6 @@ public:
     Q_INVOKABLE void removeWebsite(QObject* caller, qint64 id);
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
     Q_INVOKABLE void searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint=QString(), bool startsWith=false);
-    Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
 
     void lazyInit();
     void setDatabaseName(QString const& name);

@@ -27,6 +27,28 @@ QVariantMap TokenHelper::getTokensForSuite(qint64 author, qint64 translator, qin
 }
 
 
+
+QVariantMap TokenHelper::getTokensForLocation(QString const& city, qreal latitude, qreal longitude)
+{
+    QVariantMap keyValues;
+    keyValues["city"] = city;
+    keyValues["latitude"] = latitude;
+    keyValues["longitude"] = longitude;
+
+    return keyValues;
+}
+
+
+QVariantMap TokenHelper::getTokensForWebsite(qint64 individualId, QString const& address)
+{
+    QVariantMap keyValues;
+    keyValues["individual"] = individualId;
+    keyValues["uri"] = address;
+
+    return keyValues;
+}
+
+
 QVariantMap TokenHelper::getTokensForSuitePage(qint64 suiteId, QString const& body, QString const& heading, QString const& reference)
 {
     QVariantMap keyValues;

@@ -18,7 +18,7 @@ NavigationPane
     
     function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
     {
-        var result = tafsirHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+        var result = ilmHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
         individualPicker.model.replace(individualPicker.editIndexPath[0], result);
 
         popToRoot();
@@ -69,7 +69,7 @@ NavigationPane
                 onTriggered: {
                     console.log("UserEvent: Port");
                     individualPicker.busyControl.delegateActive = true;
-                    tafsirHelper.portIndividuals(navigationPane, "arabic");
+                    ilmHelper.portIndividuals(navigationPane, "arabic");
                 }
             }
         ]
@@ -92,7 +92,7 @@ NavigationPane
         function removeItem(ListItem)
         {
             individualPicker.busyControl.delegateActive = true;
-            tafsirHelper.removeIndividual(navigationPane, ListItem.data.id);
+            ilmHelper.removeIndividual(navigationPane, ListItem.data.id);
             individualPicker.model.removeAt(ListItem.indexPath[0]);
         }
         
@@ -101,7 +101,7 @@ NavigationPane
             if (actualId != toReplaceId)
             {
                 individualPicker.busyControl.delegateActive = true;
-                tafsirHelper.replaceIndividual(navigationPane, toReplaceId, actualId);
+                ilmHelper.replaceIndividual(navigationPane, toReplaceId, actualId);
             } else {
                 persist.showToast( qsTr("The source and replacement individuals cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
             }

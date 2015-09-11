@@ -29,7 +29,7 @@ Page
             
             function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
             {
-                var result = tafsirHelper.createIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                var result = ilmHelper.addIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
                 
                 if (result.id)
                 {
@@ -149,9 +149,9 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            tafsirHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.flag == 1 );
+            ilmHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.flag == 1 );
         } else {
-            tafsirHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
+            ilmHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
         }
     }
     

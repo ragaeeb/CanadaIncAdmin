@@ -47,8 +47,7 @@ Page
                         
                         if (city.length > 0)
                         {
-                            var id = tafsirHelper.addLocation(listView, city, latitude, longitude);
-                            var d = {'id': id, 'city': city, 'latitude': latitude, 'longitude': longitude};
+                            var d = ilmHelper.addLocation(listView, city, latitude, longitude);
                             adm.insert(0, d);
                         }
                     }
@@ -77,9 +76,9 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            tafsirHelper.fetchAllLocations(listView, trimmed);
+            ilmHelper.fetchAllLocations(listView, trimmed);
         } else {
-            tafsirHelper.fetchAllLocations(listView);
+            ilmHelper.fetchAllLocations(listView);
         }
     }
     
@@ -182,14 +181,14 @@ Page
                     {
                         element["city"] = currentCity;
                         
-                        tafsirHelper.editLocation(listView, element.id, currentCity);
+                        ilmHelper.editLocation(listView, element.id, currentCity);
                         adm.replace(ListItem.indexPath[0], element);
                     }
                 }
                 
                 function deleteCity(ListItem)
                 {
-                    tafsirHelper.removeLocation(listView, ListItem.data.id);
+                    ilmHelper.removeLocation(listView, ListItem.data.id);
                     adm.removeAt(ListItem.indexPath[0]);
                 }
                 
@@ -260,8 +259,6 @@ Page
                         busy.delegateActive = false;
                         noElements.delegateActive = adm.isEmpty();
                         listView.visible = !adm.isEmpty();
-                    } else if (id == QueryId.AddLocation) {
-                        persist.showToast( qsTr("Location added!"), "images/toast/ic_location_added.png" );
                     } else if (id == QueryId.RemoveLocation) {
                         persist.showToast( qsTr("Location removed!"), "images/menu/ic_remove_location.png" );
                     } else if (id == QueryId.EditLocation) {
@@ -299,8 +296,9 @@ Page
                             }
                         }
                         
-                        var id = tafsirHelper.addLocation(listView, city, latitude, longitude);
-                        picked(id, city);
+                        var x = ilmHelper.addLocation(listView, city, latitude, longitude);
+                        persist.showToast( qsTr("Location added!"), "images/toast/ic_location_added.png" );
+                        picked(x.id, city);
                     } else {
                         picked(d.id, d.city);
                     }

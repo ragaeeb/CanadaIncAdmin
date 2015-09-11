@@ -12,7 +12,7 @@ Page
         if (suitePageId)
         {
             quran.fetchAyatsForTafsir(listView, suitePageId);
-            tafsirHelper.fetchBioMetadata(listView, suitePageId);
+            ilmHelper.fetchBioMetadata(listView, suitePageId);
             ilmTest.fetchQuestionsForSuitePage(listView, suitePageId);
         }
     }
@@ -108,6 +108,8 @@ Page
                 var result = ilmTest.addQuestion(suitePageId, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
                 adm.insert(0, result);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                listView.visible = !adm.isEmpty();
+                noElements.delegateActive = !listView.visible;
                 
                 popToRoot();
                 
@@ -195,7 +197,7 @@ Page
                 definition.source = "IndividualPickerPage.qml";
                 var c = definition.createObject();
                 c.picked.connect(onPicked);
-                tafsirHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
+                ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
                 
                 navigationPane.push(c);
             }
@@ -352,7 +354,7 @@ Page
             function removeBioLink(ListItem)
             {
                 busy.delegateActive = true;
-                tafsirHelper.removeBioLink(listView, ListItem.data.id);
+                ilmHelper.removeBioLink(listView, ListItem.data.id);
                 adm.removeAt(ListItem.indexPath[0]);
             }
             
@@ -629,13 +631,10 @@ Page
                     }
  
                     if (target) {
-                        tafsirHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
+                        ilmHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
                     } else {
-                        var current = adm.data(prompt.indexPath);
-                        current.points = points;
+                        var current = ilmHelper.editBioLink(listView, current.id, points);
                         adm.replace(prompt.indexPath[0], current);
-                        
-                        tafsirHelper.editBioLink(listView, current.id, points);
                     }
                 }
             }

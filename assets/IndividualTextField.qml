@@ -1,4 +1,4 @@
-import bb.cascades 1.0
+import bb.cascades 1.3
 
 TextField
 {
@@ -8,6 +8,18 @@ TextField
     horizontalAlignment: HorizontalAlignment.Fill
     content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
     input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+    input.keyLayout: KeyLayout.NumbersAndPunctuation
+    
+    validator: Validator
+    {
+        id: numericValidator
+        errorMessage: qsTr("Only digits can be entered!") + Retranslate.onLanguageChanged
+        mode: ValidationMode.FocusLost
+        
+        onValidate: {
+            valid = /^\d+$/.test( tf.text.trim() );
+        }
+    }
     
     gestureHandlers: [
         DoubleTapHandler
@@ -24,7 +36,7 @@ TextField
 
                 var p = definition.createObject();
                 p.picked.connect(onPicked);
-                tafsirHelper.fetchFrequentIndividuals(p.pickerList, table, field);
+                ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field);
                 
                 navigationPane.push(p);
             }
