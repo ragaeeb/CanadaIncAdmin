@@ -8,16 +8,16 @@
 
 namespace admin {
 
-QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& tafsirPath)
+QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& dbPath)
 {
-    LOGGER("compressing database" << tafsirPath);
+    LOGGER(dbPath);
 
     QStringList toCompress;
-    toCompress << QString("%1/%2.db").arg( QDir::homePath() ).arg(tafsirPath);
+    toCompress << QString("%1/%2.db").arg( QDir::homePath() ).arg(dbPath);
 
-    JlCompress::compressFiles(TAFSIR_ZIP_DESTINATION, toCompress, TAFSIR_ARCHIVE_PASSWORD);
+    JlCompress::compressFiles(ILM_DB_ARCHIVE_DESTINATION, toCompress, ILM_ARCHIVE_PASSWORD);
 
-    QFile f(TAFSIR_ZIP_DESTINATION);
+    QFile f(ILM_DB_ARCHIVE_DESTINATION);
     f.open(QIODevice::ReadOnly);
 
     QByteArray qba = f.readAll();

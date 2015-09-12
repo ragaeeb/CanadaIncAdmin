@@ -96,7 +96,7 @@ void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 individualId)
 void TafsirHelper::fetchSuitePageIntersection(QObject* caller, QString other)
 {
     LOGGER(other);
-    other = QURAN_TAFSIR_FILE(other);
+    other = ILM_DB_FILE(other);
     m_sql->attachIfNecessary(other, true);
     m_sql->executeQuery(caller, QString("SELECT x.suite_id AS id FROM %1.suite_pages x INNER JOIN %2.suite_pages y ON x.id=y.id AND x.suite_id=y.suite_id").arg( databaseName() ).arg(other), QueryId::FetchSuitePageIntersection);
     m_sql->detach(other);
@@ -263,7 +263,7 @@ void TafsirHelper::translateQuote(QObject* caller, qint64 quoteId, QString desti
 {
     LOGGER(quoteId << destinationLanguage);
 
-    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
+    destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
@@ -278,7 +278,7 @@ void TafsirHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QStri
 {
     LOGGER(suitePageId << destinationLanguage);
 
-    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
+    destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);

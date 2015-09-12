@@ -97,8 +97,8 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 
     foreach (QString const& a, additional)
     {
-        if ( QFile::exists( QString("%1/%2.db").arg( QDir::homePath() ).arg( QURAN_TAFSIR_FILE(a) ) ) ) {
-            dbs << QURAN_TAFSIR_FILE(a);
+        if ( QFile::exists( QString("%1/%2.db").arg( QDir::homePath() ).arg( ILM_DB_FILE(a) ) ) ) {
+            dbs << ILM_DB_FILE(a);
         }
     }
 
@@ -415,7 +415,7 @@ void IlmHelper::lazyInit()
 void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
 {
     QString srcLanguage = databaseName();
-    destinationLanguage = QURAN_TAFSIR_FILE(destinationLanguage);
+    destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
     m_sql->startTransaction(caller, QueryId::PendingTransaction);
