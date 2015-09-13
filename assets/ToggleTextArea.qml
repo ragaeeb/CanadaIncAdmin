@@ -8,6 +8,29 @@ Container
     verticalAlignment: VerticalAlignment.Fill
     property string name
 
+    function concat(x)
+    {
+        var pos = textArea.editor.cursorPosition;
+        
+        if (pos == -1) {
+            pos = 0;
+        }
+        
+        var prefix = text.substring(0, pos);
+        var suffix = text.substring(pos, text.length);
+        
+        if ( prefix.charAt(prefix.length-1) != ' ' ) {
+            prefix = " "+x;
+        }
+        
+        if (prefix.length < 4) { // for example, Is %1, then we would want to put a space after
+            prefix += " ";
+        }
+        
+        text = prefix+x+suffix;
+        textArea.requestFocus();
+    }
+
     layout: StackLayout {
         orientation: LayoutOrientation.LeftToRight
     }
@@ -18,24 +41,12 @@ Container
         pressedImageSource: defaultImageSource
         
         onClicked: {
-            console.log("UserEvent: ArgButtonClicked");
-            
-            var toAppend = " %1";
-            
-            if ( text.charAt(text.length-1) == ' ' ) {
-                toAppend = "%1";
-            }
-            
-            if (text.length < 4) { // for example, Is %1, then we would want to put a space after
-                toAppend += " ";
-            }
-            
-            text = text+toAppend;
-            textArea.requestFocus();
+            console.log("UserEvent: Arg"+name);
+            concat("%1");
         }
     }
     
-    TextField
+    TextArea
     {
         id: textArea
         content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
@@ -44,23 +55,26 @@ Container
         leftMargin: 0; bottomMargin: 0; topMargin: 0; leftPadding: 0;
         backgroundVisible: false
         verticalAlignment: VerticalAlignment.Center
-        
-        validator: Validator
-        {
-            errorMessage: qsTr("Invalid entry for %1").arg(name) + Retranslate.onLanguageChanged
-            
-            onValidate: {
-                valid = text.trim().length == 0 || text.trim().length > 10;
-            }
-        }
+        maxHeight: ui.du(20)
         
         gestureHandlers: [
             DoubleTapHandler {
                 onDoubleTapped: {
                     console.log("UserEvent: DoubleTapped"+name);
-                    text = text+persist.getClipboardText();
+                    concat( persist.getClipboardText() );
                 }
             }
         ]
+    }
+    
+    ImageButton
+    {
+        defaultImageSource: "images/ic_clear.png"
+        pressedImageSource: defaultImageSource
+        
+        onClicked: {
+            console.log("UserEvent: Clear"+name);
+            textArea.resetText();
+        }
     }
 }

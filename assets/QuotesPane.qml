@@ -51,7 +51,7 @@ NavigationPane
                 {
                     var x = tafsirHelper.addQuote(author, body, reference, suiteId, uri);
                     
-                    adm.insert(0, x); // add the latest value to avoid refreshing entire list
+                    adm.insert(0,x); // add the latest value to avoid refreshing entire list
                     listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     navigationPane.parent.unreadContentCount += 1;
                     
