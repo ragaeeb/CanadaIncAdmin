@@ -113,10 +113,11 @@ QVariantMap TokenHelper::getTokensForIndividual(QString const& prefix, QString c
 }
 
 
-QVariantMap TokenHelper::getTokensForQuestion(QString const& standardBody, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& beforeBody, QString const& afterBody, int difficulty)
+QVariantMap TokenHelper::getTokensForQuestion(QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& beforeBody, QString const& afterBody, int difficulty)
 {
     QVariantMap keyValues;
     keyValues["standard_body"] = standardBody;
+    keyValues["standard_negation_body"] = standardNegation;
     keyValues["bool_standard_body"] = boolStandardBody;
     keyValues["prompt_standard_body"] = promptStandardBody;
     keyValues["ordered_body"] = orderedBody;

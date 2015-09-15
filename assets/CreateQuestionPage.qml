@@ -7,7 +7,7 @@ Page
 {
     id: createPage
     property variant questionId
-    signal saveQuestion(variant id, string standardBody, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices)
+    signal saveQuestion(variant id, string standardBody, string standardNegation, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onQuestionIdChanged: {
@@ -68,7 +68,7 @@ Page
                 difficulty.validator.validate();
                 
                 if (tftk.textField.validator.valid && difficulty.validator.valid) {
-                    saveQuestion(questionId, tftk.textField.text.trim(), boolStandardBody.text.trim(), promptStandardBody.text.trim(), orderedBody.text.trim(), countBody.text.trim(), boolCountBody.text.trim(), promptCountBody.text.trim(), afterBody.text.trim(), beforeBody.text.trim(), parseInt( difficulty.text.trim() ), global.extractADM(adm) );
+                    saveQuestion(questionId, tftk.textField.text.trim(), standardBodyNegation.text.trim(), boolStandardBody.text.trim(), promptStandardBody.text.trim(), orderedBody.text.trim(), countBody.text.trim(), boolCountBody.text.trim(), promptCountBody.text.trim(), afterBody.text.trim(), beforeBody.text.trim(), parseInt( difficulty.text.trim() ), global.extractADM(adm) );
                 }
             }
         }
@@ -114,6 +114,10 @@ Page
             
             if (data.after_body) {
                 afterBody.text = data.after_body.toString();
+            }
+            
+            if (data.standard_negation_body) {
+                standardBodyNegation.text = data.standard_negation_body.toString();
             }
             
             if (data.difficulty) {
@@ -179,10 +183,18 @@ Page
                 
                 ToggleTextArea
                 {
+                    id: standardBodyNegation
+                    hintText: qsTr("Standard Body Negation (ie: Which of the following are NOT pillars of eemaan?)") + Retranslate.onLanguageChanged
+                    name: "StandardBodyNegation"
+                    visible: tftk.textField.text.length > 0
+                }
+                
+                ToggleTextArea
+                {
                     id: boolStandardBody
                     hintText: qsTr("Bool Standard Body (ie: X is one of the pillars of eemaan.)") + Retranslate.onLanguageChanged
                     name: "BoolStandardBody"
-                    visible: tftk.textField.text.length > 0
+                    visible: standardBodyNegation.visible
                 }
                 
                 ToggleTextArea

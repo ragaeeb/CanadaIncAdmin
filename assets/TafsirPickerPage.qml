@@ -190,7 +190,6 @@ Page
                 scrollRole: ScrollRole.Main
 
                 multiSelectAction: MultiSelectActionItem {
-                    enabled: allowMultiple    
                     imageSource: "images/menu/ic_select_more.png"                
                 }
                 
@@ -218,6 +217,23 @@ Page
                             }
                             
                             tafsirPicked(all);
+                        }
+                    },
+                    
+                    DeleteActionItem
+                    {
+                        imageSource: "images/menu/ic_remove_suite.png"
+                        
+                        onTriggered: {
+                            console.log("UserEvent: DeleteMultiSuites");
+                            
+                            var all = listView.selectionList();
+                            
+                            for (var i = all.length-1; i >= 0; i--) {
+                                listView.removeItem( adm.data(all[i]) );
+                            }
+                            
+                            clearAndReload();
                         }
                     }
                 ]

@@ -49,11 +49,11 @@ QVariantMap IlmTestHelper::addChoice(QString const& value)
 }
 
 
-QVariantMap IlmTestHelper::addQuestion(qint64 suitePageId, QString const& standardBody, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty)
+QVariantMap IlmTestHelper::addQuestion(qint64 suitePageId, QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty)
 {
-    LOGGER( suitePageId << standardBody.size() << boolStandardBody.size() << promptStandardBody.size() << orderedBody.size() << countBody.size() << boolCountBody.size() << promptCountBody.size() << beforeBody.size() << afterBody.size() << difficulty );
+    LOGGER( suitePageId << standardBody.size() << standardNegation.size() << boolStandardBody.size() << promptStandardBody.size() << orderedBody.size() << countBody.size() << boolCountBody.size() << promptCountBody.size() << beforeBody.size() << afterBody.size() << difficulty );
 
-    QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty);
+    QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, standardNegation, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty);
     keyValues["suite_page_id"] = suitePageId;
     qint64 id = m_sql->executeInsert("questions", keyValues);
     SET_KEY_VALUE_ID;
@@ -74,11 +74,11 @@ QVariantMap IlmTestHelper::editChoice(QObject* caller, qint64 id, QString const&
 }
 
 
-QVariantMap IlmTestHelper::editQuestion(QObject* caller, qint64 id, QString const& standardBody, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty)
+QVariantMap IlmTestHelper::editQuestion(QObject* caller, qint64 id, QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty)
 {
-    LOGGER( id << standardBody.size() << boolStandardBody.size() << promptStandardBody.size() << orderedBody.size() << countBody.size() << boolCountBody.size() << promptCountBody.size() << beforeBody.size() << afterBody.size() << difficulty );
+    LOGGER( id << standardBody.size() << standardNegation.size() << boolStandardBody.size() << promptStandardBody.size() << orderedBody.size() << countBody.size() << boolCountBody.size() << promptCountBody.size() << beforeBody.size() << afterBody.size() << difficulty );
 
-    QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty);
+    QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, standardNegation, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty);
     m_sql->executeUpdate(caller, "questions", keyValues, QueryId::EditQuestion, id);
     SET_KEY_VALUE_ID;
 

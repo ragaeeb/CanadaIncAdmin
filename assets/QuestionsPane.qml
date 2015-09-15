@@ -135,9 +135,9 @@ NavigationPane
                     }
                 ]
                 
-                function onQuestionSaved(id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
+                function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
                 {
-                    var edited = ilmTest.editQuestion(listView, id, standardBody, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                    var edited = ilmTest.editQuestion(listView, id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
                     adm.replace(editIndexPath[0], edited);
                     
                     if (choices.length > 0 && orderedBody.length > 0) {

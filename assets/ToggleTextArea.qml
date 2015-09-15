@@ -22,7 +22,8 @@ Container
             x += " ";
         }
         
-        text = prefix+x+suffix;
+        prefix = prefix+x+suffix;
+        text = prefix.trim();
         
         textArea.requestFocus();
     }
