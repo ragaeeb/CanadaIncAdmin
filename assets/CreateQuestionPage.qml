@@ -182,6 +182,7 @@ Page
                     id: boolStandardBody
                     hintText: qsTr("Bool Standard Body (ie: X is one of the pillars of eemaan.)") + Retranslate.onLanguageChanged
                     name: "BoolStandardBody"
+                    visible: tftk.textField.text.length > 0
                 }
                 
                 ToggleTextArea
@@ -189,6 +190,7 @@ Page
                     id: promptStandardBody
                     hintText: qsTr("Prompt Standard Body (ie: Is X one of the pillars of eemaan?)") + Retranslate.onLanguageChanged
                     name: "PromptStandardBody"
+                    visible: boolStandardBody.visible
                 }
                 
                 ToggleTextArea
@@ -196,12 +198,14 @@ Page
                     id: afterBody
                     hintText: qsTr("After Body (Which pillar of eemaan comes after Belief in Allah?)") + Retranslate.onLanguageChanged
                     name: "AfterBody"
+                    visible: orderedBody.text.length > 0
                 }
                 
                 ToggleTextArea {
                     id: beforeBody
                     hintText: qsTr("Before Body (Which pillar of eemaan comes before Belief in the Angels?)") + Retranslate.onLanguageChanged
                     name: "BeforeBody"
+                    visible: afterBody.visible
                 }
                 
                 ToggleTextArea {
@@ -215,6 +219,7 @@ Page
                     id: boolCountBody
                     hintText: qsTr("Bool Count Body (ie: There are X pillars of eemaan.)") + Retranslate.onLanguageChanged
                     name: "BoolCountBody"
+                    visible: countBody.visible
                 }
                 
                 ToggleTextArea
@@ -222,6 +227,7 @@ Page
                     id: promptCountBody
                     hintText: qsTr("Prompt Count Body (ie: Are there X pillars of eemaan?)") + Retranslate.onLanguageChanged
                     name: "PromptCountBody"
+                    visible: countBody.visible
                 }
                 
                 ToggleTextArea {

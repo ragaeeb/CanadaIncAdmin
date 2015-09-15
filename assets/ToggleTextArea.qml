@@ -11,23 +11,19 @@ Container
     function concat(x)
     {
         var pos = textArea.editor.cursorPosition;
-        
-        if (pos == -1) {
-            pos = 0;
-        }
-        
         var prefix = text.substring(0, pos);
         var suffix = text.substring(pos, text.length);
         
         if ( prefix.charAt(prefix.length-1) != ' ' ) {
-            prefix = " "+x;
-        }
-        
-        if (prefix.length < 4) { // for example, Is %1, then we would want to put a space after
             prefix += " ";
         }
         
+        if ( suffix.charAt(0) != ' ' ) {
+            x += " ";
+        }
+        
         text = prefix+x+suffix;
+        
         textArea.requestFocus();
     }
 
@@ -75,6 +71,7 @@ Container
         onClicked: {
             console.log("UserEvent: Clear"+name);
             textArea.resetText();
+            textArea.requestFocus();
         }
     }
 }

@@ -188,6 +188,28 @@ QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name,
 }
 
 
+QVariantMap IlmHelper::addBook(QObject* caller, qint64 author, QString const& title)
+{
+    LOGGER(author << title);
+
+    QVariantMap keyValues = TokenHelper::getTokensForBooks(author, title);
+    qint64 id = m_sql->executeInsert("books", keyValues);
+    SET_AND_RETURN;
+}
+
+
+void IlmHelper::fetchBooksForAuthor(QObject* caller, qint64 individualId)
+{
+    LOGGER(individualId);
+    m_sql->executeQuery(caller, QString("SELECT id,name FROM books WHERE author=%1").arg(individualId), QueryId::FetchBooksForAuthor);
+}
+
+
+void IlmHelper::removeBook(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("books", QueryId::RemoveBook);
+}
+
+
 QVariantMap IlmHelper::addWebsite(qint64 individualId, QString const& address)
 {
     LOGGER(individualId << address);

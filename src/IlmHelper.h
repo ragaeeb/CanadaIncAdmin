@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE QVariantMap addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE QVariantMap editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE void addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points);
+    Q_INVOKABLE QVariantMap addBook(QObject* caller, qint64 author, QString const& title);
     Q_INVOKABLE void addChild(QObject* caller, qint64 parentId, qint64 childId);
     Q_INVOKABLE void addParent(QObject* caller, qint64 childId, qint64 parentId);
     Q_INVOKABLE void addSibling(QObject* caller, qint64 childId, qint64 siblingId);
@@ -38,6 +39,7 @@ public:
     Q_INVOKABLE void fetchAllLocations(QObject* caller, QString const& city=QString());
     Q_INVOKABLE void fetchAllWebsites(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchBio(QObject* caller, qint64 individualId);
+    Q_INVOKABLE void fetchBooksForAuthor(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchBioMetadata(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void fetchChildren(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7);
@@ -48,6 +50,7 @@ public:
     Q_INVOKABLE void fetchTeachers(QObject* caller, qint64 individualId);
     Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
     Q_INVOKABLE void removeBioLink(QObject* caller, qint64 id);
+    Q_INVOKABLE void removeBook(QObject* caller, qint64 id);
     Q_INVOKABLE void removeChild(QObject* caller, qint64 individual, qint64 parentId);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);
     Q_INVOKABLE void removeLocation(QObject* caller, qint64 id);

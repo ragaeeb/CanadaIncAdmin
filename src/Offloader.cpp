@@ -73,6 +73,7 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
     map[QueryId::FetchSiblings] = "sibling";
     map[QueryId::FetchChildren] = "child";
     map[QueryId::FetchAllWebsites] = "website";
+    map[QueryId::FetchBooksForAuthor] = "book";
 
     if (queryId == QueryId::FetchAllWebsites) {
         input = decorateWebsites(input);
