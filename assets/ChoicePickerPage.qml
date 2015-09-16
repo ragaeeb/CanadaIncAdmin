@@ -7,6 +7,7 @@ Page
     id: choicePage
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     signal picked(variant choiceId, string value)
+    signal pickedMulti(variant values)
     
     function performSearch() {
         ilmTest.fetchAllChoices( listView, tftk.textField.text.trim() );
@@ -112,6 +113,42 @@ Page
             dataModel: ArrayDataModel {
                 id: adm
             }
+            
+            onSelectionChanged: {
+                var n = selectionList().length;
+                multiSelectHandler.status = qsTr("%n choices selected", "", n);
+                selectMulti.enabled = n > 0;
+            }
+            
+            multiSelectAction: MultiSelectActionItem {}
+            
+            multiSelectHandler.actions: [
+                ActionItem
+                {
+                    id: selectMulti
+                    enabled: false
+                    imageSource: "images/menu/ic_accept.png"
+                    title: qsTr("Select") + Retranslate.onLanguageChanged
+                    
+                    onTriggered: {
+                        console.log("UserEvent: SelectMultiChoices");
+                        
+                        var all = listView.selectionList();
+                        var result = [];
+                        
+                        for (var i = all.length-1; i >= 0; i--)
+                        {
+                            var d = adm.data(all[i]);
+
+                            if ( d.source_id.toString().length == 0 ) {
+                                result.push(d);
+                            }
+                        }
+                        
+                        pickedMulti(result);
+                    }
+                }
+            ]
             
             function editChoice(ListItem, ListItemData)
             {

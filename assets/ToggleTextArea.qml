@@ -36,6 +36,7 @@ Container
     {
         defaultImageSource: "images/ic_percent.png"
         pressedImageSource: defaultImageSource
+        verticalAlignment: VerticalAlignment.Center
         
         onClicked: {
             console.log("UserEvent: Arg"+name);
@@ -68,6 +69,7 @@ Container
     {
         defaultImageSource: "images/ic_clear.png"
         pressedImageSource: defaultImageSource
+        verticalAlignment: VerticalAlignment.Center
         
         onClicked: {
             console.log("UserEvent: Clear"+name);

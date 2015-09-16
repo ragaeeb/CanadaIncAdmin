@@ -152,16 +152,40 @@ Page
             title: qsTr("Add Choice") + Retranslate.onLanguageChanged
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             
-            function onPicked(id, value)
+            function process(choiceId, value, yes)
             {
-                navigationPane.pop();
-                var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
-                var element = ilmTest.addAnswer(questionId, id, yes);
+                var element = ilmTest.addAnswer(questionId, choiceId, yes);
                 element.value_text = value;
                 
                 adm.append(element);
+            }
+            
+            function scrollAndRefresh()
+            {
+                navigationPane.pop();
                 listView.scrollToPosition(ScrollPosition.End, ScrollAnimation.Smooth);
                 listView.refresh();
+            }
+            
+            function onPicked(choiceId, value)
+            {
+                var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
+                process(choiceId, value, yes);
+                
+                scrollAndRefresh();
+            }
+            
+            function onPickedMulti(values)
+            {
+                var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
+                
+                for (var i = values.length-1; i >= 0; i--)
+                {
+                    var current = values[i];
+                    process(current.id, current.value_text, yes);
+                }
+
+                scrollAndRefresh();
             }
             
             onTriggered: {
@@ -169,6 +193,7 @@ Page
                 definition.source = "ChoicePickerPage.qml";
                 var picker = definition.createObject();
                 picker.picked.connect(onPicked);
+                picker.pickedMulti.connect(onPickedMulti);
                 navigationPane.push(picker);
             }
             
