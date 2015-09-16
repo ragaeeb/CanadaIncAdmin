@@ -69,9 +69,9 @@ ListView
         bioTypeDialog.show();
     }
     
-    function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
+    function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices, sourceId)
     {
-        var edited = ilmTest.editQuestion(listView, id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+        var edited = ilmTest.editQuestion(listView, id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, sourceId);
         adm.replace(prompt.indexPath[0], edited);
         
         if (choices.length > 0 && orderedBody.length > 0) {
@@ -99,7 +99,8 @@ ListView
         } else if (t == "question") {
             definition.source = "CreateQuestionPage.qml";
             var page = definition.createObject();
-            page.questionId = d.source_id ? d.source_id : d.id;
+            
+            page.questionId = d.id;
             page.saveQuestion.connect(onQuestionSaved);
             prompt.indexPath = indexPath;
             navigationPane.push(page);
@@ -117,8 +118,7 @@ ListView
     {
         definition.source = "CreateQuestionPage.qml";
         var page = definition.createObject();
-        page.questionId = ListItemData.source_id ? ListItemData.source_id : ListItemData.id;
-        page.questionId = undefined;
+        page.sourceId = ListItemData.source_id ? ListItemData.source_id : ListItemData.id;
         page.saveQuestion.connect(addQuestion.onQuestionSaved);
         navigationPane.push(page);
     }

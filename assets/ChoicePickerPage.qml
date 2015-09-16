@@ -50,6 +50,15 @@ Page
                 input.submitKey: SubmitKey.Search
                 input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
                 
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: DoubleTappedChoiceField");
+                            tftk.textField.text += persist.getClipboardText();
+                        }
+                    }
+                ]
+                
                 input.onSubmitted: {
                     var value = textField.text.trim();
                     

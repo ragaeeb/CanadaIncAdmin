@@ -105,9 +105,9 @@ Page
             title: qsTr("Add Question") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
             
-            function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices)
+            function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices, sourceId)
             {
-                var result = ilmTest.addQuestion(suitePageId, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty);
+                var result = ilmTest.addQuestion(suitePageId, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, sourceId);
                 adm.insert(0, result);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 listView.visible = !adm.isEmpty();

@@ -7,13 +7,21 @@ Page
 {
     id: createPage
     property variant questionId
-    signal saveQuestion(variant id, string standardBody, string standardNegation, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices)
+    property variant sourceId
+    signal saveQuestion(variant id, string standardBody, string standardNegation, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices, variant sourceId)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onQuestionIdChanged: {
         if (questionId) {
             ilmTest.fetchQuestion(createPage, questionId);
             ilmTest.fetchChoicesForQuestion(createPage, questionId);
+        }
+    }
+    
+    onSourceIdChanged: {
+        if (sourceId) {
+            ilmTest.fetchQuestion(createPage, sourceId);
+            sourceIdField.text = sourceId.toString();
         }
     }
     
@@ -28,7 +36,7 @@ Page
                 hintText: qsTr("Standard Body...") + Retranslate.onLanguageChanged
                 horizontalAlignment: HorizontalAlignment.Fill
                 content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrection
                 input.keyLayout: KeyLayout.Text
                 inputMode: TextFieldInputMode.Text
                 input.submitKey: SubmitKey.Next
@@ -68,7 +76,7 @@ Page
                 difficulty.validator.validate();
                 
                 if (tftk.textField.validator.valid && difficulty.validator.valid) {
-                    saveQuestion(questionId, tftk.textField.text.trim(), standardBodyNegation.text.trim(), boolStandardBody.text.trim(), promptStandardBody.text.trim(), orderedBody.text.trim(), countBody.text.trim(), boolCountBody.text.trim(), promptCountBody.text.trim(), afterBody.text.trim(), beforeBody.text.trim(), parseInt( difficulty.text.trim() ), global.extractADM(adm) );
+                    saveQuestion(questionId, tftk.textField.text.trim(), standardBodyNegation.text.trim(), boolStandardBody.text.trim(), promptStandardBody.text.trim(), orderedBody.text.trim(), countBody.text.trim(), boolCountBody.text.trim(), promptCountBody.text.trim(), afterBody.text.trim(), beforeBody.text.trim(), parseInt( difficulty.text.trim() ), global.extractADM(adm), sourceIdField.text.trim() );
                 }
             }
         }
@@ -122,6 +130,10 @@ Page
             
             if (data.difficulty) {
                 difficulty.text = data.difficulty.toString();
+            }
+            
+            if (data.source_id) {
+                sourceIdField.text = data.source_id.toString();
             }
         } else if (id == QueryId.FetchChoicesForQuestion) {
             adm.clear();
@@ -252,22 +264,59 @@ Page
                     }
                 }
                 
-                TextField
+                Container
                 {
-                    id: difficulty
-                    hintText: qsTr("Difficulty Level") + Retranslate.onLanguageChanged
-                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    input.keyLayout: KeyLayout.Number
-                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                    horizontalAlignment: HorizontalAlignment.Fill
                     
-                    validator: Validator
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    
+                    TextField
                     {
-                        mode: ValidationMode.FocusLost
-                        errorMessage: qsTr("Invalid Difficulty Level") + Retranslate.onLanguageChanged
+                        id: difficulty
+                        hintText: qsTr("Difficulty Level") + Retranslate.onLanguageChanged
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        input.keyLayout: KeyLayout.Number
+                        inputMode: TextFieldInputMode.NumbersAndPunctuation
                         
-                        onValidate: {
-                            valid = difficulty.text.trim().length == 0 || difficulty.text.trim().match("\\d+$");
+                        validator: Validator
+                        {
+                            mode: ValidationMode.FocusLost
+                            errorMessage: qsTr("Invalid Difficulty Level") + Retranslate.onLanguageChanged
+                            
+                            onValidate: {
+                                valid = difficulty.text.trim().length == 0 || difficulty.text.trim().match("\\d+$");
+                            }
+                        }
+                        
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.5
+                        }
+                    }
+                    
+                    TextField
+                    {
+                        id: sourceIdField
+                        hintText: qsTr("Source Question") + Retranslate.onLanguageChanged
+                        content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                        input.keyLayout: KeyLayout.Number
+                        inputMode: TextFieldInputMode.NumbersAndPunctuation
+                        
+                        validator: Validator
+                        {
+                            mode: ValidationMode.FocusLost
+                            errorMessage: qsTr("Invalid source question") + Retranslate.onLanguageChanged
+                            
+                            onValidate: {
+                                valid = sourceIdField.text.trim().length == 0 || sourceIdField.text.trim().match("\\d+$");
+                            }
+                        }
+                        
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 0.5
                         }
                     }
                 }

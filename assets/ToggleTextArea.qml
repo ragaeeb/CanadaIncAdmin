@@ -47,7 +47,7 @@ Container
     {
         id: textArea
         content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+        input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrection
         input.keyLayout: KeyLayout.Text
         leftMargin: 0; bottomMargin: 0; topMargin: 0; leftPadding: 0;
         backgroundVisible: false
