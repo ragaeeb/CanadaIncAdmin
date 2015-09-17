@@ -61,7 +61,8 @@ QVariantMap TafsirHelper::editSuitePage(QObject* caller, qint64 id, QString cons
 {
     LOGGER( id << body.length() << heading.length() << reference.length() );
 
-    QVariantMap keyValues = TokenHelper::getTokensForSuitePage(id, body, heading, reference);
+    QVariantMap keyValues = TokenHelper::getTokensForSuitePage(0, body, heading, reference);
+    keyValues.remove("suite_id");
     m_sql->executeUpdate(caller, "suite_pages", keyValues, QueryId::EditSuitePage, id);
     SET_AND_RETURN;
 }
