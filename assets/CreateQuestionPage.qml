@@ -42,6 +42,14 @@ Page
                 input.submitKey: SubmitKey.Next
                 input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
                 
+                onFocusedChanged: {
+                    if (!focused && !questionId && !sourceId && boolStandardBody.text.length == 0 && promptStandardBody.text.length == 0 && tftk.textField.text.length > 0)
+                    {
+                        boolStandardBody.text = tftk.textField.text;
+                        promptStandardBody.text = tftk.textField.text;
+                    }
+                }
+                
                 validator: Validator
                 {
                     errorMessage: qsTr("Invalid question") + Retranslate.onLanguageChanged
