@@ -220,14 +220,6 @@ Page
                 
                 ToggleTextArea
                 {
-                    id: standardBodyNegation
-                    hintText: qsTr("Standard Body Negation (ie: Which of the following are NOT pillars of eemaan?)") + Retranslate.onLanguageChanged
-                    name: "StandardBodyNegation"
-                    visible: tftk.textField.text.length > 0
-                }
-                
-                ToggleTextArea
-                {
                     id: boolStandardBody
                     hintText: qsTr("Bool Standard Body (ie: X is one of the pillars of eemaan.)") + Retranslate.onLanguageChanged
                     name: "BoolStandardBody"
@@ -287,6 +279,14 @@ Page
                     onTextChanged: {
                         listView.refresh();
                     }
+                }
+                
+                ToggleTextArea
+                {
+                    id: standardBodyNegation
+                    hintText: qsTr("Standard Body Negation (ie: Which of the following are NOT pillars of eemaan?)") + Retranslate.onLanguageChanged
+                    name: "StandardBodyNegation"
+                    visible: tftk.textField.text.length > 0
                 }
                 
                 Container
