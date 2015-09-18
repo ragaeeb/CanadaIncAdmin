@@ -120,14 +120,16 @@ Page
                 selectMulti.enabled = n > 0;
             }
             
-            multiSelectAction: MultiSelectActionItem {}
+            multiSelectAction: MultiSelectActionItem {
+                imageSource: "images/menu/ic_select_choices.png"
+            }
             
             multiSelectHandler.actions: [
                 ActionItem
                 {
                     id: selectMulti
                     enabled: false
-                    imageSource: "images/menu/ic_accept.png"
+                    imageSource: "images/menu/ic_accept_choices.png"
                     title: qsTr("Select") + Retranslate.onLanguageChanged
                     
                     onTriggered: {

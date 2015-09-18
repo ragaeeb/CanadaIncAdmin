@@ -33,8 +33,6 @@ QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& dbPath)
 
 bool ThreadUtils::seedDatabase(QString const& source, QStringList const& languages)
 {
-    bool success = false;
-
     foreach (QString const& language, languages)
     {
         QString dest = QString("%1/%2.db").arg( QDir::homePath() ).arg(language);

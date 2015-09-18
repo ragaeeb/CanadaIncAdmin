@@ -26,7 +26,7 @@ public:
     Q_INVOKABLE QVariantMap addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE QVariantMap editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description);
     Q_INVOKABLE void addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points);
-    Q_INVOKABLE QVariantMap addBook(QObject* caller, qint64 author, QString const& title);
+    Q_INVOKABLE QVariantMap addBook(qint64 author, QString const& title);
     Q_INVOKABLE void addChild(QObject* caller, qint64 parentId, qint64 childId);
     Q_INVOKABLE void addParent(QObject* caller, qint64 childId, qint64 parentId);
     Q_INVOKABLE void addSibling(QObject* caller, qint64 childId, qint64 siblingId);

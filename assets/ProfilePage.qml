@@ -246,7 +246,7 @@ Page
         } else if (id == QueryId.RemoveSibling) {
             persist.showToast( qsTr("Sibling removed!"), "images/menu/ic_remove_sibling.png" );
         } else if (id == QueryId.RemoveBook) {
-            persist.showToast( qsTr("Book removed!"), "images/menu/ic_remove_sibling.png" );
+            persist.showToast( qsTr("Book removed!"), "images/menu/ic_remove_book.png" );
         } else if (id == QueryId.AddParent) {
             persist.showToast( qsTr("Parent added!"), "images/menu/ic_add_parent.png" );
         } else if (id == QueryId.AddSibling) {
@@ -311,6 +311,7 @@ Page
         dismissAction: ActionItem
         {
             id: addBook
+            imageSource: "images/menu/ic_add_book.png"
             title: qsTr("Add Book") + Retranslate.onLanguageChanged
             
             onTriggered: {
@@ -320,7 +321,7 @@ Page
                 
                 if (name.length > 0)
                 {
-                    var x = ilmHelper.addBook(bioModel, individualId, name);
+                    var x = ilmHelper.addBook(individualId, name);
                     x.type = "book";
                     checkForDuplicate(x);
                 }

@@ -150,11 +150,11 @@ void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, Q
     LOGGER(trimmedText << andConstraint << startsWith);
 
     if ( QRegExp("\\d+$").exactMatch(trimmedText) ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%1 AS display_name,is_companion,hidden,female FROM individuals i WHERE death=? ORDER BY display_name").arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText);
+        m_sql->executeQuery(caller, QString("SELECT id,%1,is_companion,hidden,female FROM individuals i WHERE death=? ORDER BY display_name").arg( NAME_FIELD("i","display_name") ), QueryId::SearchIndividuals, QVariantList() << trimmedText);
     } else if ( andConstraint.isEmpty() ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
+        m_sql->executeQuery(caller, QString("SELECT id,%2,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i","display_name") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
     } else {
-        m_sql->executeQuery(caller, QString("SELECT id,%2 AS display_name,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+        m_sql->executeQuery(caller, QString("SELECT id,%2,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i","display_name") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
     }
 }
 
@@ -188,7 +188,7 @@ QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name,
 }
 
 
-QVariantMap IlmHelper::addBook(QObject* caller, qint64 author, QString const& title)
+QVariantMap IlmHelper::addBook(qint64 author, QString const& title)
 {
     LOGGER(author << title);
 
@@ -314,7 +314,7 @@ void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, QVaria
 {
     LOGGER(companionsOnly << knownLocations);
 
-    QString query = QString("SELECT i.id,%1 AS display_name,hidden,is_companion,female FROM individuals i").arg( NAME_FIELD("i") );
+    QString query = QString("SELECT i.id,%1,hidden,is_companion,female FROM individuals i").arg( NAME_FIELD("i","display_name") );
     QStringList restrictions;
 
     if (companionsOnly) {
@@ -361,48 +361,48 @@ void IlmHelper::fetchAllLocations(QObject* caller, QString const& city)
 void IlmHelper::fetchBioMetadata(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS target,points,mentions.target AS target_id FROM mentions LEFT JOIN individuals i ON mentions.target=i.id WHERE suite_page_id=%2").arg( NAME_FIELD("i") ).arg(suitePageId), QueryId::FetchBioMetadata);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,points,mentions.target AS target_id FROM mentions LEFT JOIN individuals i ON mentions.target=i.id WHERE suite_page_id=%2").arg( NAME_FIELD("i","target") ).arg(suitePageId), QueryId::FetchBioMetadata);
 }
 
 
 void IlmHelper::fetchTeachers(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS teacher,i.female FROM teachers INNER JOIN individuals i ON teachers.teacher=i.id WHERE teachers.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchTeachers);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM teachers INNER JOIN individuals i ON teachers.teacher=i.id WHERE teachers.individual=%2").arg( NAME_FIELD("i","teacher") ).arg(individualId), QueryId::FetchTeachers);
 }
 
 
 void IlmHelper::fetchSiblings(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1 AS sibling,i.female FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchSiblings);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1,i.female FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i","sibling") ).arg(individualId), QueryId::FetchSiblings);
 }
 
 
 void IlmHelper::fetchParents(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS parent,i.female FROM parents INNER JOIN individuals i ON parents.parent_id=i.id WHERE parents.individual=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchParents);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM parents INNER JOIN individuals i ON parents.parent_id=i.id WHERE parents.individual=%2").arg( NAME_FIELD("i","parent") ).arg(individualId), QueryId::FetchParents);
 }
 
 
 void IlmHelper::fetchStudents(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS student,i.female FROM teachers INNER JOIN individuals i ON teachers.individual=i.id WHERE teachers.teacher=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchStudents);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM teachers INNER JOIN individuals i ON teachers.individual=i.id WHERE teachers.teacher=%2").arg( NAME_FIELD("i","student") ).arg(individualId), QueryId::FetchStudents);
 }
 
 
 void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1 AS child,i.female FROM parents INNER JOIN individuals i ON parents.individual=i.id WHERE parents.parent_id=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchChildren);
+    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM parents INNER JOIN individuals i ON parents.individual=i.id WHERE parents.parent_id=%2").arg( NAME_FIELD("i","child") ).arg(individualId), QueryId::FetchChildren);
 }
 
 
 void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, QString const& field, int n)
 {
-    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2 AS display_name,is_companion,female FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
+    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2,is_companion,female FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i","display_name") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
 }
 
 
@@ -425,7 +425,7 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1 AS author,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i") ).arg(individualId), QueryId::FetchBio);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i","author") ).arg(individualId), QueryId::FetchBio);
 }
 
 

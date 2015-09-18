@@ -416,7 +416,7 @@ ListView
             StandardListItem
             {
                 id: bookSli
-                imageSource: "images/list/ic_sibling_female.png"
+                imageSource: "images/list/ic_book.png"
                 title: ListItemData.name
                 
                 contextActions: [
@@ -426,7 +426,7 @@ ListView
                         
                         DeleteActionItem
                         {
-                            imageSource: "images/menu/ic_remove_sibling.png"
+                            imageSource: "images/menu/ic_remove_book.png"
                             
                             onTriggered: {
                                 console.log("UserEvent: RemoveBook");
