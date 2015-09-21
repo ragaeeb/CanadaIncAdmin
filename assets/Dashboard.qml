@@ -40,9 +40,9 @@ NavigationPane
                 
                 function onDataLoaded(id, data)
                 {
-                    if (id == QueryId.FetchAllIds) {
+                    if (id == -4) {
                         sql.setIndexAsId(reorder, data);
-                    } else if (id == QueryId.UpdateIdWithIndex) {
+                    } else if (id == -6) {
                         persist.showToast( qsTr("Successfully reordered!"), "images/menu/ic_top.png" );
                     }
                 }
@@ -52,6 +52,9 @@ NavigationPane
                     sql.fetchAllIds(reorder, "locations");
                     sql.fetchAllIds(reorder, "individuals");
                     sql.fetchAllIds(reorder, "mentions");
+                    sql.fetchAllIds(reorder, "answers");
+                    sql.fetchAllIds(reorder, "choices");
+                    sql.fetchAllIds(reorder, "questions");
                 }
             },
             
