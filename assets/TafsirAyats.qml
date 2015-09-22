@@ -348,8 +348,11 @@ Page
                     if (target) {
                         ilmHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
                     } else {
-                        var current = ilmHelper.editBioLink(listView, current.id, points);
+                        var current = adm.data(prompt.indexPath);
+                        current.points = points;
                         adm.replace(prompt.indexPath[0], current);
+                        
+                        ilmHelper.editBioLink(listView, current.id, points);
                     }
                 }
             }
