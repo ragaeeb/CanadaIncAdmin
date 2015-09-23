@@ -367,6 +367,12 @@ Page
             imageSource: "images/menu/ic_set_marker.png"
             title: qsTr("Jump to Marker") + Retranslate.onLanguageChanged
             
+            shortcuts: [
+                Shortcut {
+                    key: qsTr("J") + Retranslate.onLanguageChanged
+                }
+            ]
+            
             onTriggered: {
                 console.log("UserEvent: JumpToMarker");
                 var marker = persist.getValueFor("suitePageMarker");
