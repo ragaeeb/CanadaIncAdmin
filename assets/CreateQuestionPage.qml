@@ -45,8 +45,9 @@ Page
                 onFocusedChanged: {
                     if (!focused && !questionId && !sourceId && boolStandardBody.text.length == 0 && promptStandardBody.text.length == 0 && tftk.textField.text.length > 0)
                     {
-                        boolStandardBody.text = tftk.textField.text;
-                        promptStandardBody.text = tftk.textField.text;
+                        var toCopy = tftk.textField.text;
+                        boolStandardBody.text = toCopy.charAt(toCopy.length-1) == '?' ? toCopy.substring(0, toCopy.length-1) + "." : toCopy;
+                        promptStandardBody.text = toCopy;
                     }
                 }
                 
@@ -64,7 +65,7 @@ Page
                     DoubleTapHandler {
                         onDoubleTapped: {
                             console.log("UserEvent: DoubleTappedStandardBody");
-                            tftk.textField.text = tftk.textField.text + persist.getClipboardText();
+                            tftk.textField.text = tftk.textField.text + global.getCapitalizedClipboard();
                         }
                     }
                 ]

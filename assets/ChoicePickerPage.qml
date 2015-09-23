@@ -263,14 +263,9 @@ Page
             
             onTriggered: {
                 var d = dataModel.data(indexPath);
-                
-                if ( d.source_id.toString().length == 0 )
-                {
-                    console.log("UserEvent: ChoicePicked");
-                    picked(d.id, d.value_text);
-                } else {
-                    console.log("UserEvent: AliasTapped");
-                }
+
+                console.log("UserEvent: ChoicePicked");
+                picked( d.source_id.toString().length == 0 ? d.id : d.source_id, d.value_text );
             }
         }
         
