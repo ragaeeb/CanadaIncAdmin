@@ -51,6 +51,7 @@ public:
 
     void setDatabaseName(QString const& name);
     Q_INVOKABLE QStringList chapters() const;
+    void analyzeKingFahadFrench(QString text);
 };
 
 } /* namespace quran */
