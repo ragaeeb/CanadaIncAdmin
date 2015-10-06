@@ -262,6 +262,7 @@ Page
                     id: countBody
                     hintText: qsTr("Count Body (ie: How many pillars of eemaan are there?)") + Retranslate.onLanguageChanged
                     name: "CountBody"
+                    symbolEnabled: false
                 }
                 
                 ToggleTextArea
@@ -280,10 +281,12 @@ Page
                     visible: countBody.visible
                 }
                 
-                ToggleTextArea {
+                ToggleTextArea
+                {
                     id: orderedBody
                     hintText: qsTr("Ordered Body (ie: Rearrange the pillars of faith in order.)") + Retranslate.onLanguageChanged
                     name: "OrderedBody"
+                    symbolEnabled: false
                     
                     onTextChanged: {
                         listView.refresh();
@@ -296,6 +299,7 @@ Page
                     hintText: qsTr("Standard Body Negation (ie: Which of the following are NOT pillars of eemaan?)") + Retranslate.onLanguageChanged
                     name: "StandardBodyNegation"
                     visible: tftk.textField.text.length > 0
+                    symbolEnabled: false
                 }
                 
                 Container

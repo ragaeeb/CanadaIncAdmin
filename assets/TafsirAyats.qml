@@ -116,6 +116,8 @@ Page
                 popToRoot();
                 
                 persist.showToast( qsTr("Question added!"), "images/menu/ic_add_question.png" );
+                
+                listView.triggered([0]);
             }
             
             onTriggered: {

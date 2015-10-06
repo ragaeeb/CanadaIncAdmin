@@ -7,6 +7,9 @@ Container
     horizontalAlignment: HorizontalAlignment.Fill
     verticalAlignment: VerticalAlignment.Fill
     property string name
+    property bool symbolEnabled: true
+    property bool percentExists: false
+    property string symbolValue: "%1"
 
     function concat(x)
     {
@@ -34,13 +37,17 @@ Container
     
     ImageButton
     {
+        id: symbol
         defaultImageSource: "images/ic_percent.png"
+        disabledImageSource: defaultImageSource
         pressedImageSource: defaultImageSource
         verticalAlignment: VerticalAlignment.Center
+        enabled: !percentExists && symbolEnabled
+        opacity: enabled ? 1 : 0.5
         
         onClicked: {
             console.log("UserEvent: Arg"+name);
-            concat("%1");
+            concat(symbolValue);
         }
     }
     
@@ -54,6 +61,10 @@ Container
         backgroundVisible: false
         verticalAlignment: VerticalAlignment.Center
         maxHeight: ui.du(20)
+        
+        onTextChanged: {
+            percentExists = text.indexOf(symbolValue) >= 0;
+        }
         
         gestureHandlers: [
             DoubleTapHandler {

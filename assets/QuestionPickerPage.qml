@@ -69,6 +69,8 @@ Page
                     adm.clear();
                     adm.append(data);
                     busy.delegateActive = false;
+                    
+                    navigationPane.parent.unreadContentCount = data.length;
                 } else if (id == QueryId.EditQuestion) {
                     persist.showToast( qsTr("Question updated"), "images/toast/ic_question_edited.png" );
                     busy.delegateActive = false;
