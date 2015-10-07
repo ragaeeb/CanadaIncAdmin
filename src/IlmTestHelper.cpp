@@ -89,11 +89,11 @@ QVariantMap IlmTestHelper::editQuestion(QObject* caller, qint64 id, QString cons
 void IlmTestHelper::fetchAllChoices(QObject* caller, QString const& choice)
 {
     LOGGER(choice);
-    QString q = "SELECT * FROM choices";
+    QString q = "SELECT * FROM choices WHERE id > 0";
     QVariantList args;
 
     if ( !choice.isEmpty() ) {
-        q += QString(" WHERE %1 LIKE '%' || ? || '%'").arg(FIELD_VALUE_TEXT);
+        q += QString(" AND %1 LIKE '%' || ? || '%'").arg(FIELD_VALUE_TEXT);
         args << choice;
     }
 
