@@ -246,8 +246,15 @@ Page
             {
                 if (id == QueryId.FetchAllChoices)
                 {
-                    adm.clear();
-                    adm.append(data);
+                    if ( data.length == adm.size() )
+                    {
+                        for (var i = data.length-1; i >= 0; i--) {
+                            adm.replace(i, data[i]);
+                        }
+                    } else {
+                        adm.clear();
+                        adm.append(data);
+                    }
 
                     busy.delegateActive = false;
                     noElements.delegateActive = adm.isEmpty();
