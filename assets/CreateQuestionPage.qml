@@ -11,6 +11,13 @@ Page
     signal saveQuestion(variant id, string standardBody, string standardNegation, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices, variant sourceId)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
+    function setBodies(standardBodyText, boolStandardText, promptBodyText)
+    {
+        boolStandardBody.text = boolStandardText;
+        promptStandardBody.text = promptBodyText;
+        tftk.textField.text = standardBodyText;
+    }
+    
     onQuestionIdChanged: {
         if (questionId) {
             ilmTest.fetchQuestion(createPage, questionId);

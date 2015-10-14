@@ -44,10 +44,18 @@ NavigationPane
             popToRoot();
         }
         
+        onDuplicateQ: {
+            definition.source = "CreateQuestionPage.qml";
+            var page = definition.createObject();
+            page.sourceId = sourceId ? sourceId : questionId;
+            page.saveQuestion.connect(onQuestionSaved);
+            navigationPane.push(page);
+        }
+        
         onPicked: {
             definition.source = "CreateQuestionPage.qml";
             var page = definition.createObject();
-            page.questionId = sourceId ? sourceId : questionId;
+            page.questionId = questionId;
             page.saveQuestion.connect(onQuestionSaved);
             navigationPane.push(page);
         }

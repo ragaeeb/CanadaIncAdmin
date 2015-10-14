@@ -114,6 +114,15 @@ ListView
         }
     }
     
+    function produceQuestion(ListItemData, standardBody, boolStandard, promptStandard)
+    {
+        definition.source = "CreateQuestionPage.qml";
+        var page = definition.createObject();
+        page.setBodies(standardBody.arg(ListItemData.target), boolStandard.arg(ListItemData.target).arg("%1"), promptStandard.arg(ListItemData.target).arg("%1"));
+        page.saveQuestion.connect(addQuestion.onQuestionSaved);
+        navigationPane.push(page);
+    }
+    
     function duplicateQuestion(ListItem, ListItemData)
     {
         definition.source = "CreateQuestionPage.qml";
@@ -208,6 +217,83 @@ ListView
                             onTriggered: {
                                 console.log("UserEvent: UpdateBioLink");
                                 bioRoot.ListItem.view.updateBioLink(bioRoot.ListItem);
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("Birth City") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreateBirthCityQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("Where was %1 born?"), qsTr("%1 was born in %2."), qsTr("Was %1 was born in %2?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("Death Age") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreateDeathAgeQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("How old was %1 when he passed away?"), qsTr("%1 was %2 when he passed away."), qsTr("Was %1 %2 when he passed away?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("Masters University") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreateMastersQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his Masters Degree in?"), qsTr("%1 completed his Masters Degree in %2."), qsTr("Did %1 complete his Masters Degree in %2?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("Masters Year") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreateMastersQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his Masters Degree?"), qsTr("%1 completed his Masters Degree in %2 AH."), qsTr("Did %1 complete his Masters Degree in %2 AH?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("PhD University") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreatePhDQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his PhD in?"), qsTr("%1 completed his PhD in %2."), qsTr("Did %1 complete his PhD in %2?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("PhD Year") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreatePhDQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his PhD?"), qsTr("%1 completed his PhD in %2 AH."), qsTr("Did %1 complete his PhD in %2 AH?") );
+                            }
+                        }
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_add_question.png"
+                            title: qsTr("Tribe") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: CreateTribeQuestion");
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What tribe was %1 from?"), qsTr("%1 was from the tribe of %2."), qsTr("Was %1 from the tribe of %2?") );
                             }
                         }
                         
