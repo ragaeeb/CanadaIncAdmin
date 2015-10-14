@@ -238,7 +238,7 @@ ListView
                             
                             onTriggered: {
                                 console.log("UserEvent: CreateDeathAgeQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("How old was %1 (رحمه الله) when he passed away?"), qsTr("%1 was %2 when he passed away."), qsTr("Was %1 %2 when he passed away?") );
+                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("How old was %1 (رحمه الله) when he passed away?"), qsTr("%1 (رحمه الله) was %2 when he passed away."), qsTr("Was %1 (رحمه الله) %2 when he passed away?") );
                             }
                         }
                         
