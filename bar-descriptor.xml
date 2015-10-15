@@ -92,6 +92,7 @@
         <include name="*.qm"/>
     </asset>
     
+    <asset path="../canadainc/assets/CanadaIncUtils.qml">assets/CanadaIncUtils.qml</asset>
     <asset path="../canadainc/assets/EmptyDelegate.qml">assets/EmptyDelegate.qml</asset>
     <asset path="../canadainc/assets/OrderedListView.qml">assets/OrderedListView.qml</asset>
     <asset path="../canadainc/assets/PersistDropDown.qml">assets/PersistDropDown.qml</asset>

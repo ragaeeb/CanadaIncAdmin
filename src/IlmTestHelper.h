@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE QVariantMap editChoice(QObject* caller, qint64 id, QString const& value);
     Q_INVOKABLE QVariantMap editQuestion(QObject* caller, qint64 id, QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty, qint64 sourceId);
     Q_INVOKABLE void fetchAllChoices(QObject* caller, QString const& choice=QString());
+    Q_INVOKABLE void fetchChoicesWithIds(QObject* caller, QVariantList const& ids);
     Q_INVOKABLE void fetchAllQuestions(QObject* caller, QString const& query=QString());
     Q_INVOKABLE void fetchQuestion(QObject* caller, qint64 questionId);
     Q_INVOKABLE void fetchChoicesForQuestion(QObject* caller, qint64 questionId);

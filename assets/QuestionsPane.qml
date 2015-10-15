@@ -52,6 +52,13 @@ NavigationPane
             navigationPane.push(page);
         }
         
+        onOpenSuitePage: {
+            definition.source = "CreateSuitePage.qml";
+            var page = definition.createObject();
+            page.suitePageId = suitePageId;
+            navigationPane.push(page);
+        }
+        
         onPicked: {
             definition.source = "CreateQuestionPage.qml";
             var page = definition.createObject();

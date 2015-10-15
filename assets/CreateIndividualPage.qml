@@ -84,7 +84,7 @@ Page
 
                 if (email.length > 0)
                 {
-                    if ( textUtils.isEmail(email) ) {
+                    if ( ciu.isValidEmail(email) ) {
                         var x = ilmHelper.addWebsite(individualId, email);
                         adm.append(x);
                         persist.showToast( qsTr("Email added!"), "asset:///images/menu/ic_add_email.png" );
@@ -111,7 +111,7 @@ Page
                 
                 if (phone.length > 0)
                 {
-                    if ( textUtils.isPhoneNumber(phone) ) {
+                    if ( ciu.isValidPhoneNumber(phone) ) {
                         var x = ilmHelper.addWebsite(individualId, phone);
                         adm.append(x);
                         persist.showToast( qsTr("Phone Number added!"), "asset:///images/menu/ic_add_phone.png" );
@@ -710,6 +710,10 @@ Page
                     name.requestFocus();
                 }
             }
-        }        
+        },
+        
+        CanadaIncUtils {
+            id: ciu
+        }
     ]
 }

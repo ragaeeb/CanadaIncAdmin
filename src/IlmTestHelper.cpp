@@ -109,6 +109,36 @@ void IlmTestHelper::fetchAllChoices(QObject* caller, QString const& choice)
 }
 
 
+void IlmTestHelper::fetchChoicesWithIds(QObject* caller, QVariantList const& ids)
+{
+    LOGGER(ids);
+
+    QStringList tokens;
+
+    foreach (QVariant const& q, ids)
+    {
+        if ( q.type() == QVariant::String ) // range
+        {
+            QStringList range = q.toString().split("-");
+
+            if ( !range.isEmpty() )
+            {
+                qint64 fromId = range.first().toLongLong();
+                qint64 toId = range.last().toLongLong();
+
+                for (qint64 i = fromId; i <= toId; i++) {
+                    tokens << QString::number(i);
+                }
+            }
+        } else if ( q.type() == QVariant::Int || q.type() == QVariant::LongLong ) { // standard int
+            tokens << QString::number( q.toLongLong() );
+        }
+    }
+
+    m_sql->executeQuery(caller, QString("SELECT * FROM choices WHERE id IN (%1)").arg( tokens.join(",") ), QueryId::FetchAllChoices);
+}
+
+
 void IlmTestHelper::fetchAllQuestions(QObject* caller, QString const& query)
 {
     LOGGER(query);

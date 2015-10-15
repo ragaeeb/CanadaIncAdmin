@@ -52,9 +52,9 @@ NavigationPane
                     sql.fetchAllIds(reorder, "locations");
                     sql.fetchAllIds(reorder, "individuals");
                     sql.fetchAllIds(reorder, "mentions");
-                    sql.fetchAllIds(reorder, "answers");
+                    //sql.fetchAllIds(reorder, "answers");
                     sql.fetchAllIds(reorder, "choices");
-                    sql.fetchAllIds(reorder, "questions");
+                    //sql.fetchAllIds(reorder, "questions");
                 }
             },
             

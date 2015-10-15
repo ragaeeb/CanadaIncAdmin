@@ -68,6 +68,22 @@ Page
         
         ActionItem
         {
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_settings.png"
+            title: qsTr("Open Links") + Retranslate.onLanguageChanged
+            enabled: suitePageId != undefined
+            
+            onTriggered: {
+                console.log("UserEvent: OpenLinks");
+                definition.source = "TafsirAyats.qml";
+                var page = definition.createObject();
+                page.suitePageId = suitePageId;
+                navigationPane.push(page);
+            }
+        },
+        
+        ActionItem
+        {
             id: findAction
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             imageSource: "images/menu/ic_search.png"

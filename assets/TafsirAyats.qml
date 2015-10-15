@@ -71,30 +71,27 @@ Page
         
         ActionItem
         {
-            id: searchAction
-            imageSource: "images/menu/ic_search.png"
-            title: qsTr("Search") + Retranslate.onLanguageChanged
+            id: addLink
+            imageSource: "images/menu/ic_add_bio.png"
+            title: qsTr("Add Link") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
             
-            shortcuts: [
-                SystemShortcut {
-                    type: SystemShortcuts.Search
-                }
-            ]
-            
-            function onPicked(chapter, verse)
+            function onPicked(individualId, name)
             {
-                prompt.inputField.defaultText = chapter+":"+verse;
-                prompt.show();
-            }
-            
-            onCreationCompleted: {
-                app.childCardFinished.connect(onFinished);
+                bioTypeDialog.target = individualId;
+                bioTypeDialog.show();
+                
+                popToRoot();
             }
             
             onTriggered: {
-                console.log("UserEvent: SearchForText");
-                persist.invoke("com.canadainc.Quran10.search.picker", "searchPicked");
+                console.log("UserEvent: AddLink");
+                definition.source = "IndividualPickerPage.qml";
+                var c = definition.createObject();
+                c.picked.connect(onPicked);
+                ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
+                
+                navigationPane.push(c);
             }
         },
         
@@ -183,27 +180,30 @@ Page
         
         dismissAction: ActionItem
         {
-            id: addLink
-            imageSource: "images/menu/ic_add_bio.png"
-            title: qsTr("Add Link") + Retranslate.onLanguageChanged
+            id: searchAction
+            imageSource: "images/menu/ic_search_choices.png"
+            title: qsTr("Search") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
             
-            function onPicked(individualId, name)
+            shortcuts: [
+                SystemShortcut {
+                    type: SystemShortcuts.Search
+                }
+            ]
+            
+            function onPicked(chapter, verse)
             {
-                bioTypeDialog.target = individualId;
-                bioTypeDialog.show();
-                
-                popToRoot();
+                prompt.inputField.defaultText = chapter+":"+verse;
+                prompt.show();
+            }
+            
+            onCreationCompleted: {
+                app.childCardFinished.connect(onFinished);
             }
             
             onTriggered: {
-                console.log("UserEvent: AddLink");
-                definition.source = "IndividualPickerPage.qml";
-                var c = definition.createObject();
-                c.picked.connect(onPicked);
-                ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
-                
-                navigationPane.push(c);
+                console.log("UserEvent: SearchForText");
+                persist.invoke("com.canadainc.Quran10.search.picker", "searchPicked");
             }
         }
         

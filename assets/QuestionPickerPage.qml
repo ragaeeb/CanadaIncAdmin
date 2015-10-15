@@ -8,6 +8,7 @@ Page
     property alias questionsList: listView
     signal picked(variant questionId, variant sourceId, string value)
     signal duplicateQ(variant questionId, variant sourceId)
+    signal openSuitePage(variant suitePageId)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     titleBar: TitleBar
@@ -91,6 +92,10 @@ Page
                 duplicateQ(ListItemData.id, ListItemData.source_id);
             }
             
+            function viewSource(ListItem, ListItemData) {
+                openSuitePage(ListItemData.suite_page_id);
+            }
+            
             function removeQuestion(ListItem, ListItemData)
             {
                 busy.delegateActive = true;
@@ -122,6 +127,17 @@ Page
                                     onTriggered: {
                                         console.log("UserEvent: DuplicateQuestion");
                                         qsli.ListItem.view.duplicateQuestion(qsli.ListItem, ListItemData);
+                                    }
+                                }
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/ic_percent.png"
+                                    title: qsTr("View Source") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: ViewSource");
+                                        qsli.ListItem.view.viewSource(qsli.ListItem, ListItemData);
                                     }
                                 }
                                 
