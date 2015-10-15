@@ -1,3 +1,59 @@
+Total # of people who tapped on the "Open Channel"
+SELECT SUM(count) FROM events WHERE event='OpenChannelTriggered'
+
+Total # of people who tapped on the "Video Tutorial"
+SELECT SUM(count) FROM events WHERE event='VideoTutorialTriggered'
+
+Total # of people who wanted to open github in browser:
+SELECT SUM(count) FROM events WHERE event='OpenInBrowser'
+
+Total # of people who clicked the 'Submit Logs':
+SELECT SUM(count) FROM events WHERE event='SubmitLogs'
+
+Total # of people who clicked the 'Attach Files':
+SELECT SUM(count) FROM events WHERE event='AttachFiles'
+
+Max # of files attached, max # of files attached, avg # of files attached:
+SELECT MIN(context) AS min_attach_count,MAX(context) AS max_attach_count,AVG(context) AS avg_attach_count FROM events WHERE event='AttachmentCount'
+
+Total # of people who tried to preview their attachments:
+SELECT SUM(count) FROM events WHERE event='AttachPreview'
+
+
+
+
+Total # of people who tapped on video tutorial for each app in order from greatest to least
+SELECT * FROM (SELECT app,SUM(count) AS count FROM events WHERE event='VideoTutorialTriggered' AND app='ilmtest' UNION SELECT app,SUM(count) FROM events WHERE event='VideoTutorialTriggered' AND app='salat10' UNION SELECT app,SUM(count) FROM events WHERE event='VideoTutorialTriggered' AND app='quran10') ORDER BY count DESC
+
+AlFurqan advertisements:
+SELECT * FROM (SELECT event,SUM(count) AS count FROM events WHERE event='AlFurqanTwitter' UNION SELECT event,SUM(count) AS count FROM events WHERE event='AlFurqanFacebook' UNION SELECT event,SUM(count) AS count FROM events WHERE event='AlFurqanEmail' UNION SELECT event,SUM(count) AS count FROM events WHERE event='AlFurqanBBM') ORDER BY count DESC
+
+Total # of people who saw the Al Furqan advertisement:
+SELECT SUM(count) FROM events WHERE event='AlFurqanBack'
+
+
+
+Salat10 (mute athans/alarms) action item tapped:
+SELECT SUM(count) FROM (SELECT count FROM events WHERE event='MuteAthans' AND app='salat10')
+
+Salat10 (athan was previewed in the list)
+SELECT SUM(count) FROM (SELECT count FROM events WHERE event='AthanPreview' AND app='salat10')
+
+Salat10 (athan previews in order from highest to lowest):
+SELECT * FROM (SELECT context,SUM(count) AS count FROM events WHERE event='AthanPreview' AND app='salat10' AND context='asset:///audio/athan_birmingham.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AthanPreview' AND app='salat10' AND context='asset:///audio/athan_sahabah.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AthanPreview' AND app='salat10' AND context='asset:///audio/athan_albaani.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AthanPreview' AND app='salat10' AND context='asset:///audio/athan_student.mp3') ORDER BY count DESC
+
+Salat10 (tap on Custom to select custom athan)
+SELECT SUM(count) FROM (SELECT count FROM events WHERE event='AthanPreviewPick' AND app='salat10')
+
+Salat10 (athan acceptance in order from highest to lowest):
+SELECT * FROM (SELECT context,SUM(count) AS count FROM events WHERE event='AcceptAthan' AND app='salat10' AND context='asset:///audio/athan_birmingham.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AcceptAthan' AND app='salat10' AND context='asset:///audio/athan_sahabah.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AcceptAthan' AND app='salat10' AND context='asset:///audio/athan_albaani.mp3' UNION SELECT context,SUM(count) FROM events WHERE event='AcceptAthan' AND app='salat10' AND context='asset:///audio/athan_student.mp3' UNION SELECT 'custom',SUM(count) FROM events WHERE event='AcceptAthan' AND app='salat10' AND context LIKE 'file://%') ORDER BY count DESC
+
+Salat10 (athan custom file picked):
+SELECT SUM(count) FROM events WHERE event='AthanCustomPicked' AND app='salat10'
+
+Salat10 (athan custom file picker canceled)
+SELECT SUM(count) FROM events WHERE event='AthanFileCanceled' AND app='salat10'
+
 CREATE TABLE sects (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE ON CONFLICT IGNORE, birth INTEGER, death INTEGER, founder INTEGER REFERENCES individuals(id) ON DELETE SET NULL ON UPDATE CASCADE, location INTEGER REFERENCES locations(id) ON DELETE SET NULL ON UPDATE CASCADE, parent_id INTEGER REFERENCES sects(id) ON DELETE CASCADE ON UPDATE CASCADE);
 CREATE TABLE aliases (id INTEGER PRIMARY KEY, name TEXT, sect_id INTEGER REFERENCES sects(id) ON DELETE CASCADE ON UPDATE CASCADE);
 CREATE TABLE beliefs (id INTEGER PRIMARY KEY, title TEXT NOT NULL, negation INTEGER REFERENCES beliefs(id) ON DELETE CASCADE ON UPDATE CASCADE);
