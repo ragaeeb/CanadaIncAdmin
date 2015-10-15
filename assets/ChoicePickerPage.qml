@@ -197,6 +197,7 @@ Page
                         imageSource: "images/list/ic_choice.png"
                         title: ListItemData.value_text
                         enabled: ListItemData.source_id.toString().length == 0
+                        status: ListItemData.id.toString()
                         
                         contextActions: [
                             ActionSet
