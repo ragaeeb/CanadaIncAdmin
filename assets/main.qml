@@ -135,7 +135,7 @@ TabbedPane
         id: questionsTab
         title: qsTr("Questions") + Retranslate.onLanguageChanged
         description: qsTr("Quiz") + Retranslate.onLanguageChanged
-        imageSource: "images/tabs/ic_rijaal.png"
+        imageSource: "images/tabs/ic_questions.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         
         onTriggered: {

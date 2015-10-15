@@ -222,7 +222,7 @@ ListView
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_birth_city.png"
                             title: qsTr("Birth City") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
@@ -233,7 +233,7 @@ ListView
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_death_age.png"
                             title: qsTr("Death Age") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
@@ -244,51 +244,51 @@ ListView
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_masters_univ.png"
                             title: qsTr("Masters University") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
-                                console.log("UserEvent: CreateMastersQuestion");
+                                console.log("UserEvent: CreateMastersUnivQuestion");
                                 bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his Masters Degree in?"), qsTr("%1 completed his Masters Degree in %2."), qsTr("Did %1 complete his Masters Degree in %2?") );
                             }
                         }
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_masters_year.png"
                             title: qsTr("Masters Year") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
-                                console.log("UserEvent: CreateMastersQuestion");
+                                console.log("UserEvent: CreateMastersYearQuestion");
                                 bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his Masters Degree?"), qsTr("%1 completed his Masters Degree in %2 AH."), qsTr("Did %1 complete his Masters Degree in %2 AH?") );
                             }
                         }
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_phd_univ.png"
                             title: qsTr("PhD University") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
-                                console.log("UserEvent: CreatePhDQuestion");
+                                console.log("UserEvent: CreatePhDUnivQuestion");
                                 bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his PhD in?"), qsTr("%1 completed his PhD in %2."), qsTr("Did %1 complete his PhD in %2?") );
                             }
                         }
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_phd_year.png"
                             title: qsTr("PhD Year") + Retranslate.onLanguageChanged
                             
                             onTriggered: {
-                                console.log("UserEvent: CreatePhDQuestion");
+                                console.log("UserEvent: CreatePhDYearQuestion");
                                 bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his PhD?"), qsTr("%1 completed his PhD in %2 AH."), qsTr("Did %1 complete his PhD in %2 AH?") );
                             }
                         }
                         
                         ActionItem
                         {
-                            imageSource: "images/menu/ic_add_question.png"
+                            imageSource: "images/menu/ic_tribe.png"
                             title: qsTr("Tribe") + Retranslate.onLanguageChanged
                             
                             onTriggered: {

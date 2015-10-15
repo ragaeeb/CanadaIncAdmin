@@ -31,9 +31,19 @@ QVariantMap IlmTestHelper::addAnswer(qint64 questionId, qint64 choiceId, bool co
 
     QVariantMap keyValues = TokenHelper::getTokensForAnswer(questionId, choiceId, correct);
     qint64 id = m_sql->executeInsert("answers", keyValues);
-    SET_KEY_VALUE_ID;
 
-    return keyValues;
+    SET_AND_RETURN;
+}
+
+
+QVariantMap IlmTestHelper::editAnswer(QObject* caller, qint64 id, bool correct)
+{
+    QVariantMap keyValues;
+    keyValues["correct"] = correct;
+
+    m_sql->executeUpdate(caller, "answers", keyValues, QueryId::EditAnswer, id);
+
+    SET_AND_RETURN;
 }
 
 
@@ -43,9 +53,8 @@ QVariantMap IlmTestHelper::addChoice(QString const& value)
 
     QVariantMap keyValues = TokenHelper::getTokensForChoice(value);
     qint64 id = m_sql->executeInsert("choices", keyValues);
-    SET_KEY_VALUE_ID;
 
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -56,9 +65,8 @@ QVariantMap IlmTestHelper::addQuestion(qint64 suitePageId, QString const& standa
     QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, standardNegation, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty, sourceId);
     keyValues["suite_page_id"] = suitePageId;
     qint64 id = m_sql->executeInsert("questions", keyValues);
-    SET_KEY_VALUE_ID;
 
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -68,9 +76,8 @@ QVariantMap IlmTestHelper::editChoice(QObject* caller, qint64 id, QString const&
 
     QVariantMap keyValues = TokenHelper::getTokensForChoice(value);
     m_sql->executeUpdate(caller, "choices", keyValues, QueryId::EditChoice, id);
-    SET_KEY_VALUE_ID;
 
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 
@@ -80,9 +87,8 @@ QVariantMap IlmTestHelper::editQuestion(QObject* caller, qint64 id, QString cons
 
     QVariantMap keyValues = TokenHelper::getTokensForQuestion(standardBody, standardNegation, boolStandardBody, promptStandardBody, orderedBody, countBody, boolCountBody, promptCountBody, beforeBody, afterBody, difficulty, sourceId);
     m_sql->executeUpdate(caller, "questions", keyValues, QueryId::EditQuestion, id);
-    SET_KEY_VALUE_ID;
 
-    return keyValues;
+    SET_AND_RETURN;
 }
 
 

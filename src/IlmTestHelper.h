@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE QVariantMap addQuestion(qint64 suitePageId, QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty, qint64 sourceId);
     Q_INVOKABLE QVariantMap addAnswer(qint64 questionId, qint64 choiceId, bool correct);
     Q_INVOKABLE QVariantMap addChoice(QString const& value);
+    Q_INVOKABLE QVariantMap editAnswer(QObject* caller, qint64 answerId, bool correct);
     Q_INVOKABLE QVariantMap editChoice(QObject* caller, qint64 id, QString const& value);
     Q_INVOKABLE QVariantMap editQuestion(QObject* caller, qint64 id, QString const& standardBody, QString const& standardNegation, QString const& boolStandardBody, QString const& promptStandardBody, QString const& orderedBody, QString const& countBody, QString const& boolCountBody, QString const& promptCountBody, QString const& afterBody, QString const& beforeBody, int difficulty, qint64 sourceId);
     Q_INVOKABLE void fetchAllChoices(QObject* caller, QString const& choice=QString());

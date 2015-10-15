@@ -18,6 +18,7 @@ public:
         AddSibling,
         AddStudent,
         AddTeacher,
+        EditAnswer,
         EditBioLink,
         EditChoice,
         EditIndividual,

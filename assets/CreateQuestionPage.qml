@@ -157,6 +157,8 @@ Page
             listView.refresh();
         } else if (id == QueryId.RemoveAnswer) {
             persist.showToast( qsTr("Answer removed!"), "images/menu/ic_remove_answer.png" );
+        } else if (id == QueryId.EditAnswer) {
+            persist.showToast( qsTr("Answer updated!"), "images/menu/ic_flip_answer.png" );
         }
     }
     
@@ -398,6 +400,15 @@ Page
                 visible = !adm.isEmpty();
             }
             
+            function editAnswer(ListItem, ListItemData)
+            {
+                var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
+                ilmTest.editAnswer(createPage, ListItemData.id, yes);
+                
+                ListItemData.correct = yes;
+                adm.replace(ListItem.indexPath[0], ListItemData);
+            }
+            
             function removeAnswer(ListItem, ListItemData)
             {
                 ilmTest.removeAnswer(createPage, ListItemData.id);
@@ -420,6 +431,17 @@ Page
                             {
                                 title: sli.title
                                 subtitle: sli.status
+                                
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_flip_answer.png"
+                                    title: qsTr("Flip") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: EditAnswer");
+                                        sli.ListItem.view.editAnswer(sli.ListItem, ListItemData);
+                                    }
+                                }
                                 
                                 DeleteActionItem
                                 {
