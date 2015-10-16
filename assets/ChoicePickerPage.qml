@@ -12,165 +12,7 @@ Page
     function performSearch() {
         ilmTest.fetchAllChoices( listView, tftk.textField.text.trim() );
     }
-    
-    actions: [
-        ActionItem
-        {
-            imageSource: "images/menu/ic_search_location.png"
-            title: qsTr("Locations") + Retranslate.onLanguageChanged
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetLocationChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["32-43", 85, 86, "178-185", 913, 931, "950-962", 1047, "1527-1538", "1612-1613", "1617-1622", "1636-1637"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_search_rijaal.png"
-            title: qsTr("Sects") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetSectChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["214-217", "317-322", 334, 507, "515-517", "530-532", 563, "579-583", "693-699", "805-810", "658-662", "1268-1270", "1276-1277", "1623-1626", "1683-1687", 1708] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_find_duplicate_quotes.png"
-            title: qsTr("Occupations") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetOccupationChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["165-170", "916-920", 942, "979-987", "1049-1052"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_tribe.png"
-            title: qsTr("Tribes") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetTribeChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["203-212", 1610] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/ic_percent.png"
-            title: qsTr("Numeric") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetNumericChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["302-311"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/list/ic_book.png"
-            title: qsTr("Books") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetBookChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["416-419", "1675-1682"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/list/ic_like.png"
-            title: qsTr("Names of Allah") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetNamesOfAllahChoices");
-                ilmTest.fetchChoicesWithIds( listView, [493, "495-499"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_edit_bio.png"
-            title: qsTr("Fields") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetFieldsChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["508-514", "934-939", "1638-1639"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/menu/ic_preview.png"
-            title: qsTr("Sins") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetSinsChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["589-594", 651, "839-840", "1698-1699"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/list/site_link.png"
-            title: qsTr("Prayers") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetPrayerChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["678-686"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/list/ic_geo_search.png"
-            title: qsTr("Rulings") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetRulingsChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["745-749", 758] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/list/ic_geo_result.png"
-            title: qsTr("Schools") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetSchoolChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["923-930", "943-946", "972-978"] );
-            }
-        },
-        
-        ActionItem
-        {
-            imageSource: "images/tabs/ic_rijaal.png"
-            title: qsTr("Angels") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: GetAngelChoices");
-                ilmTest.fetchChoicesWithIds( listView, ["1086-1091", "1340-1343", "1399-1402", "1417-1418", "1484-1489", "1497-1508"] );
-            }
-        }
-    ]
-    
+
     titleBar: TitleBar
     {
         scrollBehavior: TitleBarScrollBehavior.NonSticky
@@ -207,13 +49,6 @@ Page
                         value = offloader.toTitleCase(value);
                         var x = ilmTest.addChoice(value);
                         picked(x.id, x.value_text);
-                        /*var useCustom = persist.showBlockingDialog( qsTr("New Choice"), qsTr("Do you want to add '%1' to the database?").arg(value) );
-
-                        if (useCustom)
-                        {
-                            var x = ilmTest.addChoice(value);
-                            picked(x.id, x.value_text);
-                        } */
                     }
                 }
                 
@@ -422,8 +257,32 @@ Page
         }
     }
     
+    function createAction(imageSource, title, data)
+    {
+        var x = actionDef.createObject();
+        x.imageSource = imageSource;
+        x.title = title;
+        x.data = data;
+        
+        return x;
+    }
+    
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(choicePage, listView);
+        
+        addAction( createAction("images/menu/ic_search_location.png", qsTr("Locations"), ["32-43", 85, 86, "178-185", 913, 931, "950-962", 1047, "1527-1538", "1612-1613", "1617-1622", "1636-1637"]) );
+        addAction( createAction("images/menu/ic_search_rijaal.png", qsTr("Sects"), ["214-217", "317-322", 334, 507, "515-517", "530-532", 563, "579-583", "693-699", "805-810", "658-662", "1268-1270", "1276-1277", "1623-1626", "1683-1687", 1708]) );
+        addAction( createAction("images/menu/ic_tribe.png", qsTr("Tribes"), ["203-212", 1610]) );
+        addAction( createAction("images/menu/ic_find_duplicate_quotes.png", qsTr("Occupations"), ["165-170", "916-920", 942, "979-987", "1049-1052"]) );
+        addAction( createAction("images/list/ic_book.png", qsTr("Books"), ["416-419", "1675-1682"]) );
+        addAction( createAction("images/list/ic_like.png", qsTr("Names of Allah"), [493, "495-499"]) );
+        addAction( createAction("images/menu/ic_edit_bio.png", qsTr("Fields"), ["508-514", "934-939", "1638-1639"]) );
+        addAction( createAction("images/menu/ic_preview.png", qsTr("Sins"), ["589-594", 651, "839-840", "1698-1699"]) );
+        addAction( createAction("images/list/site_link.png", qsTr("Prayers"), ["678-686"]) );
+        addAction( createAction("images/list/ic_geo_result.png", qsTr("Schools"), ["923-930", "943-946", "972-978"]) );
+
+        titleBar.acceptAction = createAction("images/list/ic_geo_search.png", qsTr("Rulings"), ["745-749", 758]);
+        titleBar.dismissAction = createAction("images/tabs/ic_rijaal.png", qsTr("Angels"), ["1086-1091", "1340-1343", "1399-1402", "1417-1418", "1484-1489", "1497-1508"]);
     }
     
     function cleanUp() {}
@@ -436,6 +295,22 @@ Page
             
             onTriggered: {
                 tftk.textField.requestFocus();
+            }
+        },
+        
+        ComponentDefinition
+        {
+            id: actionDef
+            
+            ActionItem
+            {
+                property variant data
+                ActionBar.placement: ActionBarPlacement.OnBar
+                
+                onTriggered: {
+                    console.log("UserEvent: Get"+title.split(" ").join("")+"Choices" )
+                    ilmTest.fetchChoicesWithIds(listView, data);
+                }
             }
         }
     ]
