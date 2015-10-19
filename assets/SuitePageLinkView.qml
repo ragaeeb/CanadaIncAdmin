@@ -127,7 +127,7 @@ ListView
     {
         definition.source = "CreateQuestionPage.qml";
         var page = definition.createObject();
-        page.sourceId = ListItemData.source_id ? ListItemData.source_id : ListItemData.id;
+        page.sourceFrom(ListItemData.id, ListItemData.source_id);
         page.saveQuestion.connect(addQuestion.onQuestionSaved);
         navigationPane.push(page);
     }

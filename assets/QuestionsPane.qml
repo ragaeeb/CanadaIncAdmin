@@ -44,14 +44,6 @@ NavigationPane
             popToRoot();
         }
         
-        onDuplicateQ: {
-            definition.source = "CreateQuestionPage.qml";
-            var page = definition.createObject();
-            page.sourceId = sourceId ? sourceId : questionId;
-            page.saveQuestion.connect(onQuestionSaved);
-            navigationPane.push(page);
-        }
-        
         onOpenSuitePage: {
             definition.source = "CreateSuitePage.qml";
             var page = definition.createObject();

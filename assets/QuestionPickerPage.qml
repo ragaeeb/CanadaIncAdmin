@@ -7,7 +7,6 @@ Page
     property alias questionsModel: adm
     property alias questionsList: listView
     signal picked(variant questionId, variant sourceId, string value)
-    signal duplicateQ(variant questionId, variant sourceId)
     signal openSuitePage(variant suitePageId)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -55,7 +54,7 @@ Page
             }
         }
         
-        ListView
+        OrderedListView
         {
             id: listView
             scrollRole: ScrollRole.Main
@@ -86,10 +85,7 @@ Page
                 
                 listView.visible = !adm.isEmpty();
                 noElements.delegateActive = !listView.visible;
-            }
-            
-            function duplicateQuestion(ListItem, ListItemData) {
-                duplicateQ(ListItemData.id, ListItemData.source_id);
+                rearrangeHandler.active = true;
             }
             
             function viewSource(ListItem, ListItemData) {
@@ -118,17 +114,6 @@ Page
                             {
                                 title: qsli.title
                                 subtitle: qsli.status
-                                
-                                ActionItem
-                                {
-                                    imageSource: "images/menu/ic_edit_link.png"
-                                    title: qsTr("Duplicate") + Retranslate.onLanguageChanged
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: DuplicateQuestion");
-                                        qsli.ListItem.view.duplicateQuestion(qsli.ListItem, ListItemData);
-                                    }
-                                }
                                 
                                 ActionItem
                                 {

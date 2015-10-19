@@ -7,7 +7,6 @@ Page
 {
     id: createPage
     property variant questionId
-    property variant sourceId
     signal saveQuestion(variant id, string standardBody, string standardNegation, string boolStandard, string promptStandard, string orderedBody, string countBody, string boolCount, string promptCount, string afterBody, string beforeBody, int difficulty, variant choices, variant sourceId)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -25,11 +24,10 @@ Page
         }
     }
     
-    onSourceIdChanged: {
-        if (sourceId) {
-            ilmTest.fetchQuestion(createPage, sourceId);
-            sourceIdField.text = sourceId.toString();
-        }
+    function sourceFrom(questionId, sourceId)
+    {
+        ilmTest.fetchQuestion(createPage, questionId);
+        sourceIdField.text = sourceId.toString();
     }
     
     titleBar: TitleBar
@@ -50,7 +48,7 @@ Page
                 input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Next
                 
                 onFocusedChanged: {
-                    if (!focused && !questionId && !sourceId && boolStandardBody.text.length == 0 && promptStandardBody.text.length == 0 && tftk.textField.text.length > 0)
+                    if (!focused && !questionId && boolStandardBody.text.length == 0 && promptStandardBody.text.length == 0 && tftk.textField.text.length > 0)
                     {
                         var toCopy = tftk.textField.text;
                         boolStandardBody.text = toCopy.charAt(toCopy.length-1) == '?' ? toCopy.substring(0, toCopy.length-1) + "." : toCopy;
