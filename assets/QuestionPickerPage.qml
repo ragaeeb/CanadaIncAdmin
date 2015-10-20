@@ -8,6 +8,7 @@ Page
     property alias questionsList: listView
     signal picked(variant questionId, variant sourceId, string value)
     signal openSuitePage(variant suitePageId)
+    signal orderChanged()
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     titleBar: TitleBar
@@ -58,6 +59,10 @@ Page
         {
             id: listView
             scrollRole: ScrollRole.Main
+            
+            rearrangeHandler.onMoveUpdated: {
+                orderChanged();
+            }
             
             dataModel: ArrayDataModel {
                 id: adm

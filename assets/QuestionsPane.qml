@@ -24,6 +24,33 @@ NavigationPane
     {
         id: questionsPage
         
+        actions: [
+            ActionItem
+            {
+                id: commitChanges
+                ActionBar.placement: ActionBarPlacement.Signature
+                enabled: false
+                imageSource: "images/menu/ic_merge_into.png"
+                title: qsTr("Commit") + Retranslate.onLanguageChanged
+                
+                function onDataLoaded(id, data)
+                {
+                    if (id == QueryId.UpdateSortOrder) {
+                        persist.showToast( qsTr("Question difficulties updated!"), imageSource.toString() );
+                    }
+                }
+                
+                onTriggered: {
+                    console.log("UserEvent: CommitQuestions");
+                    ilmTest.updateQuestionOrders( commitChanges, global.extractADM(questionsPage.questionsModel) );
+                }
+            }
+        ]
+        
+        onOrderChanged: {
+            commitChanges.enabled = true;
+        }
+        
         function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices, sourceId)
         {
             var edited = ilmTest.editQuestion(questionsList, id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, sourceId);

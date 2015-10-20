@@ -332,7 +332,7 @@ Page
                             errorMessage: qsTr("Invalid Difficulty Level") + Retranslate.onLanguageChanged
                             
                             onValidate: {
-                                valid = difficulty.text.trim().length == 0 || difficulty.text.trim().match("\\d+$");
+                                valid = difficulty.text.trim().length == 0 || difficulty.text.trim().match("\\d+$") ? true : false;
                             }
                         }
                         

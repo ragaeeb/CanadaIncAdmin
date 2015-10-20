@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE void removeChoice(QObject* caller, qint64 id);
     Q_INVOKABLE void removeQuestion(QObject* caller, qint64 id);
     Q_INVOKABLE QVariantMap sourceChoice(qint64 originalChoiceId, QString const& value);
+    Q_INVOKABLE void updateQuestionOrders(QObject* caller, QVariantList const& qvl);
     Q_INVOKABLE void updateSortOrders(QObject* caller, QVariantList const& qvl);
 
     void lazyInit();

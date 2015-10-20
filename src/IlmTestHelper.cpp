@@ -150,7 +150,7 @@ void IlmTestHelper::fetchAllQuestions(QObject* caller, QString const& query)
         args << query;
     }
 
-    q += " ORDER BY id DESC";
+    q += " ORDER BY difficulty";
 
     m_sql->executeQuery(caller, q, QueryId::FetchAllQuestions, args);
 }
@@ -218,6 +218,22 @@ QVariantMap IlmTestHelper::sourceChoice(qint64 originalChoiceId, QString const& 
     SET_KEY_VALUE_ID;
 
     return keyValues;
+}
+
+
+void IlmTestHelper::updateQuestionOrders(QObject* caller, QVariantList const& qvl)
+{
+    LOGGER( qvl.size() );
+
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+
+    for (int i = 0; i < qvl.size(); i++)
+    {
+        QVariantMap current = qvl[i].toMap();
+        m_sql->executeQuery( caller, QString("UPDATE questions SET difficulty=%1 WHERE id=%2").arg(i+1).arg( current["id"].toLongLong() ), QueryId::PendingTransaction );
+    }
+
+    m_sql->endTransaction(caller, QueryId::UpdateSortOrder);
 }
 
 
