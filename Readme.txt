@@ -19,8 +19,95 @@ SELECT MIN(context) AS min_attach_count,MAX(context) AS max_attach_count,AVG(con
 Total # of people who tried to preview their attachments:
 SELECT SUM(count) FROM events WHERE event='AttachPreview'
 
+Total # of Salat10 users:
+SELECT COUNT() AS total_users FROM (SELECT DISTINCT user_id FROM events WHERE app='salat10')
+
+Total # of times Salat10 app was launched:
+SELECT COUNT() FROM (SELECT event FROM events WHERE event='AppLaunch' AND app='salat10')
+
+Total # of users who want to view the Quran10 tutorial video:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE event='TutorialPromptResult' AND context='video:true' AND app='quran10')
+
+Total # of users who DON'T want to view the Quran10 tutorial video:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE event='TutorialPromptResult' AND context='video:false' AND app='quran10')
+
+Total # of users who confirmed to download the recitations:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE event='DownloadRecitationConfirm' AND context='true')
+
+Total # of users who denied downloading the recitations:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE event='DownloadRecitationConfirm' AND context='false')
+
+Total # of corrupted Mushaf downloads:
+SELECT COUNT() FROM (SELECT context FROM events WHERE event='MushafWriteError')
+
+Total # of Mushaf launches:
+SELECT SUM(count) FROM events WHERE event='LaunchMushaf'
+
+Total # of Help Page launches for Salat10:
+SELECT SUM(count) FROM events WHERE event='HelpPage' AND app='salat10'
+
+Total # of users who were down to donate:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE context='donate:true')
+
+Total # of users who were NOT down to donate:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE context='donate:false')
+
+Total # of users who were down to review:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE context='review:true')
+
+Total # of users who were NOT down to review:
+SELECT COUNT() FROM (SELECT user_id FROM events WHERE context='review:false')
+
+Total # of unique users who launched the mushaf:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='LaunchMushaf')
+
+Total # of users who have used the surah verse shortcut:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='SurahVerseShortcut')
+
+Total # of users who downloaded all the Mushaf pages:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='MushafDownloadAll')
+
+Total # of times they tried to play recitations:
+SELECT SUM(count) FROM events WHERE event='PlayFrom'
+
+Total # of times multiple verses were copied:
+SELECT SUM(count) FROM events WHERE event='MultiCopy'
+SELECT SUM(count) FROM events WHERE event='MultiShare'
+SELECT SUM(count) FROM events WHERE event='Memorize'
+
+Total # of users who have used the multiple verse copy:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='MultiCopy')
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='MultiShare')
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='Memorize')
+
+Total # of users who opened biographies:
+SELECT COUNT() AS unique_bio_tapped FROM (SELECT DISTINCT user_id FROM events WHERE event='BioTapped' AND context LIKE '%bio')
 
 
+
+Total # of times a juz was triggered:
+SELECT SUM(count) FROM events WHERE event='JuzTriggered'
+
+Total # of users who have triggered a juz:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='JuzTriggered')
+
+Total # of times a supplication was triggered:
+SELECT SUM(count) FROM events WHERE event='SupplicationTriggered'
+
+Total # of users who have opened a supplication:
+SELECT COUNT() FROM (SELECT DISTINCT user_id FROM events WHERE event='SupplicationTriggered')
+
+
+Total # of suppression tutorials:
+SELECT SUM(count) FROM events WHERE event='SuppressTutorials'
+
+Translation selections for Quran10 in order:
+SELECT * FROM (SELECT 'indo' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='indo') UNION SELECT 'english' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='english') UNION SELECT 'french' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='french') UNION SELECT 'arabic' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='arabic') UNION SELECT 'french' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='french') UNION SELECT 'spanish' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='spanish') UNION SELECT 'thai' AS translation_lang,COUNT() AS total FROM (SELECT context FROM events WHERE event='Translation' AND context='thai')) ORDER BY total DESC
+
+Launch time stats for Quran10:
+SELECT MIN(context) AS min_window_posted,MAX(context) AS max_window_posted,AVG(context) AS avg_window_posted FROM events WHERE event='com.canadainc.Quran10.gYABgIj2kohPCVRhZD.nLSagI6_1_window_posted'
+SELECT MIN(context) AS min_window_posted,MAX(context) AS max_window_posted,AVG(context) AS avg_window_posted FROM events WHERE event='com.canadainc.Quran10.gYABgIj2kohPCVRhZD.nLSagI6_1_process_created'
+SELECT MIN(context) AS min_window_posted,MAX(context) AS max_window_posted,AVG(context) AS avg_window_posted FROM events WHERE event='com.canadainc.Quran10.gYABgIj2kohPCVRhZD.nLSagI6_1_fully_visible'
 
 Total # of people who tapped on video tutorial for each app in order from greatest to least
 SELECT * FROM (SELECT app,SUM(count) AS count FROM events WHERE event='VideoTutorialTriggered' AND app='ilmtest' UNION SELECT app,SUM(count) FROM events WHERE event='VideoTutorialTriggered' AND app='salat10' UNION SELECT app,SUM(count) FROM events WHERE event='VideoTutorialTriggered' AND app='quran10') ORDER BY count DESC
