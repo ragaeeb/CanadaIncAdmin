@@ -10,24 +10,6 @@ Page
     
     actions: [
         ActionItem {
-            id: searchAction
-            imageSource: "images/menu/ic_search_location.png"
-            title: qsTr("Search") + Retranslate.onLanguageChanged
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                console.log("UserEvent: SearchLocationTriggered");
-                performSearch();
-            }
-            
-            shortcuts: [
-                SystemShortcut {
-                    type: SystemShortcuts.Search
-                }
-            ]
-        },
-        
-        ActionItem {
             id: addLocation
             imageSource: "images/menu/ic_add_location.png"
             title: qsTr("Add Location") + Retranslate.onLanguageChanged
@@ -65,6 +47,7 @@ Page
             id: remoteSearch
             imageSource: "images/menu/ic_search_location.png"
             title: qsTr("Remote Search") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
             
             onTriggered: {
                 console.log("UserEvent: SearchLocationTriggered");
@@ -157,6 +140,15 @@ Page
                         
                         onEnded: {
                             deviceUtils.attachTopBottomKeys(individualPage, listView);
+                        }
+                    }
+                ]
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: WebsiteBodyDT"); 
+                            searchField.text = persist.getClipboardText().trim();
                         }
                     }
                 ]

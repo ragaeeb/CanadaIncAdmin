@@ -74,6 +74,15 @@ Page
                         valid = nameField.text.trim().length > 0;
                     }
                 }
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: CenterNameDT"); 
+                            nameField.text = persist.getClipboardText().trim();
+                        }
+                    }
+                ]
             }
             
             TextField
@@ -90,6 +99,15 @@ Page
                         valid = textUtils.isUrl( website.text.trim() );
                     }
                 }
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: WebsiteBodyDT"); 
+                            website.text = persist.getClipboardText().trim();
+                        }
+                    }
+                ]
             }
             
             Button
