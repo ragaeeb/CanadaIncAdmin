@@ -53,12 +53,20 @@ QVariantMap SalatHelper::editCenter(QObject* caller, qint64 id, QString const& n
 }
 
 
-void SalatHelper::fetchAllCenters(QObject* caller)
+void SalatHelper::fetchAllCenters(QObject* caller, QString const& name)
 {
     QString q = "SELECT * FROM masjids";
+
+    QVariantList args;
+
+    if ( !name.isEmpty() ) {
+        q += " WHERE name LIKE '%' || ? || '%'";
+        args << name;
+    }
+
     q += " ORDER BY name";
 
-    m_sql->executeQuery(caller, q, QueryId::FetchAllCenters);
+    m_sql->executeQuery(caller, q, QueryId::FetchAllCenters, args);
 }
 
 

@@ -24,7 +24,7 @@ public:
 
     Q_INVOKABLE QVariantMap addCenter(QString const& name, QString const& website, qint64 location);
     Q_INVOKABLE QVariantMap editCenter(QObject* caller, qint64 id, QString const& name, QString const& website, qint64 location);
-    Q_INVOKABLE void fetchAllCenters(QObject* caller);
+    Q_INVOKABLE void fetchAllCenters(QObject* caller, QString const& name=QString());
     Q_INVOKABLE void fetchCenter(QObject* caller, qint64 id);
 
     void lazyInit();

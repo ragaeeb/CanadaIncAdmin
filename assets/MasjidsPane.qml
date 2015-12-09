@@ -12,7 +12,7 @@ NavigationPane
     function reload()
     {
         busy.delegateActive = true;
-        salat.fetchAllCenters(listView);
+        salat.fetchAllCenters(listView, tftk.textField.text.trim());
     }
     
     function clearAndReload()
@@ -73,8 +73,20 @@ NavigationPane
             }
         ]
         
-        titleBar: TitleBar {
-            title: qsTr("Masjids") + Retranslate.onLanguageChanged
+        titleBar: TitleBar
+        {
+            kind: TitleBarKind.TextField
+            kindProperties: TextFieldTitleBarKindProperties
+            {
+                id: tftk
+                textField.hintText: qsTr("Enter name of center to search...") + Retranslate.onLanguageChanged
+                textField.input.submitKey: SubmitKey.Submit
+                textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
+                textField.onTextChanging: {
+                    clearAndReload();
+                }
+            }
         }
         
         Container
@@ -117,7 +129,7 @@ NavigationPane
                             StandardListItem
                             {
                                 id: rootItem
-                                description: ListItemData.description
+                                description: ListItemData.website
                                 imageSource: "images/list/ic_quote.png"
                                 title: ListItemData.name
                             }
