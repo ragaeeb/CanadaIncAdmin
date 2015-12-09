@@ -90,6 +90,7 @@ public:
         SearchTafsir,
         SettingUpTafsir,
         SetupTafsir,
+        TagSuites,
         TranslateQuote,
         TranslateSuitePage,
         UnlinkAyatsFromTafsir,

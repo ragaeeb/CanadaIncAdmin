@@ -1,6 +1,7 @@
 #ifndef ApplicationUI_HPP_
 #define ApplicationUI_HPP_
 
+#include "AdminUtils.h"
 #include "DatabaseHelper.h"
 #include "IlmHelper.h"
 #include "IlmTestHelper.h"
@@ -31,6 +32,7 @@ class ApplicationUI : public QObject
 
     DatabaseHelper m_sql;
     Persistance m_persistance;
+    AdminUtils m_admin;
     NetworkProcessor m_network;
     ilm::IlmHelper m_ilm;
     ilmtest::IlmTestHelper m_ilmTest;

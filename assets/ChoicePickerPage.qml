@@ -156,7 +156,7 @@ Page
                         var copy = ilmTest.sourceChoice(ListItemData.id, aliasValue);
                         adm.insert(ListItem.indexPath[0], copy);
                     } else {
-                        persist.showToast( qsTr("Alias cannot be the same as the original!"), "images/toast/invalid_entry.png" );
+                        persist.showToast( qsTr("Alias cannot be the same as the original!"), "images/toast/question_entry_warning.png" );
                     }
                 }
             }

@@ -268,7 +268,7 @@ Page
                 } else if (!location.validator.valid) {
                     persist.showToast( qsTr("Invalid location specified!"), "images/toast/incomplete_field.png" );
                 } else {
-                    persist.showToast( qsTr("Invalid name!"), "images/toast/incomplete_field.png" );
+                    persist.showToast( qsTr("Invalid name!"), "images/toast/invalid_name.png" );
                 }
             }
         }

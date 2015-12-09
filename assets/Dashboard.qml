@@ -115,6 +115,13 @@ NavigationPane
             }
         ]
         
+        Container
+        {
+            Button {
+                text: qsTr("Update OCT10 Database") + Retranslate.onLanguageChanged
+            }
+        }
+        
         function onReady() {
             reporter.initPage(dashboard);
         }

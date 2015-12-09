@@ -115,7 +115,7 @@ Page
                     if (flag == 0) {
                         imageSource = "images/menu/ic_search_rijaal.png"; // standard contains
                     } else if (flag == 1) {
-						imageSource = "images/toast/success_upload_local.png"; // starts with
+						imageSource = "images/dropdown/starts_with.png"; // starts with
                     } else if (flag == 2) {
                         imageSource = "images/list/ic_location.png"; // includes location only
                     } else if (flag == 3) {

@@ -78,7 +78,7 @@ Page
                     
                     navigationPane.parent.unreadContentCount = data.length;
                 } else if (id == QueryId.EditQuestion) {
-                    persist.showToast( qsTr("Question updated"), "images/toast/ic_question_edited.png" );
+                    persist.showToast( qsTr("Question updated"), "images/toast/question_updated.png" );
                     busy.delegateActive = false;
                 } else if (id == QueryId.RemoveQuestion) {
                     persist.showToast( qsTr("Question removed!"), "images/menu/ic_remove_question.png" );

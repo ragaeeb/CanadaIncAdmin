@@ -13,13 +13,37 @@ NavigationPane
     {
         id: tafsirPicker
         
+        function onDataLoaded(id, data)
+        {
+            if (id == QueryId.TagSuites) {
+                persist.showToast( qsTr("Suites tagged!"), "images/toast/ic_add_tag.png" );
+            }
+        }
+        
+        function onFinished(tag, data)
+        {
+            if (tag.length > 0) {
+                ilmHelper.tagSuites(tafsirPicker, data, tag);
+            }
+        }
+        
         onTafsirPicked: {
-            definition.source = "TafsirContentsPage.qml";
-            var page = definition.createObject();
-            page.title = data[0].title;
-            page.suiteId = data[0].id;
-            
-            navigationPane.push(page);
+            if (data.length > 1) {
+                var all = [];
+                
+                for (var i = data.length-1; i >= 0; i--) {
+                    all.push(data[i].id);
+                }
+                
+                persist.showPrompt( tafsirPicker, qsTr("Enter tag"), qsTr("You can use this tag to categorize the articles."), "salat10", qsTr("Tag..."), 30, "onFinished", all );
+            } else {
+                definition.source = "TafsirContentsPage.qml";
+                var page = definition.createObject();
+                page.title = data[0].title;
+                page.suiteId = data[0].id;
+                
+                navigationPane.push(page);
+            }
         }
         
         actions: [

@@ -103,7 +103,7 @@ NavigationPane
                 individualPicker.busyControl.delegateActive = true;
                 ilmHelper.replaceIndividual(navigationPane, toReplaceId, actualId);
             } else {
-                persist.showToast( qsTr("The source and replacement individuals cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
+                persist.showToast( qsTr("The source and replacement individuals cannot be the same!"), "images/toast/same_people.png" );
             }
             
             popToRoot();

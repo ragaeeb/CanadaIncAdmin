@@ -153,6 +153,7 @@ CREATE TABLE choices (id INTEGER PRIMARY KEY, value_text TEXT, source_id INTEGER
 CREATE TABLE answers (id INTEGER PRIMARY KEY, question_id INTEGER REFERENCES questions(id) ON DELETE CASCADE ON UPDATE CASCADE, choice_id INTEGER REFERENCES choices(id), sort_order INTEGER, correct INTEGER, UNIQUE(question_id,choice_id) ON CONFLICT IGNORE);
 CREATE TABLE books (id INTEGER PRIMARY KEY, author INTEGER REFERENCES individuals(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL, name TEXT NOT NULL, CHECK(name <> '')); 
 
+CREATE TABLE tags (id INTEGER PRIMARY KEY, suite_page_id INTEGER REFERENCES suite_pages(id) ON DELETE CASCADE ON UPDATE CASCADE, tag TEXT NOT NULL, CHECK(tag <> ''), UNIQUE(suite_page_id,tag) ON CONFLICT IGNORE);
 
 void AdminHelper::analyzeKingFahadFrench(QString text)
 {

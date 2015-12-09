@@ -171,7 +171,7 @@ Page
                     
                     adm.removeAt(editIndexPath[0]);
                 } else {
-                    persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
+                    persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/same_suites.png" );
                 }
                 
                 popToRoot();

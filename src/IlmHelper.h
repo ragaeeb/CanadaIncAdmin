@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE void removeWebsite(QObject* caller, qint64 id);
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
     Q_INVOKABLE void searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint=QString(), bool startsWith=false);
+    Q_INVOKABLE void tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag);
 
     void lazyInit();
     void setDatabaseName(QString const& name);

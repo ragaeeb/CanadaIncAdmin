@@ -429,6 +429,20 @@ void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
 }
 
 
+void IlmHelper::tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag)
+{
+    LOGGER(suiteIds << tag);
+
+    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+
+    foreach (QVariant const& suiteId, suiteIds) {
+        m_sql->executeQuery(caller, QString("INSERT INTO tags (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), QueryId::PendingTransaction, QVariantList() << suiteId);
+    }
+
+    m_sql->endTransaction(caller, QueryId::TagSuites);
+}
+
+
 void IlmHelper::lazyInit()
 {
 }
