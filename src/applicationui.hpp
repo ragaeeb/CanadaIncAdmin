@@ -9,6 +9,7 @@
 #include "Offloader.h"
 #include "Persistance.h"
 #include "QuranHelper.h"
+#include "SalatHelper.h"
 #include "TafsirHelper.h"
 #include "TextUtils.h"
 
@@ -35,6 +36,7 @@ class ApplicationUI : public QObject
     ilmtest::IlmTestHelper m_ilmTest;
     quran::QuranHelper m_quran;
     TafsirHelper m_tafsir;
+    SalatHelper m_salat;
     QFileSystemWatcher m_watcher;
     QFile m_source;
     QFile m_target;

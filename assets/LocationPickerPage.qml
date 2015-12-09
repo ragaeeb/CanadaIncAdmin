@@ -47,7 +47,7 @@ Page
                         
                         if (city.length > 0)
                         {
-                            var d = ilmHelper.addLocation(listView, city, latitude, longitude);
+                            var d = ilmHelper.addLocation(city, latitude, longitude);
                             adm.insert(0, d);
                         }
                     }
@@ -59,6 +59,17 @@ Page
                     type: SystemShortcuts.CreateNew
                 }
             ]
+        },
+        
+        ActionItem {
+            id: remoteSearch
+            imageSource: "images/menu/ic_search_location.png"
+            title: qsTr("Remote Search") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: SearchLocationTriggered");
+                app.geoLookup( searchField.text.trim() );                
+            }
         }
     ]
     
@@ -256,9 +267,7 @@ Page
                         adm.clear();
                         adm.append(data);
                         
-                        busy.delegateActive = false;
-                        noElements.delegateActive = adm.isEmpty();
-                        listView.visible = !adm.isEmpty();
+                        refresh();
                     } else if (id == QueryId.RemoveLocation) {
                         persist.showToast( qsTr("Location removed!"), "images/menu/ic_remove_location.png" );
                     } else if (id == QueryId.EditLocation) {
@@ -296,7 +305,7 @@ Page
                             }
                         }
                         
-                        var x = ilmHelper.addLocation(listView, city, latitude, longitude);
+                        var x = ilmHelper.addLocation(city, latitude, longitude);
                         persist.showToast( qsTr("Location added!"), "images/toast/ic_location_added.png" );
                         picked(x.id, city);
                     } else {
@@ -313,12 +322,20 @@ Page
         }
     }
     
+    function refresh()
+    {
+        busy.delegateActive = false;
+        noElements.delegateActive = adm.isEmpty();
+        listView.visible = !adm.isEmpty();
+    }
+    
     function onLocationsFound(result)
     {
         if (result.status == "OK")
         {
             adm.clear();
             adm.append(result.results);
+            refresh();
         } else {
             persist.showToast( qsTr("Could not fetch geolocation results."), "images/toast/no_geo_found.png", 0 );
         }

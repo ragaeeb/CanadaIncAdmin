@@ -147,6 +147,23 @@ TabbedPane
         }
     }
     
+    Tab
+    {
+        id: masjidsTab
+        title: qsTr("Centers") + Retranslate.onLanguageChanged
+        description: qsTr("Masjids") + Retranslate.onLanguageChanged
+        imageSource: "images/tabs/ic_questions.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        
+        onTriggered: {
+            console.log("UserEvent: CentersTab");
+        }
+        
+        delegate: Delegate {
+            source: "MasjidsPane.qml"
+        }
+    }
+    
     onCreationCompleted: {
         app.lazyInitComplete.connect(spd.onReady);
     }
