@@ -34,7 +34,7 @@ Page
         acceptAction: ActionItem
         {
             title: qsTr("Save") + Retranslate.onLanguageChanged
-            imageSource: "images/dropdown/save_quote.png"
+            imageSource: "images/dropdown/save_center.png"
             enabled: true
             
             onTriggered: {

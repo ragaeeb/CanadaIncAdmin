@@ -152,7 +152,7 @@ TabbedPane
         id: masjidsTab
         title: qsTr("Centers") + Retranslate.onLanguageChanged
         description: qsTr("Masjids") + Retranslate.onLanguageChanged
-        imageSource: "images/tabs/ic_questions.png"
+        imageSource: "images/tabs/ic_centers.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         
         onTriggered: {

@@ -36,7 +36,7 @@ NavigationPane
             ActionItem
             {
                 id: addAction
-                imageSource: "images/menu/ic_add_quote.png"
+                imageSource: "images/menu/ic_add_center.png"
                 title: qsTr("Add") + Retranslate.onLanguageChanged
                 ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
                 
@@ -54,7 +54,7 @@ NavigationPane
                     listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     navigationPane.parent.unreadContentCount += 1;
                     
-                    persist.showToast( qsTr("Center added!"), "images/menu/ic_add_quote.png" );
+                    persist.showToast( qsTr("Center added!"), addAction.imageSource.toString() );
                     
                     while (navigationPane.top != masjidPickerPage) {
                         navigationPane.pop();
@@ -117,7 +117,7 @@ NavigationPane
                             adm.append(data);
                             navigationPane.parent.unreadContentCount = data.length;
                         } else if (id == QueryId.EditCenter) {
-                            persist.showToast( qsTr("Center updated!"), "images/menu/ic_edit_quote.png" );
+                            persist.showToast( qsTr("Center updated!"), "images/menu/ic_edit_center.png" );
                         }
                         
                         refresh();
@@ -130,7 +130,7 @@ NavigationPane
                             {
                                 id: rootItem
                                 description: ListItemData.website
-                                imageSource: "images/list/ic_quote.png"
+                                imageSource: "images/list/ic_masjid.png"
                                 title: ListItemData.name
                             }
                         }
@@ -171,7 +171,7 @@ NavigationPane
             EmptyDelegate
             {
                 id: noElements
-                graphic: "images/placeholders/empty_quotes.png"
+                graphic: "images/placeholders/empty_centers.png"
                 labelText: qsTr("No centers matched your search criteria. Please try a different search term.") + Retranslate.onLanguageChanged
                 
                 onImageTapped: {
@@ -182,7 +182,7 @@ NavigationPane
             ProgressControl
             {
                 id: busy
-                asset: "images/progress/loading_quotes.png"
+                asset: "images/progress/loading_centers.png"
             }
         }
     }
