@@ -16,6 +16,8 @@ namespace admin {
 
 using namespace bb::system;
 
+class TafsirHelper;
+
 class InvokeHelper : public QObject
 {
     Q_OBJECT
@@ -25,9 +27,15 @@ class InvokeHelper : public QObject
     QObject* m_root;
     InvokeManager* m_invokeManager;
     canadainc::TextUtils m_textUtils;
+    TafsirHelper* m_tafsir;
+
+    void applyProperty(const char* field, QString const& value);
+
+private slots:
+    void createQuote(QVariant id, QString author, QString body, QString reference, QVariant suiteId, QString uri);
 
 public:
-    InvokeHelper(InvokeManager* invokeManager);
+    InvokeHelper(InvokeManager* invokeManager, TafsirHelper* tafsir);
     virtual ~InvokeHelper();
 
     void init(QString const& qmlDoc, QMap<QString, QObject*> const& context, QObject* parent);

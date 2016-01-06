@@ -98,6 +98,31 @@
     <asset path="../canadainc/assets/PersistDropDown.qml">assets/PersistDropDown.qml</asset>
 	<asset path="../canadainc/assets/ProgressControl.qml">assets/ProgressControl.qml</asset>
 
+    <invoke-target id="com.canadainc.CanadaIncAdmin.createQuote">
+    <invoke-target-type>card.composer</invoke-target-type>
+    <invoke-target-name>Admin Quote</invoke-target-name> 
+    	<icon><image>icon.png</image></icon>
+        <filter>
+            <action>bb.action.SHARE</action>
+            <mime-type>*</mime-type>
+            <property var="uris" value="file://,http://,https://"/>
+        </filter>
+        <filter>
+            <action>bb.action.SHARE</action>
+            <mime-type>filelist/audio</mime-type>
+            <mime-type>filelist/video</mime-type>
+            <mime-type>filelist/image</mime-type>
+            <mime-type>filelist/media</mime-type>
+            <mime-type>filelist/document</mime-type>
+            <mime-type>filelist/mixed</mime-type>
+            <property var="uris" value="list://"/>
+        </filter>
+       <filter>
+          <action>bb.action.SHARE</action>
+          <mime-type>text/plain</mime-type>
+       </filter>
+    </invoke-target>
+
     <!-- Request permission to execute native code.  Required for native applications. -->
     <permission system="true">run_native</permission>
     <env var="LD_LIBRARY_PATH" value="app/native/lib:/usr/lib/qt4/lib"/>

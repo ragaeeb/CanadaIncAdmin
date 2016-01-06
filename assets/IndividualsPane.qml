@@ -136,7 +136,7 @@ NavigationPane
 
                             ActionItem
                             {
-                                imageSource: "images/menu/ic_copy.png"
+                                imageSource: "images/common/ic_copy.png"
                                 title: qsTr("Copy") + Retranslate.onLanguageChanged
                                 
                                 onTriggered: {

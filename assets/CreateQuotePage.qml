@@ -5,6 +5,10 @@ Page
 {
     id: createPage
     property variant quoteId
+    property alias author: authorField.text
+    property alias body: bodyField.text
+    property alias reference: referenceField.text
+    property alias uri: uriField.text
     signal createQuote(variant id, string author, string body, string reference, variant suiteId, string uri)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -173,4 +177,10 @@ Page
             }
         }
     }
+    
+    attachedObjects: [
+        ComponentDefinition {
+            id: definition
+        }
+    ]
 }
