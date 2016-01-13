@@ -1,45 +1,43 @@
 import bb.cascades 1.3
+import com.canadainc.data 1.0
 
-TextField
+Button
 {
     id: tf
     property string table: "suites"
     property string field: "author"
+    property variant pickedId
     horizontalAlignment: HorizontalAlignment.Fill
-    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-    input.keyLayout: KeyLayout.NumbersAndPunctuation
     
-    validator: Validator
+    function onDataLoaded(id, data)
     {
-        id: numericValidator
-        errorMessage: qsTr("Only digits can be entered!") + Retranslate.onLanguageChanged
-        mode: ValidationMode.FocusLost
-        
-        onValidate: {
-            valid = /^\d+$/.test( tf.text.trim() );
+        if (id == QueryId.FetchIndividualData && data.length > 0)
+        {
+            imageSource = "images/dropdown/ic_tabi_tabiee.png"
+            text = data[0].displayName ? data[0].displayName : data[0].name;
         }
     }
     
-    gestureHandlers: [
-        DoubleTapHandler
-        {
-            function onPicked(id)
-            {
-                tf.text = id.toString();
-                navigationPane.pop();
-            }
-            
-            onDoubleTapped: {
-                console.log("UserEvent: AuthorDoubleTapped");
-                definition.source = "IndividualPickerPage.qml";
-
-                var p = definition.createObject();
-                p.picked.connect(onPicked);
-                ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field);
-                
-                navigationPane.push(p);
-            }
+    onPickedIdChanged: {
+        if (pickedId) {
+            ilmHelper.fetchIndividualData(tf, pickedId);
         }
-    ]
+    }
+    
+    function onPicked(id, name)
+    {
+        pickedId = id;
+        navigationPane.pop();
+    }
+    
+    onClicked: {
+        console.log("UserEvent: ITFClicked");
+        definition.source = "IndividualPickerPage.qml";
+        
+        var p = definition.createObject();
+        p.picked.connect(onPicked);
+        ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field, 12);
+        
+        navigationPane.push(p);
+    }
 }

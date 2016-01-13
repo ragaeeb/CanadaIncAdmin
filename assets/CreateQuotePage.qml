@@ -5,7 +5,7 @@ Page
 {
     id: createPage
     property variant quoteId
-    property alias author: authorField.text
+    property alias author: authorField.pickedId
     property alias body: bodyField.text
     property alias reference: referenceField.text
     property alias uri: uriField.text
@@ -24,7 +24,7 @@ Page
         {
             var data = results[0];
             
-            authorField.text = data.author_id.toString();
+            authorField.pickedId = data.author_id;
             bodyField.text = data.body;
             referenceField.text = data.reference;
             
@@ -50,10 +50,9 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: CreateQuoteSaveTriggered");
-                authorField.validator.validate();
                 
-                if ( authorField.validator.valid && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) ) {
-                    createQuote( quoteId, authorField.text.trim(), bodyField.text.trim(), referenceField.text.trim(), suiteId.text.trim(), uriField.text.trim() );
+                if ( authorField.pickedId && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) ) {
+                    createQuote( quoteId, authorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.text.trim(), uriField.text.trim() );
                 }
             }
         }
@@ -73,18 +72,8 @@ Page
             IndividualTextField
             {
                 id: authorField
-                hintText: qsTr("Author name") + Retranslate.onLanguageChanged
+                text: qsTr("Author name") + Retranslate.onLanguageChanged
                 table: "quotes"
-                
-                validator: Validator
-                {
-                    errorMessage: qsTr("Author name cannot be empty...") + Retranslate.onLanguageChanged
-                    mode: ValidationMode.FocusLost
-                    
-                    onValidate: {
-                        valid = authorField.text.trim().length > 0;
-                    }
-                }
             }
             
             TextArea {
@@ -156,14 +145,13 @@ Page
                 ]
             }
             
-            TextField
+            TextArea
             {
                 id: uriField
                 horizontalAlignment: HorizontalAlignment.Fill
                 content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
                 input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
                 input.submitKey: SubmitKey.Submit
-                inputMode: TextFieldInputMode.Url
                 hintText: qsTr("URL (for reference purposes only)") + Retranslate.onLanguageChanged
                 
                 gestureHandlers: [

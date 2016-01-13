@@ -162,6 +162,12 @@ Page
                 }
             }
             
+            shortcuts: [
+                SystemShortcut {
+                    type: SystemShortcuts.Search
+                }
+            ]
+            
             onCreationCompleted: {
                 quran.ayatsCaptured.connect(onCaptured);
             }
@@ -184,12 +190,6 @@ Page
             imageSource: "images/menu/ic_search_choices.png"
             title: qsTr("Search") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
-            
-            shortcuts: [
-                SystemShortcut {
-                    type: SystemShortcuts.Search
-                }
-            ]
             
             function onPicked(chapter, verse)
             {

@@ -24,6 +24,13 @@ Page
         }
     }
     
+    function refresh()
+    {
+        busy.delegateActive = false;
+        listView.visible = !adm.isEmpty();
+        noElements.delegateActive = !listView.visible;
+    }
+    
     function popToRoot()
     {
         while (navigationPane.top != tafsirContentsPage) {
@@ -74,6 +81,7 @@ Page
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 
                 popToRoot();
+                refresh();
             }
             
             onTriggered: {
@@ -126,9 +134,7 @@ Page
                     persist.saveValueFor("translation", "arabic");
                 }
                 
-                busy.delegateActive = false;
-                listView.visible = !adm.isEmpty();
-                noElements.delegateActive = !listView.visible;
+                refresh();
             }
             
             function removeItem(ListItemData)

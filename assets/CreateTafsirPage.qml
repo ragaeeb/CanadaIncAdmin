@@ -24,15 +24,15 @@ Page
             var data = results[0];
             
             if (data.author) {
-                authorField.text = data.author.toString();
+                authorField.pickedId = data.author;
             }
             
             if (data.translator) {
-                translatorField.text = data.translator.toString();
+                translatorField.pickedId = data.translator;
             }
             
             if (data.explainer) {
-                explainerField.text = data.explainer.toString();
+                explainerField.pickedId = data.explainer;
             }
 
             titleField.text = data.title;
@@ -56,7 +56,7 @@ Page
                 titleField.validator.validate();
                 
                 if (titleField.validator.valid) {
-                    createTafsir( suiteId, authorField.text.trim(), translatorField.text.trim(), explainerField.text.trim(), titleField.text.trim(), descriptionField.text.trim(), referenceField.text.trim() );
+                    createTafsir( suiteId, authorField.pickedId, translatorField.pickedId, explainerField.pickedId, titleField.text.trim(), descriptionField.text.trim(), referenceField.text.trim() );
                 }
             }
         }
@@ -91,24 +91,23 @@ Page
             verticalAlignment: VerticalAlignment.Fill
             topPadding: 10
             
-            IndividualTextField
-            {
+            IndividualTextField {
                 id: authorField
-                hintText: qsTr("Author name") + Retranslate.onLanguageChanged
+                text: qsTr("Author name") + Retranslate.onLanguageChanged
             }
             
             IndividualTextField
             {
                 id: translatorField
                 field: "translator"
-                hintText: qsTr("Translator") + Retranslate.onLanguageChanged
+                text: qsTr("Translator") + Retranslate.onLanguageChanged
             }
             
             IndividualTextField
             {
                 id: explainerField
                 field: "explainer"
-                hintText: qsTr("Explainer") + Retranslate.onLanguageChanged
+                text: qsTr("Explainer") + Retranslate.onLanguageChanged
             }
             
             TextField
