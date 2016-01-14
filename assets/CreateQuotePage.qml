@@ -9,6 +9,7 @@ Page
     property alias body: bodyField.text
     property alias reference: referenceField.text
     property alias uri: uriField.text
+    property alias bufferText: buffer.text
     signal createQuote(variant id, string author, string body, string reference, variant suiteId, string uri)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -82,7 +83,7 @@ Page
                 minHeight: 150
                 inputMode: TextAreaInputMode.Text
                 content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
-                input.flags: TextInputFlag.AutoCapitalization | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheck | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
+                input.flags: TextInputFlag.AutoCapitalization | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheck | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff
                 
                 gestureHandlers: [
                     DoubleTapHandler {
@@ -113,36 +114,45 @@ Page
                 ]
             }
             
-            TextField
+            Button
             {
                 id: suiteId
+                property variant pickedId
                 horizontalAlignment: HorizontalAlignment.Fill
-                content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                hintText: qsTr("Suite ID...") + Retranslate.onLanguageChanged
+                text: qsTr("Suite ID...") + Retranslate.onLanguageChanged
                 
-                gestureHandlers: [
-                    DoubleTapHandler
-                    {
-                        function onPicked(data)
-                        {
-                            suiteId.text = data[0].id.toString();
-                            navigationPane.pop();
-                        }
-                        
-                        onDoubleTapped: {
-                            console.log("UserEvent: QuoteSuiteDoubleTapped");
-                            definition.source = "TafsirPickerPage.qml";
-                            
-                            var p = definition.createObject();
-                            p.tafsirPicked.connect(onPicked);
-                            p.autoFocus = true;
-                            p.reload();
-                            
-                            navigationPane.push(p);
-                        }
+                onPickedIdChanged: {
+                    if (pickedId) {
+                        tafsirHelper.fetchTafsirMetadata(suiteId, pickedId);
                     }
-                ]
+                }
+                
+                function onDataLoaded(id, data)
+                {
+                    if (id == QueryId.FetchTafsirHeader && data.length > 0)
+                    {
+                        imageSource = "images/list/ic_book.png"
+                        text = data[0].title;
+                    }
+                }
+                
+                function onPicked(data)
+                {
+                    pickedId = data[0].id;
+                    navigationPane.pop();
+                }
+                
+                onClicked: {
+                    console.log("UserEvent: QuoteSuiteDoubleTapped");
+                    definition.source = "TafsirPickerPage.qml";
+                    
+                    var p = definition.createObject();
+                    p.tafsirPicked.connect(onPicked);
+                    p.autoFocus = true;
+                    p.reload();
+                    
+                    navigationPane.push(p);
+                }
             }
             
             TextArea
@@ -151,7 +161,6 @@ Page
                 horizontalAlignment: HorizontalAlignment.Fill
                 content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
                 input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
-                input.submitKey: SubmitKey.Submit
                 hintText: qsTr("URL (for reference purposes only)") + Retranslate.onLanguageChanged
                 
                 gestureHandlers: [
@@ -162,6 +171,15 @@ Page
                         }
                     }
                 ]
+            }
+            
+            TextArea
+            {
+                id: buffer
+                horizontalAlignment: HorizontalAlignment.Fill
+                content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
+                input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff
+                hintText: qsTr("Buffer (not used)...") + Retranslate.onLanguageChanged
             }
         }
     }

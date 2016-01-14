@@ -9,6 +9,7 @@
 #include "TextUtils.h"
 
 #define REGEX_QUOTES QRegExp("\"([^\"]*)\"")
+#define REGEX_SPECIAL_QUOTES QRegExp( QString("([^\"]*)").prepend( QChar(8220) ).append( QChar(8221) ) )
 #define REGEX_BRACKETS QRegExp("\\[(.*)\\]")
 #define REGEX_URL QRegExp("http[^\\s]+")
 #define TARGET_SHARE_QUOTE "com.canadainc.CanadaIncAdmin.createQuote"
@@ -122,6 +123,12 @@ void InvokeHelper::process()
                         current.remove(quote);
                     }
 
+                    if ( current.contains( QChar(8220) ) )
+                    {
+                        quote = extractQuotes(current, REGEX_SPECIAL_QUOTES);
+                        current.remove(quote);
+                    }
+
                     if ( current.contains("[") )
                     {
                         src = extractQuotes(current, REGEX_BRACKETS);
@@ -139,7 +146,7 @@ void InvokeHelper::process()
             applyProperty("uri", url);
             applyProperty("body", quote);
             applyProperty("reference", src);
-            applyProperty("author", unmatched.join("\n"));
+            applyProperty("bufferText", unmatched.join("\n"));
 
             connect( m_root, SIGNAL( createQuote(QVariant, QString, QString, QString, QVariant, QString) ), this, SLOT( createQuote(QVariant, QString, QString, QString, QVariant, QString) ) );
         }

@@ -382,7 +382,10 @@ Page
                     if (id == QueryId.FetchAllTafsir && data.length > 0)
                     {
                         adm.append(data);
-                        navigationPane.parent.unreadContentCount = data.length;
+                        
+                        if (navigationPane.parent.unreadContentCount != undefined) {
+                            navigationPane.parent.unreadContentCount = data.length;
+                        }
                     } else if (id == QueryId.RemoveSuite) {
                         persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
                     } else if (id == QueryId.EditSuite) {
