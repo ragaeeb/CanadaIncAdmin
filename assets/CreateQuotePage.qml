@@ -180,6 +180,7 @@ Page
                 content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
                 input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff
                 hintText: qsTr("Buffer (not used)...") + Retranslate.onLanguageChanged
+                backgroundVisible: false
             }
         }
     }
