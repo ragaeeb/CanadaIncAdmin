@@ -11,8 +11,11 @@
 #define REGEX_QUOTES QRegExp("\"([^\"]*)\"")
 #define REGEX_SPECIAL_QUOTES QRegExp( QString("([^\"]*)").prepend( QChar(8220) ).append( QChar(8221) ) )
 #define REGEX_BRACKETS QRegExp("\\[(.*)\\]")
+#define REGEX_TWITTER_USERNAME QRegExp("(^|[^@\\w])@(\\w{1,15})\\b: ")
 #define REGEX_URL QRegExp("http[^\\s]+")
+#define REGEX_URL_TWITTER QRegExp("https{0,1}:\\/\\/twitter\\.com\\/(#!\\/)?[a-zA-Z0-9_]+")
 #define TARGET_SHARE_QUOTE "com.canadainc.CanadaIncAdmin.createQuote"
+#define TWITTER_HOST "twitter.com"
 
 namespace {
 
@@ -111,7 +114,7 @@ void InvokeHelper::process()
 
                 if ( !current.isEmpty() )
                 {
-                    if ( current.contains("twitter.com") && url.isEmpty() )
+                    if ( current.contains(TWITTER_HOST) && url.isEmpty() )
                     {
                         url = extractQuotes(current, REGEX_URL, false);
                         current.remove(url);
@@ -143,10 +146,30 @@ void InvokeHelper::process()
                 }
             }
 
+            QString buffer = unmatched.join("\n").remove(REGEX_TWITTER_USERNAME).remove(REGEX_URL_TWITTER).remove("[]").remove( QChar(8220) ).remove( QChar(8221) );
+            int statusIndex = buffer.indexOf("/status");
+
+            if (statusIndex >= 0)
+            {
+                int endIndex = buffer.indexOf(QRegExp("\\s"), statusIndex);
+
+                if (endIndex == -1) {
+                    endIndex = buffer.length();
+                }
+
+                buffer.remove( statusIndex, endIndex-statusIndex );
+            }
+
+            buffer = buffer.trimmed();
+
+            if ( buffer.endsWith(":") ) {
+                buffer.chop(1);
+            }
+
             applyProperty("uri", url);
             applyProperty("body", quote);
             applyProperty("reference", src);
-            applyProperty("bufferText", unmatched.join("\n"));
+            applyProperty("bufferText", buffer);
 
             connect( m_root, SIGNAL( createQuote(QVariant, QString, QString, QString, QVariant, QString) ), this, SLOT( createQuote(QVariant, QString, QString, QString, QVariant, QString) ) );
         }
