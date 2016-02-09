@@ -178,15 +178,15 @@ void TafsirHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds
 {
     LOGGER(toReplaceIds << actualId);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     foreach (QVariant const& q, toReplaceIds)
     {
         qint64 toReplaceId = q.toLongLong();
 
-        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1,heading=(SELECT title FROM suites WHERE id=%2),reference=(SELECT reference FROM suites WHERE id=%2) WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), QueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1,heading=(SELECT title FROM suites WHERE id=%2),reference=(SELECT reference FROM suites WHERE id=%2) WHERE suite_id=%2").arg(actualId).arg(toReplaceId), InternalQueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), InternalQueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), InternalQueryId::PendingTransaction);
     }
 
     m_sql->endTransaction(caller, QueryId::ReplaceSuite);
@@ -267,8 +267,8 @@ void TafsirHelper::translateQuote(QObject* caller, qint64 quoteId, QString desti
     destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes (english_id,author,body,reference,uri) SELECT id,author,body,reference,uri FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.quotes (english_id,author,body,reference,uri) SELECT id,author,body,reference,uri FROM quotes WHERE id=%2").arg(destinationLanguage).arg(quoteId), InternalQueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::TranslateQuote);
 
     m_sql->detach(destinationLanguage);
@@ -282,11 +282,11 @@ void TafsirHelper::translateSuitePage(QObject* caller, qint64 suitePageId, QStri
     destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction); // don't port the translator
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suites(id,author,explainer,title,description,reference) SELECT id,author,explainer,title,description,reference FROM suites WHERE id=(SELECT suite_id FROM suite_pages WHERE id=%2)").arg(destinationLanguage).arg(suitePageId), InternalQueryId::PendingTransaction); // don't port the translator
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.suite_pages(id,suite_id,body) SELECT id,suite_id,body FROM suite_pages WHERE id=%2").arg(destinationLanguage).arg(suitePageId), InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.mentions SELECT * FROM mentions WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.explanations(surah_id,from_verse_number,to_verse_number,suite_page_id) SELECT surah_id,from_verse_number,to_verse_number,suite_page_id FROM explanations WHERE suite_page_id=%2").arg(destinationLanguage).arg(suitePageId), InternalQueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::TranslateSuitePage);
 
     m_sql->detach(destinationLanguage);

@@ -225,12 +225,12 @@ void IlmTestHelper::updateQuestionOrders(QObject* caller, QVariantList const& qv
 {
     LOGGER( qvl.size() );
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     for (int i = 0; i < qvl.size(); i++)
     {
         QVariantMap current = qvl[i].toMap();
-        m_sql->executeQuery( caller, QString("UPDATE questions SET difficulty=%1 WHERE id=%2").arg(i+1).arg( current["id"].toLongLong() ), QueryId::PendingTransaction );
+        m_sql->executeQuery( caller, QString("UPDATE questions SET difficulty=%1 WHERE id=%2").arg(i+1).arg( current["id"].toLongLong() ), InternalQueryId::PendingTransaction );
     }
 
     m_sql->endTransaction(caller, QueryId::UpdateSortOrder);
@@ -255,10 +255,10 @@ void IlmTestHelper::updateSortOrders(QObject* caller, QVariantList const& qvl)
 
     if ( !result.isEmpty() )
     {
-        m_sql->startTransaction(caller, QueryId::PendingTransaction);
+        m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
         foreach ( qint64 id, result.keys() ) {
-            m_sql->executeQuery( caller, QString("UPDATE answers SET %1=%2 WHERE id=%3").arg(FIELD_SORT_ORDER).arg( result.value(id) ).arg(id), QueryId::PendingTransaction );
+            m_sql->executeQuery( caller, QString("UPDATE answers SET %1=%2 WHERE id=%3").arg(FIELD_SORT_ORDER).arg( result.value(id) ).arg(id), InternalQueryId::PendingTransaction );
         }
 
         m_sql->endTransaction(caller, QueryId::UpdateSortOrder);

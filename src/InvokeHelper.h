@@ -41,6 +41,7 @@ public:
     void init(QString const& qmlDoc, QMap<QString, QObject*> const& context, QObject* parent);
     QString invoked(bb::system::InvokeRequest const& request);
     void process();
+    Q_INVOKABLE QString optimize(QString input);
 };
 
 } /* namespace admin */

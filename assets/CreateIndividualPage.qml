@@ -541,7 +541,7 @@ Page
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 console.log("UserEvent: IndividualDescDoubleTapped");
-                                descriptionField.text = textUtils.optimize( persist.getClipboardText() );
+                                descriptionField.text = invokeHelper.optimize( persist.getClipboardText() );
                             }
                         },
                         
@@ -549,7 +549,7 @@ Page
                             onPinchEnded: {
                                 if (event.pinchRatio < 1) {
                                     console.log("UserEvent: PasteDescription");
-                                    descriptionField.text = descriptionField.text+"\n\n"+textUtils.optimize( persist.getClipboardText() );
+                                    descriptionField.text = descriptionField.text+"\n\n"+invokeHelper.optimize( persist.getClipboardText() );
                                 }
                             }
                         }

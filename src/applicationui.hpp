@@ -84,6 +84,8 @@ public:
     Q_INVOKABLE void geoLookup(QString const& location);
     Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);
     Q_INVOKABLE void replicateEnglishDatabase();
+    Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
+    Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
 };
 
 }

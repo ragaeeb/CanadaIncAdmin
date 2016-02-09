@@ -162,7 +162,7 @@ void QuranHelper::linkAyatToTafsir(QObject* caller, qint64 suitePageId, int chap
 
 void QuranHelper::linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVariantList const& chapterVerseData)
 {
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     foreach (QVariant const& q, chapterVerseData)
     {

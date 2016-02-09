@@ -65,7 +65,6 @@ public:
         FindDuplicates,
         LinkAyatsToTafsir,
         MoveToSuite,
-        PendingTransaction,
         PortIndividuals,
         RemoveAnswer,
         RemoveBioLink,

@@ -106,8 +106,31 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
 }
 
 
-QString Offloader::toTitleCase(QString const& input) {
-    return TextUtils::toTitleCase(input);
+QString Offloader::toTitleCase(QString const& s)
+{
+    static const QString matchWords = QString("\\b([\\w'%1%2]+)\\b").arg( QChar(8217) ).arg( QChar(8216) );
+    static const QString littleWords = "\\b(a|an|and|as|at|by|for|if|in|of|on|or|to|the|ibn|bin|bint|b\\.)\\b";
+    QString result = s.toLower();
+
+    QRegExp wordRegExp(matchWords);
+    int i = wordRegExp.indexIn( result );
+    QString match = wordRegExp.cap(1);
+    bool first = true;
+
+    QRegExp littleWordRegExp(littleWords);
+    while (i > -1)
+    {
+        if ( match == match.toLower() && ( first || !littleWordRegExp.exactMatch( match ) ) )
+        {
+            result[i] = result[i].toUpper();
+        }
+
+        i = wordRegExp.indexIn( result, i + match.length() );
+        match = wordRegExp.cap(1);
+        first = false;
+    }
+
+    return result;
 }
 
 

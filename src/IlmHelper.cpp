@@ -10,8 +10,8 @@
 #include "TokenHelper.h"
 
 #define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
-#define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::PendingTransaction)
-#define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), QueryId::PendingTransaction);
+#define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), InternalQueryId::PendingTransaction)
+#define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), InternalQueryId::PendingTransaction);
 
 namespace ilm {
 
@@ -111,7 +111,7 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
         LOGGER(db);
         m_sql->attachIfNecessary(db, true);
 
-        m_sql->startTransaction(caller, QueryId::PendingTransaction);
+        m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
         REPLACE_INDIVIDUAL("UPDATE %3.mentions SET target=%1 WHERE target=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.quotes SET author=%1 WHERE author=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
@@ -134,9 +134,9 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
         REPLACE_INDIVIDUAL_FIELD("current_location");
         REPLACE_INDIVIDUAL_FIELD("is_companion");
         REPLACE_INDIVIDUAL_FIELD("hidden");
-        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), QueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), QueryId::PendingTransaction);
-        m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : QueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), InternalQueryId::PendingTransaction);
+        m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), InternalQueryId::PendingTransaction);
+        m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : InternalQueryId::PendingTransaction);
 
         if (db != current) {
             m_sql->detach(db);
@@ -165,10 +165,10 @@ void IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, QVariantList con
 
     QString query = "INSERT INTO mentions (target,suite_page_id,points) VALUES(?,?,?)";
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     foreach (QVariant const& targetId, targetIds) {
-        m_sql->executeQuery(caller, query, QueryId::PendingTransaction, QVariantList() << targetId << suitePageId << points);
+        m_sql->executeQuery(caller, query, InternalQueryId::PendingTransaction, QVariantList() << targetId << suitePageId << points);
     }
 
     m_sql->endTransaction(caller, QueryId::AddBioLink);
@@ -433,10 +433,10 @@ void IlmHelper::tagSuites(QObject* caller, QVariantList const& suiteIds, QString
 {
     LOGGER(suiteIds << tag);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     foreach (QVariant const& suiteId, suiteIds) {
-        m_sql->executeQuery(caller, QString("INSERT INTO tags (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), QueryId::PendingTransaction, QVariantList() << suiteId);
+        m_sql->executeQuery(caller, QString("INSERT INTO tags (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), InternalQueryId::PendingTransaction, QVariantList() << suiteId);
     }
 
     m_sql->endTransaction(caller, QueryId::TagSuites);
@@ -454,7 +454,7 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
     destinationLanguage = ILM_DB_FILE(destinationLanguage);
     m_sql->attachIfNecessary(destinationLanguage, true);
 
-    m_sql->startTransaction(caller, QueryId::PendingTransaction);
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
     m_sql->executeQuery(caller, QString("UPDATE %1.individuals SET %2,%3,%4,%5").arg(destinationLanguage)
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "prefix") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "name") )
@@ -465,11 +465,11 @@ void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "female") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "location") )
             .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "current_location") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "is_companion") ), QueryId::PendingTransaction);
+            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "is_companion") ), InternalQueryId::PendingTransaction);
 
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM %2.individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("DELETE FROM %1.individuals WHERE id NOT IN (SELECT id FROM %2.individuals)").arg(destinationLanguage).arg(srcLanguage), QueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM %2.individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
+    m_sql->executeQuery(caller, QString("DELETE FROM %1.individuals WHERE id NOT IN (SELECT id FROM %2.individuals)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
     m_sql->endTransaction(caller, QueryId::PortIndividuals);
 
     m_sql->detach(destinationLanguage);

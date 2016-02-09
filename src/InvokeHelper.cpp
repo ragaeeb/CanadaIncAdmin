@@ -2,6 +2,7 @@
 
 #include "InvokeHelper.h"
 #include "CardUtils.h"
+#include "CommonConstants.h"
 #include "Logger.h"
 #include "Persistance.h"
 #include "QueryId.h"
@@ -28,7 +29,14 @@ QString extractQuotes(QString const& str, QRegExp const& regex, bool chop=true)
 
         //pos += regex.matchedLength();
 
-        return chop ? canadainc::TextUtils::removeBrackets(x) : x.trimmed();
+        if (chop) {
+            x.remove(0,1);
+            x.chop(1);
+        } else {
+            x = x.trimmed();
+        }
+
+        return x;
     }
 
     return QString();
@@ -53,6 +61,7 @@ void InvokeHelper::init(QString const& qmlDoc, QMap<QString, QObject*> const& co
 
     QmlDocument* qml = QmlDocument::create("asset:///GlobalProperties.qml").parent(this);
     qml->setContextProperty("textUtils", &m_textUtils);
+    qml->setContextProperty("invokeHelper", this);
     QObject* global = qml->createRootObject<QObject>();
     QmlDocument::defaultDeclarativeEngine()->rootContext()->setContextProperty("global", global);
 
@@ -174,6 +183,14 @@ void InvokeHelper::process()
             connect( m_root, SIGNAL( createQuote(QVariant, QString, QString, QString, QVariant, QString) ), this, SLOT( createQuote(QVariant, QString, QString, QString, QVariant, QString) ) );
         }
     }
+}
+
+
+QString InvokeHelper::optimize(QString input)
+{
+    input.replace( QChar(253), "'" );
+    input.replace( QRegExp("\n{2,}\\s*"), "\n\n" );
+    return input.trimmed();
 }
 
 
