@@ -97,6 +97,7 @@
     <asset path="../canadainc/assets/OrderedListView.qml">assets/OrderedListView.qml</asset>
     <asset path="../canadainc/assets/PersistDropDown.qml">assets/PersistDropDown.qml</asset>
 	<asset path="../canadainc/assets/ProgressControl.qml">assets/ProgressControl.qml</asset>
+	<asset path="/Users/rhaq/workspace/java/CanadaIncIslamicUtils/res/sunnah10/sunnah_english.db">assets/dbase/sunnah_english.db</asset>
 
     <invoke-target id="com.canadainc.CanadaIncAdmin.createQuote">
     <invoke-target-type>card.composer</invoke-target-type>

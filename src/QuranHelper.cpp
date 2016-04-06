@@ -170,7 +170,7 @@ void QuranHelper::linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVarian
         linkAyatToTafsir( caller, suitePageId, qvm.value(CHAPTER_KEY).toInt(), qvm.value(FROM_VERSE_KEY).toInt(), qvm.value(TO_VERSE_KEY).toInt() );
     }
 
-    m_sql->endTransaction(caller, QueryId::LinkAyatsToTafsir);
+    m_sql->endTransaction(caller, QueryId::LinkAyatToSuitePage);
 }
 
 

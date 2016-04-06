@@ -15,6 +15,7 @@ Page
             quran.fetchAyatsForTafsir(listView, suitePageId);
             ilmHelper.fetchBioMetadata(listView, suitePageId);
             ilmTest.fetchQuestionsForSuitePage(listView, suitePageId);
+            sunnah.fetchNarrationsForSuitePage(listView, suitePageId);
         }
     }
     
@@ -52,7 +53,7 @@ Page
         {
             id: addAction
             imageSource: "images/menu/ic_link_ayat_to_tafsir.png"
-            title: qsTr("Add") + Retranslate.onLanguageChanged
+            title: qsTr("Link Ayat") + Retranslate.onLanguageChanged
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             
             shortcuts: [
@@ -90,6 +91,41 @@ Page
                 var c = definition.createObject();
                 c.picked.connect(onPicked);
                 ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
+                
+                navigationPane.push(c);
+            }
+        },
+        
+        ActionItem
+        {
+            id: addNarration
+            imageSource: "images/menu/ic_add_narration.png"
+            title: qsTr("Add Narration") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            
+            function onPicked(elements)
+            {
+                var all = [];
+                
+                for (var i = elements.length-1; i >= 0; i--) {
+                    all.push(elements[i].id);
+                }
+                
+                sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);
+                popToRoot();
+            }
+            
+            shortcuts: [
+                Shortcut {
+                    key: qsTr("H") + Retranslate.onLanguageChanged
+                }
+            ]
+            
+            onTriggered: {
+                console.log("UserEvent: AddNarration");
+                definition.source = "NarrationPickerPage.qml";
+                var c = definition.createObject();
+                c.picked.connect(onPicked);
                 
                 navigationPane.push(c);
             }

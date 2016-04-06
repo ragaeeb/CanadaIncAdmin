@@ -65,7 +65,7 @@ ListView
     
     function checkLinks(ListItemData)
     {
-        definition.source = "TafsirAyats.qml";
+        definition.source = "SuitePageLinks.qml";
         var ipp = definition.createObject();
         ipp.suitePageId = ListItemData.suite_page_id;
         

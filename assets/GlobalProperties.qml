@@ -15,6 +15,17 @@ QtObject
         }
     }
     
+    function extractTokens(trimmed)
+    {
+        var elements = trimmed.match(/(?:[^\s"]+|"[^"]*")+/g);
+        
+        for (var j = elements.length-1; j >= 0; j--) {
+            elements[j] = elements[j].replace(/^"(.*)"$/, '$1');
+        }
+        
+        return elements;
+    }
+
     function getIndicesOf(searchStr, str, caseSensitive)
     {
         var startIndex = 0, searchStrLen = searchStr.length;

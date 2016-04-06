@@ -75,7 +75,7 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: OpenLinks");
-                definition.source = "TafsirAyats.qml";
+                definition.source = "SuitePageLinks.qml";
                 var page = definition.createObject();
                 page.suitePageId = suitePageId;
                 navigationPane.push(page);

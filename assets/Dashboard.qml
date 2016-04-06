@@ -121,14 +121,6 @@ NavigationPane
                 text: qsTr("Update OCT10 Database") + Retranslate.onLanguageChanged
             }
         }
-        
-        function onReady() {
-            reporter.initPage(dashboard);
-        }
-        
-        onCreationCompleted: {
-            app.lazyInitComplete.connect(onReady);
-        }
     }
     
     attachedObjects: [

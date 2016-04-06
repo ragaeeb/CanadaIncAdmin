@@ -1,7 +1,6 @@
 #ifndef ApplicationUI_HPP_
 #define ApplicationUI_HPP_
 
-#include "AdminUtils.h"
 #include "DatabaseHelper.h"
 #include "IlmHelper.h"
 #include "IlmTestHelper.h"
@@ -11,6 +10,7 @@
 #include "Persistance.h"
 #include "QuranHelper.h"
 #include "SalatHelper.h"
+#include "SunnahHelper.h"
 #include "TafsirHelper.h"
 #include "TextUtils.h"
 
@@ -32,13 +32,13 @@ class ApplicationUI : public QObject
 
     DatabaseHelper m_sql;
     Persistance m_persistance;
-    AdminUtils m_admin;
     NetworkProcessor m_network;
     ilm::IlmHelper m_ilm;
     ilmtest::IlmTestHelper m_ilmTest;
     quran::QuranHelper m_quran;
     TafsirHelper m_tafsir;
     SalatHelper m_salat;
+    sunnah::SunnahHelper m_sunnah;
     QFileSystemWatcher m_watcher;
     QFile m_source;
     QFile m_target;

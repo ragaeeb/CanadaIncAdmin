@@ -151,7 +151,9 @@ CREATE TABLE ascriptions (id INTEGER PRIMARY KEY, person_id INTEGER REFERENCES i
 CREATE TABLE questions (id INTEGER PRIMARY KEY, standard_body TEXT NOT NULL, standard_negation_body TEXT, bool_standard_body TEXT, prompt_standard_body TEXT, ordered_body TEXT, count_body TEXT, bool_count_body TEXT, prompt_count_body TEXT, before_body TEXT, after_body TEXT, difficulty INTEGER, source_id INTEGER REFERENCES questions(id) ON DELETE CASCADE ON UPDATE CASCADE, suite_page_id INTEGER REFERENCES suite_pages(id) ON DELETE CASCADE ON UPDATE CASCADE);
 CREATE TABLE choices (id INTEGER PRIMARY KEY, value_text TEXT, source_id INTEGER REFERENCES choices(id) ON DELETE CASCADE ON UPDATE CASCADE);
 CREATE TABLE answers (id INTEGER PRIMARY KEY, question_id INTEGER REFERENCES questions(id) ON DELETE CASCADE ON UPDATE CASCADE, choice_id INTEGER REFERENCES choices(id), sort_order INTEGER, correct INTEGER, UNIQUE(question_id,choice_id) ON CONFLICT IGNORE);
-CREATE TABLE books (id INTEGER PRIMARY KEY, author INTEGER REFERENCES individuals(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL, name TEXT NOT NULL, CHECK(name <> '')); 
+CREATE TABLE books (id INTEGER PRIMARY KEY, author INTEGER REFERENCES individuals(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL, name TEXT NOT NULL, CHECK(name <> ''));
+CREATE TABLE narration_explanations (id INTEGER PRIMARY KEY, narration_id INTEGER NOT NULL, suite_page_id INTEGER NOT NULL REFERENCES suite_pages(id) ON DELETE CASCADE, link_type INTEGER, UNIQUE(narration_id, suite_page_id) ON CONFLICT IGNORE);
+CREATE TABLE related_narrations (narration_id INTEGER NOT NULL, other_narration_id INTEGER NOT NULL, link_type INTEGER, UNIQUE(narration_id, other_narration_id) ON CONFLICT IGNORE, CHECK(narration_id <> other_narration_id));
 
 CREATE TABLE tags (id INTEGER PRIMARY KEY, suite_page_id INTEGER REFERENCES suite_pages(id) ON DELETE CASCADE ON UPDATE CASCADE, tag TEXT NOT NULL, CHECK(tag <> ''), UNIQUE(suite_page_id,tag) ON CONFLICT IGNORE);
 

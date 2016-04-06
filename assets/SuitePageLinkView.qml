@@ -12,13 +12,10 @@ ListView
     
     function onDataLoaded(id, data)
     {
-        if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchBioMetadata || id == QueryId.FetchQuestionsForSuitePage)
+        if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchNarrationsForSuitePage || id == QueryId.FetchBioMetadata || id == QueryId.FetchQuestionsForSuitePage)
         {
-            if ( adm.isEmpty() )
-            {
-                if (data.length > 0) {
-                    adm.append(data);
-                }
+            if ( adm.isEmpty() ) {
+                adm.append(data);
             } else { // do diff
                 app.doDiff(data, adm);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
@@ -28,7 +25,14 @@ ListView
         } else if (id == QueryId.UnlinkAyatsFromTafsir) {
             persist.showToast( qsTr("Ayat unlinked from tafsir"), "images/menu/ic_unlink_tafsir_ayat.png" );
             busy.delegateActive = false;
-        } else if (id == QueryId.LinkAyatsToTafsir) {
+        } else if (id == QueryId.UnlinkNarrationsFromSuitePage) {
+            persist.showToast( qsTr("Narration unlinked from suite page"), "images/menu/ic_unlink_narration.png" );
+            busy.delegateActive = false;
+        } else if (id == QueryId.LinkNarrationsToSuitePage) {
+            persist.showToast( qsTr("Narration linked to suite page"), "images/menu/ic_add_narration.png" );
+            busy.delegateActive = false;
+            suitePageIdChanged();
+        } else if (id == QueryId.LinkAyatToSuitePage) {
             persist.showToast( qsTr("Ayat linked to tafsir!"), "images/menu/ic_link_ayat_to_tafsir.png" );
             suitePageIdChanged();
             popToRoot();
@@ -104,6 +108,8 @@ ListView
             page.saveQuestion.connect(onQuestionSaved);
             prompt.indexPath = indexPath;
             navigationPane.push(page);
+        } else if (t == "narration") {
+            persist.invoke("com.canadainc.Sunnah10.shortcut", "bb.action.VIEW", "", "sunnah://id/"+d.narration_id);
         } else {
             definition.source = "ProfilePage.qml";
             var page = definition.createObject();
@@ -182,12 +188,21 @@ ListView
         adm.removeAt(ListItem.indexPath[0]);
     }
     
+    function unlinkNarration(ListItem)
+    {
+        busy.delegateActive = true;
+        sunnah.unlinkNarrationsFromSuitePage(listView, [ListItem.data.narration_id], suitePageId);
+        adm.removeAt(ListItem.indexPath[0]);
+    }
+    
     function itemType(data, indexPath)
     {
         if (data.surah_id) {
             return "ayat";
         } else if (data.standard_body) {
             return "question"
+        } else if (data.narration_id) {
+            return "narration"
         } else {
             return "bio";
         }
@@ -348,6 +363,39 @@ ListView
                             onTriggered: {
                                 console.log("UserEvent: UnlinkAyatFromTafsir");
                                 rootItem.ListItem.view.unlink(rootItem.ListItem);
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        
+        ListItemComponent
+        {
+            type: "narration"
+            
+            StandardListItem
+            {
+                id: narration
+                description: ListItemData.body
+                imageSource: "images/list/ic_narration.png"
+                title: ListItemData.collection_name
+                status: ListItemData.hadith_number
+                
+                contextActions: [
+                    ActionSet
+                    {
+                        title: narration.title
+                        subtitle: narration.status
+                        
+                        DeleteActionItem
+                        {
+                            imageSource: "images/menu/ic_unlink_narration.png"
+                            title: qsTr("Unlink") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: UnlinkNarrationFromSuitePage");
+                                narration.ListItem.view.unlinkNarration(narration.ListItem);
                             }
                         }
                     }

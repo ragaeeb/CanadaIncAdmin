@@ -1,11 +1,6 @@
 #ifndef QuranHelper_H_
 #define QuranHelper_H_
 
-#define AYAT_NUMERIC_PATTERN "^\\d{1,3}:\\d{1,3}$"
-#define SIMILAR_DB "similar"
-#define TAFSIR_ARABIC_DB "tafsir_arabic"
-#define ENGLISH_TRANSLATION "english"
-
 #include "QueryId.h"
 
 #include <QFutureWatcher>
@@ -44,7 +39,7 @@ public:
 
     Q_INVOKABLE void captureAyats(QString const& body);
     Q_INVOKABLE void fetchAyatsForTafsir(QObject* caller, qint64 suitePageId);
-    Q_INVOKABLE void linkAyatToTafsir(QObject* caller, qint64 suitePageId, int chapter, int fromVerse, int toVerse, QueryId::Type linkId=QueryId::LinkAyatsToTafsir);
+    Q_INVOKABLE void linkAyatToTafsir(QObject* caller, qint64 suitePageId, int chapter, int fromVerse, int toVerse, QueryId::Type linkId=QueryId::LinkAyatToSuitePage);
     Q_INVOKABLE void linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVariantList const& chapterVerseData);
     Q_INVOKABLE void unlinkAyatsForTafsir(QObject* caller, QVariantList const& ids, qint64 suitePageId);
     Q_INVOKABLE void updateTafsirLink(QObject* caller, qint64 explanationId, int surahId, int fromVerse, int toVerse);
