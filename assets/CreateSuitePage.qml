@@ -13,6 +13,24 @@ Page
         navigationPane.pushTransitionEnded.disconnect(checkFocus);
     }
     
+    function getIndicesOf(searchStr, str, caseSensitive)
+    {
+        var startIndex = 0, searchStrLen = searchStr.length;
+        var index, indices = [];
+        
+        if (!caseSensitive) {
+            str = str.toLowerCase();
+            searchStr = searchStr.toLowerCase();
+        }
+        
+        while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+            indices.push(index);
+            startIndex = index + searchStrLen;
+        }
+        
+        return indices;
+    }
+    
     function checkFocus()
     {
         navigationPane.pushTransitionEnded.disconnect(checkFocus);
@@ -100,7 +118,7 @@ Page
                     query = persist.showBlockingPrompt( qsTr("Enter query"), qsTr("Please enter search query:"), "", qsTr("Enter any non-empty value"), 60, false ).trim();
                     
                     if (query.length > 0) {
-                        indices = global.getIndicesOf(query, bodyField.text, false);
+                        indices = getIndicesOf(query, bodyField.text, false);
                     }
                 }
                 

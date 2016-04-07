@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "TextUtils.h"
 
+#define NARRATION_COLUMNS "narrations.id,collection_id,hadith_number,body,name"
 #define LIKE_CLAUSE QString("(body LIKE '%' || ? || '%')")
 
 namespace {
@@ -46,6 +47,15 @@ void SunnahHelper::fetchAllCollections(QObject* caller)
 }
 
 
+void SunnahHelper::fetchNarration(QObject* caller, qint64 collectionId, QString const& hadithNumber)
+{
+    LOGGER(collectionId << hadithNumber);
+
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collections.id=narrations.collection_id WHERE collection_id=%2 AND (hadith_number='%3' OR hadith_number LIKE '%3 %')").arg(NARRATION_COLUMNS).arg(collectionId).arg(hadithNumber);
+    m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
+}
+
+
 void SunnahHelper::fetchNarrationsForSuitePage(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
@@ -60,7 +70,7 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
     LOGGER(params << collections);
 
     int n = params.size();
-    QString query = QString("SELECT narrations.id,collection_id,hadith_number,body,name FROM narrations INNER JOIN collections ON narrations.collection_id=collections.id WHERE (%1").arg(LIKE_CLAUSE);
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON narrations.collection_id=collections.id WHERE (%2").arg(NARRATION_COLUMNS).arg(LIKE_CLAUSE);
 
     if ( params.size() > 1 ) {
         query += QString(" AND %1").arg(LIKE_CLAUSE).repeated(n-1);
@@ -147,7 +157,7 @@ void SunnahHelper::unlinkNarrationsFromSuitePage(QObject* caller, QVariantList c
 {
     LOGGER(arabicIds << suitePageId);
 
-    QString query = QString("DELETE FROM explanations WHERE arabic_id IN (%1) AND suite_page_id=%2").arg( combine(arabicIds) ).arg(suitePageId);
+    QString query = QString("DELETE FROM narration_explanations WHERE narration_id IN (%1) AND suite_page_id=%2").arg( combine(arabicIds) ).arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::UnlinkNarrationsFromSuitePage);
 }
 

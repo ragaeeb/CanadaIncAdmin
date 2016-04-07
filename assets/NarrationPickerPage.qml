@@ -6,9 +6,39 @@ Page
     id: searchRoot
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     property variant includedCollections: []
+    property variant collectionCodes: {'d': 1, 'a': 2, 'b': 3, 'g': 4, 'i': 5, 'k': 6, 'm': 7, 'n': 8, 'w': 9, 'q': 10, 'r': 11, 't': 12}
     signal picked(variant picked)
     
     function cleanUp() {}
+    
+    function isTurboQuery(term) {
+        return new RegExp("^[a-w]{1}\\d{1,4}$").test(term) && ( term.charAt(0) in collectionCodes );
+    }
+    
+    function extractTokens(trimmed)
+    {
+        var elements = trimmed.match(/(?:[^\s"]+|"[^"]*")+/g);
+        
+        for (var j = elements.length-1; j >= 0; j--) {
+            elements[j] = elements[j].replace(/^"(.*)"$/, '$1');
+        }
+        
+        return elements;
+    }
+    
+    actions: [
+        DeleteActionItem
+        {
+            id: clearAll
+            imageSource: "images/menu/ic_reset_search.png"
+            title: qsTr("Clear") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                tftk.textField.resetText();
+                tftk.textField.requestFocus();
+            }
+        }
+    ]
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(searchRoot, listView);
@@ -31,17 +61,21 @@ Page
                 
                 if (trimmed.length > 0)
                 {
-                    var elements = global.extractTokens(trimmed);
+                    if ( isTurboQuery(trimmed) ) {
+                        sunnah.fetchNarration(listView, collectionCodes[trimmed.charAt(0)], trimmed.substring(1));
+                    } else {
+                        var elements = extractTokens(trimmed);
+                        
+                        var included = [];
+                        
+                        for (var i = includedCollections.length-1; i >= 0; i--) {
+                            included.push(includedCollections[i].id);
+                        }
+                        
+                        sunnah.searchNarrations(listView, elements, included, shortNarrations.checked);
+                    }
 
                     busy.delegateActive = true;
-                    
-                    var included = [];
-                    
-                    for (var i = includedCollections.length-1; i >= 0; i--) {
-                        included.push(includedCollections[i].id);
-                    }
-                    
-                    sunnah.searchNarrations(listView, elements, included, shortNarrations.checked);
                 }
             }
         }
@@ -53,20 +87,26 @@ Page
         horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Fill
         
-        CheckBox {
-            id: shortNarrations
+        Container
+        {
+            leftPadding: 10; rightPadding: 10; topPadding: 10;
             horizontalAlignment: HorizontalAlignment.Fill
-            text: qsTr("Short Narrations")
-            checked: true
+            
+            CheckBox {
+                id: shortNarrations
+                horizontalAlignment: HorizontalAlignment.Fill
+                text: qsTr("Short Narrations")
+                checked: true
+            }
         }
         
         Button
         {
+            id: collectionButton
             horizontalAlignment: HorizontalAlignment.Fill
-            text: qsTr("Search All Collections")
             opacity: 0
             
-            function onPicked(all)
+            function process(all)
             {
                 includedCollections = all;
                 
@@ -79,13 +119,22 @@ Page
                     }
                     
                     text = elements.join(", ");
+                    imageSource = "images/dropdown/ic_search_specific.png";
                 } else {
                     text = qsTr("Search All Collections");
+                    imageSource = "images/dropdown/ic_search_all_collections.png";
                 }
+            }
+            
+            function onPicked(all)
+            {
+                process(all);
                 
                 while (navigationPane.top != searchRoot) {
                     navigationPane.pop();
                 }
+                
+                tftk.textField.requestFocus();
             }
             
             onClicked: {
@@ -107,6 +156,7 @@ Page
 
                     onEnded: {
                         tftk.textField.requestFocus();
+                        collectionButton.process([]);
                     }
                 }
             ]
@@ -124,6 +174,7 @@ Page
                 multiSelectHandler.actions: [
                     ActionItem
                     {
+                        imageSource: "images/menu/ic_accept_narrations.png"
                         title: qsTr("Select")
                         
                         onTriggered: {
@@ -172,16 +223,18 @@ Page
                             }
 
                             contextActions: [
-                                ActionSet {
+                                ActionSet
+                                {
                                     title: header.title
                                     subtitle: bodyLabel.text.substring( 0, Math.min(bodyLabel.text.length, 15) ).replace(/\n/g, " ")
                                     
-                                    ActionItem {
+                                    ActionItem
+                                    {
+                                        imageSource: "images/menu/ic_preview_hadith.png"
                                         title: qsTr("Open") + Retranslate.onLanguageChanged
                                         
                                         onTriggered: {
-                                            persist.invoke("com.canadainc.Sunnah10.shortcut", "bb.action.VIEW", "", "sunnah://id/"+ListItemData.narration_id);
-                                            rootItem.ListItem.view.open(ListItemData);
+                                            persist.invoke("com.canadainc.Sunnah10.shortcut", "bb.action.VIEW", "", "sunnah://id/"+ListItemData.id);
                                         }
                                     }
                                 }
@@ -216,7 +269,7 @@ Page
             EmptyDelegate
             {
                 id: noElements
-                graphic: "images/placeholders/empty_centers.png"
+                graphic: "images/placeholders/empty_narrations.png"
                 labelText: qsTr("No results matched your query.") + Retranslate.onLanguageChanged
                 
                 onImageTapped: {
@@ -227,7 +280,7 @@ Page
             ProgressControl
             {
                 id: busy
-                asset: "images/progress/loading_choices.png"
+                asset: "images/progress/loading_narrations.png"
             }
         }
     }

@@ -29,6 +29,7 @@ public:
 	void lazyInit();
 
 	Q_INVOKABLE void fetchAllCollections(QObject* caller);
+	Q_INVOKABLE void fetchNarration(QObject* caller, qint64 collectionId, QString const& hadithNumber);
     Q_INVOKABLE void fetchNarrationsForSuitePage(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void linkNarrations(QObject* caller, QVariantList const& arabicIds);
     Q_INVOKABLE void linkNarrationsToSuitePage(QObject* caller, qint64 suitePageId, QVariantList const& arabicIds);
