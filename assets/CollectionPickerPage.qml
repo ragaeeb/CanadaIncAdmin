@@ -41,7 +41,8 @@ Page
             multiSelectHandler.actions: [
                 ActionItem
                 {
-                    title: qsTr("Accept")
+                    imageSource: "images/menu/ic_accept.png"
+                    title: qsTr("Accept") + Retranslate.onLanguageChanged
                     
                     onTriggered: {
                         var all = listView.selectionList();

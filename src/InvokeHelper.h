@@ -4,6 +4,7 @@
 #include <bb/system/InvokeRequest>
 
 #include "DeviceUtils.h"
+#include "Offloader.h"
 #include "TextUtils.h"
 
 namespace bb {
@@ -28,6 +29,7 @@ class InvokeHelper : public QObject
     InvokeManager* m_invokeManager;
     canadainc::TextUtils m_textUtils;
     TafsirHelper* m_tafsir;
+    Offloader m_offloader;
 
     void applyProperty(const char* field, QString const& value);
 
@@ -38,7 +40,7 @@ public:
     InvokeHelper(InvokeManager* invokeManager, TafsirHelper* tafsir);
     virtual ~InvokeHelper();
 
-    void init(QString const& qmlDoc, QMap<QString, QObject*> const& context, QObject* parent);
+    void init(QString const& qmlDoc, QMap<QString, QObject*> context, QObject* parent);
     QString invoked(bb::system::InvokeRequest const& request);
     void process();
     Q_INVOKABLE QString optimize(QString input);

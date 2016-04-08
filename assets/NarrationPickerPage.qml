@@ -79,6 +79,20 @@ Page
                 }
             }
         }
+        
+        acceptAction: ActionItem
+        {
+            id: shortNarrations
+            imageSource: checked ? "images/dropdown/ic_short_narrations.png" : "images/dropdown/ic_any_narrations.png"
+            property bool checked: true
+            title: checked ? qsTr("Short") + Retranslate.onLanguageChanged : qsTr("Any") + Retranslate.onLanguageChanged
+
+            onTriggered: {
+                console.log("UserEvent: ShortNarrationsTapped");
+                checked = !checked;
+                tftk.textField.requestFocus();
+            }
+        }
     }
     
     Container
@@ -86,19 +100,6 @@ Page
         id: searchContainer
         horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Fill
-        
-        Container
-        {
-            leftPadding: 10; rightPadding: 10; topPadding: 10;
-            horizontalAlignment: HorizontalAlignment.Fill
-            
-            CheckBox {
-                id: shortNarrations
-                horizontalAlignment: HorizontalAlignment.Fill
-                text: qsTr("Short Narrations")
-                checked: true
-            }
-        }
         
         Button
         {
@@ -174,8 +175,9 @@ Page
                 multiSelectHandler.actions: [
                     ActionItem
                     {
+                        id: accept
                         imageSource: "images/menu/ic_accept_narrations.png"
-                        title: qsTr("Select")
+                        title: qsTr("Select") + Retranslate.onLanguageChanged
                         
                         onTriggered: {
                             var all = listView.selectionList();
@@ -187,8 +189,73 @@ Page
 
                             picked(result);
                         }
+                    },
+                    
+                    ActionItem
+                    {
+                        id: linkAction
+                        imageSource: "images/menu/ic_link.png"
+                        title: qsTr("Link") + Retranslate.onLanguageChanged
+                        property variant selectedIds: []
+                        property int nextGroupNumber: 0
+                        
+                        function createNewGroup() {
+                            sunnah.groupNarrations(linkAction, selectedIds, nextGroupNumber);
+                        }
+                        
+                        function onPicked(id)
+                        {
+                            if (id != 0) {
+                                sunnah.groupNarrations(linkAction, selectedIds, id);
+                            } else {
+                                createNewGroup();
+                            }
+                        }
+                        
+                        function onDataLoaded(id, data)
+                        {
+                            if (id == QueryId.FetchGroupedNarrations)
+                            {
+                                if (data.length > 0) { // at least one of these narrations already belongs to a group, ask user if they want to merge these new narrations into one of the existing groups or not
+                                    definition.source = "NarrationGroupPicker.qml";
+                                    var ngp = definition.createObject();
+                                    ngp.picked.connect(onPicked);
+                                    ngp.apply(data);
+                                    
+                                    navigationPane.push(ngp);
+                                } else { // these narrations don't already belong to a group, create a new one
+                                    createNewGroup();
+                                }
+                            } else if (id == QueryId.FetchNextGroupNumber) {
+                                nextGroupNumber = data[0].group_number;
+                                console.log("NextGroupNumberAvailable", nextGroupNumber);
+                            } else if (id == QueryId.GroupNarrations) {
+                                persist.showToast( qsTr("Narrations successfully linked!"), linkAction.imageSource.toString() );
+                            }
+                        }
+                        
+                        onTriggered: {
+                            console.log("UserEvent: LinkNarrations");
+                            
+                            var all = listView.selectionList();
+                            var result = [];
+                            
+                            for (var i = all.length-1; i >= 0; i--) {
+                                result.push( listView.dataModel.data(all[i]).id );
+                            }
+                            
+                            selectedIds = result;
+                            sunnah.fetchNextAvailableGroupNumber(linkAction);
+                            sunnah.fetchGroupedNarrations(linkAction, result);
+                        }
                     }
                 ]
+                
+                onSelectionChanged: {
+                    var n = selectionList().length;
+                    linkAction.enabled = n > 1;
+                    accept.enabled = n > 0;
+                }
 
                 dataModel: ArrayDataModel {
                     id: adm
@@ -275,6 +342,7 @@ Page
                 
                 onImageTapped: {
                     console.log("UserEvent: NoMatches");
+                    shortNarrations.triggered();
                 }
             }
             

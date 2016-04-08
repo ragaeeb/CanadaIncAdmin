@@ -55,15 +55,18 @@ InvokeHelper::InvokeHelper(InvokeManager* invokeManager, TafsirHelper* tafsir) :
 }
 
 
-void InvokeHelper::init(QString const& qmlDoc, QMap<QString, QObject*> const& context, QObject* parent)
+void InvokeHelper::init(QString const& qmlDoc, QMap<QString, QObject*> context, QObject* parent)
 {
     qmlRegisterUncreatableType<QueryId>("com.canadainc.data", 1, 0, "QueryId", "Can't instantiate");
 
     QmlDocument* qml = QmlDocument::create("asset:///GlobalProperties.qml").parent(this);
+    qml->setContextProperty("offloader", &m_offloader);
     qml->setContextProperty("textUtils", &m_textUtils);
     qml->setContextProperty("invokeHelper", this);
     QObject* global = qml->createRootObject<QObject>();
     QmlDocument::defaultDeclarativeEngine()->rootContext()->setContextProperty("global", global);
+
+    context["offloader"] = &m_offloader;
 
     m_root = CardUtils::initAppropriate(qmlDoc, context, parent);
 }

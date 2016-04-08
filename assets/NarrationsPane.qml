@@ -17,29 +17,6 @@ NavigationPane
         sunnah.fetchGroupedNarrations(listView);
     }
     
-    function updateSelectedGroup(all, groupNumber)
-    {
-        var removedValues = [];
-        var result = [];
-        var i = 0;
-        
-        for (i = all.length-1; i >= 0; i--)
-        {
-            var current = gdm.data(all[i]);
-            result.push(current.id);
-            gdm.remove(current);
-            
-            current.group_number = groupNumber;
-            removedValues.push(current);
-        }
-        
-        for (i = removedValues.length-1; i >= 0; i--) {
-            gdm.insert(removedValues[i]);
-        }
-        
-        sunnah.updateGroupNumber(listView, result, groupNumber);
-    }
-    
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(narrationPage, listView, true);
         reload();
@@ -97,60 +74,58 @@ NavigationPane
                         ActionItem
                         {
                             id: link
-                            imageSource: "images/menu/ic_reorder_suites.png"
+                            imageSource: "images/menu/ic_relink.png"
                             title: qsTr("Link") + Retranslate.onLanguageChanged
                             enabled: listView.totalSelected > 1
+                            property variant selectedData
+                            
+                            function onPicked(groupNumber)
+                            {
+                                if (groupNumber == 0) {
+                                    groupNumber = gdm.data( gdm.last() ).group_number+1; // to guarantee we'll get a unique new group number
+                                }
+                                
+                                var result = [];
+                                var i = 0;
+                                
+                                for (i = selectedData.length-1; i >= 0; i--)
+                                {
+                                    var current = selectedData[i];
+                                    result.push(current.id);
+                                    
+                                    if (current.group_number != groupNumber)
+                                    {
+                                        gdm.remove(current);
+
+                                        current.group_number = groupNumber;
+                                        gdm.insert(current);
+                                    }
+                                }
+
+                                sunnah.updateGroupNumber(listView, result, groupNumber);
+                                
+                                while (navigationPane.top != narrationPage) {
+                                    navigationPane.pop();
+                                }
+                            }
                             
                             onTriggered: {
                                 console.log("UserEvent: LinkNarrations");
                                 
-                                targetDialog.clearList();
                                 var all = listView.selectionList();
+                                var result = [];
                                 
-                                for (var i = 0; i < all.length; i++)
-                                {
-                                    var current = gdm.data(all[i]);
-                                    targetDialog.appendItem( current.name+" #"+current.hadith_number, true, i == 0 );
+                                for (var i = all.length-1; i >= 0; i--) {
+                                    result.push( gdm.data(all[i]) );
                                 }
                                 
-                                targetDialog.selectedPaths = all;
-                                targetDialog.show();
-                            }
-                            
-                            attachedObjects: [
-                                SystemListDialog
-                                {
-                                    id: targetDialog
-                                    property variant selectedPaths
-                                    title: qsTr("Choose Target Group") + Retranslate.onLanguageChanged
-                                    body: qsTr("Which is the correct hadith group you want to move these narrations into?") + Retranslate.onLanguageChanged
-                                    cancelButton.label: qsTr("Cancel")
-                                    confirmButton.label: qsTr("OK") + Retranslate.onLanguageChanged
-
-                                    onFinished: {
-                                        if (value == SystemUiResult.ConfirmButtonSelection)
-                                        {
-                                            var index = selectedIndices[0];
-                                            var groupNumber = gdm.data( selectedPaths[index] ).group_number;
-                                            updateSelectedGroup(selectedPaths, groupNumber);
-                                        }
-                                    }
-                                }
-                            ]
-                        },
-                        
-                        ActionItem
-                        {
-                            id: relink
-                            imageSource: "images/menu/ic_relink.png"
-                            title: qsTr("Move") + Retranslate.onLanguageChanged
-                            enabled: link.enabled
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RelinkNarrations");
+                                definition.source = "NarrationGroupPicker.qml";
+                                var ngp = definition.createObject();
+                                ngp.picked.connect(onPicked);
+                                ngp.apply(result);
                                 
-                                var groupNumber = gdm.data( gdm.last() ).group_number+1; // to guarantee we'll get a unique new group number
-                                updateSelectedGroup( listView.selectionList(), groupNumber );
+                                selectedData = result;
+                                navigationPane.push(ngp);
                             }
                         },
                         
@@ -190,14 +165,6 @@ NavigationPane
                         busy.delegateActive = false;
                     }
                     
-                    function onDecorated(data)
-                    {
-                        gdm.clear();
-                        gdm.insertList(data);
-                        
-                        listView.visible = !gdm.isEmpty();
-                    }
-                    
                     function onDataLoaded(id, data)
                     {
                         if (id == QueryId.FetchGroupedNarrations)
@@ -210,7 +177,7 @@ NavigationPane
                         } else if (id == QueryId.UnlinkNarrationsFromSimilar) {
                             persist.showToast( qsTr("Related narrations unlinked!"), unlinkSimilar.imageSource.toString()  );
                         } else if (id == QueryId.UpdateGroupNumbers) {
-                            persist.showToast( qsTr("Related narrations moved!"), relink.imageSource.toString()  );
+                            persist.showToast( qsTr("Related narrations moved!"), link.imageSource.toString()  );
                         }
                     }
                     
@@ -234,22 +201,7 @@ NavigationPane
                         {
                             type: "item"
                             
-                            Container
-                            {
-                                horizontalAlignment: HorizontalAlignment.Fill
-                                leftPadding: 10; rightPadding: 10; bottomPadding: 10
-                                
-                                Label {
-                                    id: bodyLabel
-                                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                                    multiline: true
-                                    text: ListItemData.body+" ("+ListItemData.name+" #"+ListItemData.hadith_number+")"
-                                }
-                                
-                                Divider {
-                                    topMargin: 0; bottomMargin: 0;
-                                }
-                            }
+                            NarrationListItem {}
                         }
                     ]
                     

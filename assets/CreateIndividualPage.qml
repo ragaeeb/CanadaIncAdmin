@@ -414,7 +414,7 @@ Page
                             DoubleTapHandler {
                                 onDoubleTapped: {
                                     console.log("UserEvent: PrefixDoubleTapped");
-                                    prefix.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                    prefix.text = offloader.toTitleCase( persist.getClipboardText() );
                                 }
                             }
                         ]
@@ -436,7 +436,7 @@ Page
                             DoubleTapHandler {
                                 onDoubleTapped: {
                                     console.log("UserEvent: IndividualKunyaDoubleTapped");
-                                    kunya.text = textUtils.toTitleCase( persist.getClipboardText() );
+                                    kunya.text = offloader.toTitleCase( persist.getClipboardText() );
                                 }
                             }
                         ]
@@ -573,7 +573,7 @@ Page
             scrollRole: ScrollRole.Main
             
             onCreationCompleted: {
-                maxHeight = deviceUtils.pixelSize/3;
+                maxHeight = deviceUtils.pixelSize.height/3;
             }
             
             dataModel: ArrayDataModel {

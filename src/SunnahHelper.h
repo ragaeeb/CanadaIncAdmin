@@ -31,8 +31,9 @@ public:
 	Q_INVOKABLE void fetchAllCollections(QObject* caller);
 	Q_INVOKABLE void fetchNarration(QObject* caller, qint64 collectionId, QString const& hadithNumber);
     Q_INVOKABLE void fetchNarrationsForSuitePage(QObject* caller, qint64 suitePageId);
-    Q_INVOKABLE void fetchGroupedNarrations(QObject* caller);
-    Q_INVOKABLE void linkNarrations(QObject* caller, QVariantList const& arabicIds);
+    Q_INVOKABLE void fetchNextAvailableGroupNumber(QObject* caller);
+    Q_INVOKABLE void fetchGroupedNarrations(QObject* caller, QVariantList const& ids=QVariantList());
+    Q_INVOKABLE void groupNarrations(QObject* caller, QVariantList const& arabicIds, qint64 groupNumber);
     Q_INVOKABLE void linkNarrationsToSuitePage(QObject* caller, qint64 suitePageId, QVariantList const& arabicIds);
     Q_INVOKABLE void searchNarrations(QObject* caller, QVariantList const& terms, QVariantList const& collections, bool restrictToShort);
     Q_INVOKABLE void unlinkNarrationsFromSuitePage(QObject* caller, QVariantList const& arabicIds, qint64 suitePageId);

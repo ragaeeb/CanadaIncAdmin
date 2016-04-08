@@ -65,9 +65,19 @@ void SunnahHelper::fetchNarrationsForSuitePage(QObject* caller, qint64 suitePage
 }
 
 
-void SunnahHelper::fetchGroupedNarrations(QObject* caller)
+void SunnahHelper::fetchNextAvailableGroupNumber(QObject* caller) {
+    m_sql->executeQuery(caller, "SELECT MAX(group_number)+1 AS group_number FROM grouped_narrations", QueryId::FetchNextGroupNumber);
+}
+
+
+void SunnahHelper::fetchGroupedNarrations(QObject* caller, QVariantList const& ids)
 {
     QString query = "SELECT grouped_narrations.id,narration_id,group_number,name,body,hadith_number FROM grouped_narrations INNER JOIN narrations ON narrations.id=narration_id INNER JOIN collections ON collections.id=collection_id";
+
+    if ( !ids.isEmpty() ) {
+        query += QString(" WHERE narration_id IN (%1)").arg( combine(ids) );
+    }
+
     m_sql->executeQuery(caller, query, QueryId::FetchGroupedNarrations);
 }
 
@@ -104,37 +114,20 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
 }
 
 
-void SunnahHelper::linkNarrations(QObject* caller, QVariantList const& arabicIds)
+void SunnahHelper::groupNarrations(QObject* caller, QVariantList const& arabicIds, qint64 groupNumber)
 {
-    LOGGER(arabicIds);
-/*
-    if ( arabicIds.size() > 1 )
+    LOGGER(arabicIds << groupNumber);
+
+    if ( groupNumber != 0 && arabicIds.size() > 1 )
     {
-        int firstRef = 0;
-        int secondRef = 0;
-        QStringList queryBlocks = QueryUtils::buildLinkQueryBlocks(arabicIds, firstRef, secondRef);
+        QStringList selects;
 
-        m_sql.attachIfNecessary(SIMILAR_DB, true);
-        m_sql.startTransaction(NULL, QueryId::Pending);
-
-        QStringList queryBlockChunk;
-
-        foreach (QString const& block, queryBlocks)
-        {
-            queryBlockChunk << block;
-
-            if ( queryBlockChunk.size() >= 30 )
-            {
-                queryBlockChunk.prepend( QString("INSERT OR IGNORE INTO similar.related (arabic_id,other_id) SELECT %1 AS 'arabicID', %2 AS 'otherID'").arg(firstRef).arg(secondRef) );
-                m_sql.executeQuery( NULL, queryBlockChunk.join(" "), QueryId::Pending );
-                queryBlockChunk.clear();
-            }
+        foreach (QVariant const& q, arabicIds) {
+            selects << QString("SELECT %1,%2").arg( q.toInt() ).arg(groupNumber);
         }
 
-        queryBlockChunk.prepend( QString("INSERT OR IGNORE INTO similar.related (arabic_id,other_id) SELECT %1 AS 'arabicID', %2 AS 'otherID'").arg(firstRef).arg(secondRef) );
-        m_sql.executeQuery( caller, queryBlockChunk.join(" "), QueryId::LinkingNarrations );
-        m_sql.endTransaction(caller, QueryId::LinkNarrations);
-    } */
+        m_sql->executeQuery(caller, QString("INSERT OR REPLACE INTO grouped_narrations (narration_id,group_number) %1").arg( selects.join(" UNION ") ), QueryId::GroupNarrations);
+    }
 }
 
 
@@ -155,7 +148,7 @@ void SunnahHelper::linkNarrationsToSuitePage(QObject* caller, qint64 suitePageId
         queryBlocks << QString("UNION SELECT %1,%2").arg(arabicID).arg(suitePageId);
     }
 
-    queryBlocks.prepend( QString("INSERT OR IGNORE INTO narration_explanations (narration_id,suite_page_id) SELECT %1 AS 'arabicID', %2 AS 'suitePageID'").arg( arabicIds.first().toInt() ).arg(suitePageId) );
+    queryBlocks.prepend( QString("INSERT OR REPLACE INTO narration_explanations (narration_id,suite_page_id) SELECT %1 AS 'arabicID', %2 AS 'suitePageID'").arg( arabicIds.first().toInt() ).arg(suitePageId) );
     m_sql->executeQuery( caller, queryBlocks.join(" "), QueryId::LinkNarrationsToSuitePage );
 }
 

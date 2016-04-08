@@ -18,11 +18,11 @@ QtObject
     function optimizeAndClean(input)
     {
         var n = invokeHelper.optimize(input);
-        n = textUtils.toTitleCase(n);
+        n = offloader.toTitleCase(n);
         n = n.replace(/\-[A-Z]{1}[a-z]{1}\-/, function(v) {
-                return v.toLowerCase();
+            return v.toLowerCase();
         });
-        
+
         return n;
     }
     
