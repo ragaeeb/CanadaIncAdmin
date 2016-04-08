@@ -17,11 +17,11 @@ TafsirHelper::TafsirHelper(DatabaseHelper* sql) : m_sql(sql)
 }
 
 
-QVariantMap TafsirHelper::addQuote(qint64 authorId, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
+QVariantMap TafsirHelper::addQuote(qint64 authorId, qint64 translatorId, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
-    LOGGER(authorId << body << reference << suiteId << uri);
+    LOGGER(authorId << translatorId << body << reference << suiteId << uri);
 
-    QVariantMap keyValues = TokenHelper::getTokensForQuote(authorId, body, reference, suiteId, uri);
+    QVariantMap keyValues = TokenHelper::getTokensForQuote(authorId, translatorId, body, reference, suiteId, uri);
     qint64 id = m_sql->executeInsert("quotes", keyValues);
     SET_AND_RETURN;
 }
@@ -68,11 +68,11 @@ QVariantMap TafsirHelper::editSuitePage(QObject* caller, qint64 id, QString cons
 }
 
 
-QVariantMap TafsirHelper::editQuote(QObject* caller, qint64 id, qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
+QVariantMap TafsirHelper::editQuote(QObject* caller, qint64 id, qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
-    LOGGER(id << author << body << reference << suiteId << uri);
+    LOGGER(id << author << translator << body << reference << suiteId << uri);
 
-    QVariantMap keyValues = TokenHelper::getTokensForQuote(author, body, reference, suiteId, uri);
+    QVariantMap keyValues = TokenHelper::getTokensForQuote(author, translator, body, reference, suiteId, uri);
     m_sql->executeUpdate(caller, "quotes", keyValues, QueryId::EditQuote, id);
     SET_AND_RETURN;
 }
@@ -169,7 +169,7 @@ void TafsirHelper::fetchQuote(QObject* caller, qint64 id)
 {
     LOGGER(id);
 
-    QString query = QString("SELECT quotes.author AS author_id, body,reference,suite_id,uri FROM quotes INNER JOIN individuals ON individuals.id=quotes.author WHERE quotes.id=%1").arg(id);
+    QString query = QString("SELECT quotes.author AS author_id,quotes.translator AS translator_id,body,reference,suite_id,uri FROM quotes INNER JOIN individuals ON individuals.id=quotes.author WHERE quotes.id=%1").arg(id);
     m_sql->executeQuery(caller, query, QueryId::FetchQuote);
 }
 
@@ -223,9 +223,13 @@ void TafsirHelper::searchQuote(QObject* caller, QString fieldName, QString const
     QString query;
     QVariantList args = QVariantList() << searchTerm;
 
-    if (fieldName == "author") {
-        query = QString("SELECT quotes.id,%1,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author WHERE %2 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") );
-        args << searchTerm << searchTerm;
+    if (fieldName == "author")
+    {
+        query = QString("SELECT quotes.id,%1,%3,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author INNER JOIN individuals j ON j.id=quotes.translator WHERE %2 OR %4 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg( NAME_FIELD("j","translator") ).arg( NAME_SEARCH("j") );
+
+        for (int i = 0; i < 5; i++) {
+            args << searchTerm;
+        }
     } else {
         query = QString("SELECT quotes.id,%2,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") );
     }

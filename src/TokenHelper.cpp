@@ -71,13 +71,14 @@ QVariantMap TokenHelper::getTokensForSuitePage(qint64 suiteId, QString const& bo
 }
 
 
-QVariantMap TokenHelper::getTokensForQuote(qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
+QVariantMap TokenHelper::getTokensForQuote(qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
     QVariantMap keyValues;
     keyValues["author"] = author;
     keyValues["body"] = body;
     keyValues["reference"] = reference;
     keyValues["suite_id"] = suiteId;
+    keyValues["translator"] = translator;
     keyValues["uri"] = uri;
 
     return keyValues;

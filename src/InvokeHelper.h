@@ -34,7 +34,7 @@ class InvokeHelper : public QObject
     void applyProperty(const char* field, QString const& value);
 
 private slots:
-    void createQuote(QVariant id, QString author, QString body, QString reference, QVariant suiteId, QString uri);
+    void createQuote(QVariant id, QVariant author, QVariant translator, QString body, QString reference, QVariant suiteId, QString uri);
 
 public:
     InvokeHelper(InvokeManager* invokeManager, TafsirHelper* tafsir);

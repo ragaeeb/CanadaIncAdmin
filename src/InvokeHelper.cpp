@@ -183,7 +183,7 @@ void InvokeHelper::process()
             applyProperty("reference", src);
             applyProperty("bufferText", buffer);
 
-            connect( m_root, SIGNAL( createQuote(QVariant, QString, QString, QString, QVariant, QString) ), this, SLOT( createQuote(QVariant, QString, QString, QString, QVariant, QString) ) );
+            connect( m_root, SIGNAL( createQuote(QVariant, QVariant, QVariant, QString, QString, QVariant, QString) ), this, SLOT( createQuote(QVariant, QVariant, QVariant, QString, QString, QVariant, QString) ) );
         }
     }
 }
@@ -197,11 +197,11 @@ QString InvokeHelper::optimize(QString input)
 }
 
 
-void InvokeHelper::createQuote(QVariant id, QString author, QString body, QString reference, QVariant suiteId, QString uri)
+void InvokeHelper::createQuote(QVariant id, QVariant author, QVariant translator, QString body, QString reference, QVariant suiteId, QString uri)
 {
     Q_UNUSED(id);
 
-    m_tafsir->addQuote( author.toLongLong(), body, reference, suiteId.toLongLong(), uri );
+    m_tafsir->addQuote( author.toLongLong(), translator.toLongLong(), body, reference, suiteId.toLongLong(), uri );
 
     Persistance::showBlockingDialog( tr("Quote added"), tr("Quote successfully added!"), tr("OK"), "" );
     m_invokeManager->sendCardDone( CardDoneMessage() );

@@ -10,7 +10,7 @@ Page
     property alias reference: referenceField.text
     property alias uri: uriField.text
     property alias bufferText: buffer.text
-    signal createQuote(variant id, string author, string body, string reference, variant suiteId, string uri)
+    signal createQuote(variant id, variant author, variant translator, string body, string reference, variant suiteId, string uri)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onQuoteIdChanged: {
@@ -26,6 +26,7 @@ Page
             var data = results[0];
             
             authorField.pickedId = data.author_id;
+            translatorField.pickedId = data.translator_id;
             bodyField.text = data.body;
             referenceField.text = data.reference;
             
@@ -53,7 +54,7 @@ Page
                 console.log("UserEvent: CreateQuoteSaveTriggered");
                 
                 if ( authorField.pickedId && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) ) {
-                    createQuote( quoteId, authorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.text.trim(), uriField.text.trim() );
+                    createQuote( quoteId, authorField.pickedId, translatorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.text.trim(), uriField.text.trim() );
                 }
             }
         }
@@ -73,7 +74,15 @@ Page
             IndividualTextField
             {
                 id: authorField
-                text: qsTr("Author name") + Retranslate.onLanguageChanged
+                text: qsTr("Author") + Retranslate.onLanguageChanged
+                table: "quotes"
+            }
+            
+            IndividualTextField
+            {
+                id: translatorField
+                field: "translator"
+                text: qsTr("Translator") + Retranslate.onLanguageChanged
                 table: "quotes"
             }
             

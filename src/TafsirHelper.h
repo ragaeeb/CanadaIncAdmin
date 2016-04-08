@@ -22,10 +22,10 @@ public:
     TafsirHelper(DatabaseHelper* sql);
     virtual ~TafsirHelper();
 
-    Q_INVOKABLE QVariantMap addQuote(qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
+    Q_INVOKABLE QVariantMap addQuote(qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
     Q_INVOKABLE QVariantMap addSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference);
     Q_INVOKABLE QVariantMap addSuitePage(qint64 suiteId, QString const& body, QString const& heading, QString const& reference);
-    Q_INVOKABLE QVariantMap editQuote(QObject* caller, qint64 quoteId, qint64 author, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
+    Q_INVOKABLE QVariantMap editQuote(QObject* caller, qint64 quoteId, qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
     Q_INVOKABLE QVariantMap editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference);
     Q_INVOKABLE QVariantMap editSuitePage(QObject* caller, qint64 suitePageId, QString const& body, QString const& heading, QString const& reference);
     Q_INVOKABLE void fetchAllQuotes(QObject* caller, qint64 individualId=0);

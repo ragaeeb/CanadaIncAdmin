@@ -47,9 +47,9 @@ NavigationPane
                     }
                 ]
                 
-                function onCreate(id, author, body, reference, suiteId, uri)
+                function onCreate(id, author, translator, body, reference, suiteId, uri)
                 {
-                    var x = tafsirHelper.addQuote(author, body, reference, suiteId, uri);
+                    var x = tafsirHelper.addQuote(author, translator, body, reference, suiteId, uri);
                     
                     adm.insert(0,x); // add the latest value to avoid refreshing entire list
                     listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
@@ -157,6 +157,13 @@ NavigationPane
                         text: qsTr("Reference") + Retranslate.onLanguageChanged
                         value: "reference"
                     }
+                    
+                    Option {
+                        description: qsTr("Search URI field") + Retranslate.onLanguageChanged
+                        imageSource: "images/dropdown/search_uri.png"
+                        text: qsTr("URI") + Retranslate.onLanguageChanged
+                        value: "uri"
+                    }
                 }
                 
                 ListView
@@ -192,19 +199,19 @@ NavigationPane
                         noElements.delegateActive = !listView.visible;
                     }
                     
-                    function onEdit(id, author, body, reference, suiteId, uri)
+                    function onEdit(id, author, translator, body, reference, suiteId, uri)
                     {
                         busy.delegateActive = true;
-                        tafsirHelper.editQuote(listView, id, author, body, reference, suiteId, uri);
+                        tafsirHelper.editQuote(listView, id, author, translator, body, reference, suiteId, uri);
                         
                         var current = dataModel.data(editIndexPath);
                         current["body"] = body;
                         current["reference"] = reference;
                         current["suite_id"] = suiteId;
                         current["uri"] = uri;
-                        
+
                         dataModel.replace(editIndexPath[0], current);
-                        
+
                         while (navigationPane.top != quotePickerPage) {
                             navigationPane.pop();
                         }
