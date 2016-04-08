@@ -21,11 +21,13 @@ class Offloader : public QObject
 
 private slots:
     void onResultsDecorated();
+    void onGroupedDecorated();
 
 public:
     Offloader();
     virtual ~Offloader();
 
+    Q_INVOKABLE void decorateGroupedResults(QVariantList const& input, QObject* caller);
     Q_INVOKABLE void decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries);
     Q_INVOKABLE static QVariantList decorateWebsites(QVariantList input);
     Q_INVOKABLE static QVariantList fillType(QVariantList input, int queryId);

@@ -49,6 +49,7 @@ public:
         FetchChapters,
         FetchChildren,
         FetchChoicesForQuestion,
+        FetchGroupedNarrations,
         FetchIndividualData,
         FetchNarrationsForSuitePage,
         FetchPageNumbers,
@@ -99,7 +100,8 @@ public:
         TranslateSuitePage,
         UnlinkAyatsFromTafsir,
         UnlinkNarrationsFromSuitePage,
-        UnlinkNarrationFromSimilar,
+        UnlinkNarrationsFromSimilar,
+        UpdateGroupNumbers,
         UpdateIdWithIndex,
         UpdateSortOrder,
         UpdateTafsirLink

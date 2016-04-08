@@ -164,6 +164,23 @@ TabbedPane
         }
     }
     
+    Tab
+    {
+        id: narrationsTab
+        title: qsTr("Narrations") + Retranslate.onLanguageChanged
+        description: qsTr("Ahadith") + Retranslate.onLanguageChanged
+        imageSource: "images/tabs/ic_narrations.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        
+        onTriggered: {
+            console.log("UserEvent: NarrationsTab");
+        }
+        
+        delegate: Delegate {
+            source: "NarrationsPane.qml"
+        }
+    }
+    
     onCreationCompleted: {
         app.lazyInitComplete.connect(spd.onReady);
     }

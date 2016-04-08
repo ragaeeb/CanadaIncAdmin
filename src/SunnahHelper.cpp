@@ -65,6 +65,13 @@ void SunnahHelper::fetchNarrationsForSuitePage(QObject* caller, qint64 suitePage
 }
 
 
+void SunnahHelper::fetchGroupedNarrations(QObject* caller)
+{
+    QString query = "SELECT grouped_narrations.id,narration_id,group_number,name,body,hadith_number FROM grouped_narrations INNER JOIN narrations ON narrations.id=narration_id INNER JOIN collections ON collections.id=collection_id";
+    m_sql->executeQuery(caller, query, QueryId::FetchGroupedNarrations);
+}
+
+
 void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params, QVariantList const& collections, bool restrictToShort)
 {
     LOGGER(params << collections);
@@ -162,11 +169,20 @@ void SunnahHelper::unlinkNarrationsFromSuitePage(QObject* caller, QVariantList c
 }
 
 
-void SunnahHelper::unlinkNarrationFromSimilar(QObject* caller, int arabicId)
+void SunnahHelper::unlinkNarrationFromSimilar(QObject* caller, QVariantList const& data)
 {
-    LOGGER(arabicId);
-    QString query = QString("DELETE FROM related WHERE arabic_id=%1 OR other_id=%1").arg(arabicId);
-    m_sql->executeQuery(caller, query, QueryId::UnlinkNarrationFromSimilar);
+    LOGGER(data);
+    QString query = QString("DELETE FROM grouped_narrations WHERE id IN (%1)").arg( combine(data) );
+    m_sql->executeQuery(caller, query, QueryId::UnlinkNarrationsFromSimilar);
+}
+
+
+void SunnahHelper::updateGroupNumber(QObject* caller, QVariantList const& ids, qint64 groupNumber)
+{
+    LOGGER(ids << groupNumber);
+
+    QString query = QString("UPDATE grouped_narrations SET group_number=%1 WHERE id IN (%2)").arg(groupNumber).arg( combine(ids) );
+    m_sql->executeQuery(caller, query, QueryId::UpdateGroupNumbers);
 }
 
 

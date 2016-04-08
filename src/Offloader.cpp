@@ -12,6 +12,42 @@
 #define KEY_KUNYA "kunya"
 #define KEY_NAME "name"
 #define KEY_PREFIX "prefix"
+#define KEY_NARRATION_BODY "body"
+
+namespace {
+
+struct RelatedStruct
+{
+    QVariantList data;
+    QObject* caller;
+    QString funcName;
+};
+
+RelatedStruct decorateResults(RelatedStruct rs)
+{
+    QVariantList input = rs.data;
+    LOGGER("*** SDFLKSDJFKLDS");
+
+    for (int i = input.size()-1; i > 0; i--)
+    {
+        QVariantMap current = input[i].toMap();
+        QString firstBody = input[0].toMap().value(KEY_NARRATION_BODY).toString();
+        QString currentBody = current.value(KEY_NARRATION_BODY).toString();
+        QString common = islamiclib::SimilarUtils::longestCommonSubstring(firstBody, currentBody);
+
+        currentBody.replace(common, "<span style='font-style:italic;color:lightgreen'>"+common+"</span>", Qt::CaseInsensitive);
+
+        current[KEY_NARRATION_BODY] = "<html>"+currentBody+"</html>";
+        input[i] = current;
+        LOGGER("*** SDFLKSDJFKLDfffffS");
+    }
+    LOGGER("*** SDFLKSDJFKLDS33");
+    rs.data = input;
+    LOGGER("*** SDFLKSDJFKLDS222");
+    return rs;
+}
+
+}
 
 namespace admin {
 
@@ -234,10 +270,34 @@ void Offloader::onResultsDecorated()
     QFutureWatcher<SimilarReference>* qfw = static_cast< QFutureWatcher<SimilarReference>* >( sender() );
     SimilarUtils::onResultsDecorated( qfw->result() );
 
-    SimilarReference sr = qfw->result();
-    bb::cascades::ArrayDataModel* adm = sr.adm;
-
     sender()->deleteLater();
+}
+
+
+void Offloader::onGroupedDecorated()
+{
+    LOGGER("*** HERE");
+    QFutureWatcher<RelatedStruct>* qfw = static_cast< QFutureWatcher<RelatedStruct>* >( sender() );
+    RelatedStruct rs = qfw->result();
+
+    LOGGER("*** HERE555");
+    QMetaObject::invokeMethod(rs.caller, "onDecorated", Qt::QueuedConnection, Q_ARG(QVariant, rs.data) );
+    LOGGER("*** HERE666");
+    sender()->deleteLater();
+}
+
+
+void Offloader::decorateGroupedResults(QVariantList const& input, QObject* caller)
+{
+    RelatedStruct rs;
+    rs.caller = caller;
+    rs.data = input;
+
+    QFutureWatcher<RelatedStruct>* qfw = new QFutureWatcher<RelatedStruct>(this);
+    connect( qfw, SIGNAL( finished() ), this, SLOT( onGroupedDecorated() ) );
+
+    QFuture<RelatedStruct> future = QtConcurrent::run(&decorateResults, rs);
+    qfw->setFuture(future);
 }
 
 
@@ -246,7 +306,7 @@ void Offloader::decorateSearchResults(QVariantList const& input, bb::cascades::A
     LOGGER(input.size() << queries);
 
     QFutureWatcher<SimilarReference>* qfw = new QFutureWatcher<SimilarReference>(this);
-    connect( qfw, SIGNAL( finished() ), this, SLOT( onResultsDecorated() ) );
+    connect( qfw, SIGNAL( finished() ), this, SLOT( onSimilarDecorated() ) );
 
     QFuture<SimilarReference> future = QtConcurrent::run(&SimilarUtils::decorateResults, input, adm, queries);
     qfw->setFuture(future);

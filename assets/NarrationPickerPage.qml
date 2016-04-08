@@ -252,9 +252,10 @@ Page
                         busy.delegateActive = false;
                         noElements.delegateActive = adm.isEmpty();
                         listView.visible = !adm.isEmpty();
+                        var trimmed = tftk.textField.text.trim();
                         
-                        if (listView.visible) {
-                            offloader.decorateSearchResults(data, adm, global.extractTokens( tftk.textField.text.trim() ) );
+                        if ( listView.visible && !isTurboQuery(trimmed) ) {
+                            offloader.decorateSearchResults(data, adm, extractTokens(trimmed) );
                         }
                     }
                 }
