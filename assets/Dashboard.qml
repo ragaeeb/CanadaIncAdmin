@@ -84,17 +84,6 @@ NavigationPane
                 }
             },
             
-            ActionItem
-            {
-                ActionBar.placement: ActionBarPlacement.OnBar
-                imageSource: "images/menu/ic_replicate.png"
-                title: qsTr("Replicate") + Retranslate.onLanguageChanged
-                
-                onTriggered: {
-                    app.replicateEnglishDatabase();
-                }
-            },
-            
             InvokeActionItem
             {
                 imageSource: "images/menu/ic_share_db.png"
@@ -114,13 +103,10 @@ NavigationPane
                 }
             }
         ]
-        
-        Container
-        {
-            Button {
-                text: qsTr("Update OCT10 Database") + Retranslate.onLanguageChanged
-            }
-        }
+    }
+    
+    function process()
+    {
     }
     
     attachedObjects: [

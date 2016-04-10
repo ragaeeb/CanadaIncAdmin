@@ -90,7 +90,7 @@ Page
             {
                 ilmHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
                 
-                popToRoot();
+                global.popToRoot(navigationPane, bioPage);
                 reload();
             }
             
@@ -193,14 +193,7 @@ Page
             ilmHelper.fetchBooksForAuthor(bioPage, individualId);
         }
     }
-    
-    function popToRoot()
-    {
-        while (navigationPane.top != bioPage) {
-            navigationPane.pop();
-        }
-    }
-    
+
     function checkForDuplicate(result)
     {
         var indexPath = bioModel.findExact(result);
@@ -209,7 +202,7 @@ Page
             bioModel.insert(result);
         }
         
-        popToRoot();
+        global.popToRoot(navigationPane, bioPage);
     }
     
     function onDataLoaded(id, data)
@@ -270,21 +263,21 @@ Page
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         } else if (id == QueryId.ReplaceSuite) {
             persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge_into.png" );
-            popToRoot();
+            global.popToRoot(navigationPane, bioPage);
             reload();
             return;
         } else if (id == QueryId.EditSuitePage) {
             persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
-            popToRoot();
+            global.popToRoot(navigationPane, bioPage);
         } else if (id == QueryId.EditSuite) {
             persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_bio.png" );
-            popToRoot();
+            global.popToRoot(navigationPane, bioPage);
         } else if (id == QueryId.RemoveSuite) {
             persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
-            popToRoot();
+            global.popToRoot(navigationPane, bioPage);
         } else if (id == QueryId.AddBioLink) {
             persist.showToast( qsTr("Biography added!!"), "images/menu/ic_add_bio.png" );
-            popToRoot();
+            global.popToRoot(navigationPane, bioPage);
             reload();
             return;
         }
@@ -306,7 +299,7 @@ Page
             function onSuitePicked(suites)
             {
                 ilmHelper.addBioLink(navigationPane, suites[0]);
-                popToRoot();
+                global.popToRoot(navigationPane, bioPage);
             }
             
             onTriggered: {

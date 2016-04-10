@@ -256,6 +256,8 @@ TabbedPane
                 app.compressProgress.connect(onCompressProgress);
                 app.requestComplete.connect(dismiss);
                 app.transferProgress.connect(onTransferring);
+
+                activePane.process();
             }
         }
     ]

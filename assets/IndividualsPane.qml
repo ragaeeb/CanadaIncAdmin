@@ -9,19 +9,12 @@ NavigationPane
         deviceUtils.cleanUpAndDestroy(page);
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != individualPicker) {
-            navigationPane.pop();
-        }
-    }
-    
     function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
     {
         var result = ilmHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
         individualPicker.model.replace(individualPicker.editIndexPath[0], result);
 
-        popToRoot();
+        global.popToRoot(navigationPane, individualPicker);
     }
     
     function onDataLoaded(id, data)
@@ -106,7 +99,7 @@ NavigationPane
                 persist.showToast( qsTr("The source and replacement individuals cannot be the same!"), "images/toast/same_people.png" );
             }
             
-            popToRoot();
+            global.popToRoot(navigationPane, individualPicker);
         }
         
         function replace(ListItemData)

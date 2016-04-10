@@ -147,6 +147,11 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
 }
 
 
+void TafsirHelper::lazyInit() {
+    m_sql->attachIfNecessary("tafsir_english", true);
+}
+
+
 void TafsirHelper::findDuplicateQuotes(QObject* caller, QString const& field)
 {
     LOGGER(field);
@@ -305,7 +310,6 @@ void TafsirHelper::setDatabaseName(QString const& name) {
 QString TafsirHelper::databaseName() const {
     return m_name;
 }
-
 
 
 TafsirHelper::~TafsirHelper()

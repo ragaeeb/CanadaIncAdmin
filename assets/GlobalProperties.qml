@@ -13,6 +13,14 @@ QtObject
         
         return result;
     }
+    
+    
+    function popToRoot(navigationPane,page)
+    {
+        while (navigationPane.top != page) {
+            navigationPane.pop();
+        }
+    }
 
     
     function optimizeAndClean(input)

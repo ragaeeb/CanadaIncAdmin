@@ -211,7 +211,7 @@ Page
                         
                         if (bodyField.editable)
                         {
-                            var body = textUtils.invokeHelper( persist.getClipboardText() );
+                            var body = invokeHelper.optimize( persist.getClipboardText() );
                             body = body.replace(/ÑÍãå Çááå/g, "رحمه الله");
                             body = body.replace(/ÍÝÙå Çááå/g, "حفظه الله");
                             body = body.replace(/æ ÇáÍãÏ ááå/g, "ماشاء الله");

@@ -67,13 +67,6 @@ Page
         reload();
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != tafsirPickerPage) {
-            navigationPane.pop();
-        }
-    }
-    
     function reload()
     {
         busy.delegateActive = true;
@@ -248,13 +241,13 @@ Page
                     var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference);
                     dataModel.replace(editIndexPath[0], current);
                     
-                    popToRoot();
+                    global.popToRoot(navigationPane, tafsirPickerPage);
                 }
                 
                 function onDelete(id)
                 {
                     removeItem({'id': id});
-                    popToRoot();
+                    global.popToRoot(navigationPane, tafsirPickerPage);
                 }
                 
                 function editItem(indexPath, ListItemData)
@@ -291,7 +284,7 @@ Page
                         persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
                     }
                     
-                    popToRoot();
+                    global.popToRoot(navigationPane, tafsirPickerPage);
                 }
                 
                 function merge(ListItemData)

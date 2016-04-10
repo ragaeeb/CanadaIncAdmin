@@ -106,7 +106,8 @@ public:
         UpdateGroupNumbers,
         UpdateIdWithIndex,
         UpdateSortOrder,
-        UpdateTafsirLink
+        UpdateTafsirLink,
+        FindLegacy
     };
 };
 

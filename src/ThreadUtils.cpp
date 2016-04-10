@@ -31,24 +31,4 @@ QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& dbPath)
 }
 
 
-bool ThreadUtils::seedDatabase(QString const& source, QStringList const& languages)
-{
-    foreach (QString const& language, languages)
-    {
-        QString dest = QString("%1/%2.db").arg( QDir::homePath() ).arg(language);
-
-        if ( QFile::exists(dest) )
-        {
-            LOGGER("RemoveExisting" << dest);
-            LOGGER( QFile::remove(dest) );
-        }
-
-        if ( !QFile::copy( QString("%1/%2.db").arg( QDir::homePath() ).arg(source), dest ) ) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 } /* namespace admin */
