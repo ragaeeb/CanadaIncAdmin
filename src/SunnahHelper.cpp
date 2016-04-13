@@ -83,6 +83,15 @@ void SunnahHelper::fetchGroupedNarrations(QObject* caller, QVariantList const& i
 }
 
 
+void SunnahHelper::fetchSimilarNarrations(QObject* caller, QVariantList const& ids)
+{
+    LOGGER(ids);
+
+    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE x.id IN (SELECT narration_id FROM grouped_narrations WHERE group_number=(SELECT group_number FROM grouped_narrations WHERE narration_id IN (%2)))").arg(NARRATION_COLUMNS).arg( combine(ids) );
+    m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
+}
+
+
 void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params, QVariantList const& collections, bool restrictToShort)
 {
     LOGGER(params << collections);

@@ -86,6 +86,7 @@ Page
                 }
                 
                 sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);
+                sunnah.fetchSimilarNarrations(listView, all);
                 popToRoot();
             }
             

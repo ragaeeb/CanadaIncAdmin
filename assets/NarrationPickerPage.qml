@@ -26,6 +26,12 @@ Page
         return elements;
     }
     
+    function populateAndSelect(data)
+    {
+        listView.onDataLoaded(QueryId.SearchNarrations, data);
+        listView.selectAllOnLoad = true;
+    }
+    
     actions: [
         DeleteActionItem
         {
@@ -164,10 +170,21 @@ Page
             layout: DockLayout {}
             horizontalAlignment: HorizontalAlignment.Fill
             verticalAlignment: VerticalAlignment.Fill
-            
+
             ListView
             {
                 id: listView
+                property bool selectAllOnLoad: false
+                
+                function loadingFinished()
+                {
+                    if (selectAllOnLoad)
+                    {
+                        multiSelectHandler.active = true;
+                        selectAll();
+                    }
+                }
+
                 multiSelectHandler.actions: [
                     ActionItem
                     {
@@ -210,6 +227,12 @@ Page
                             id: rootItem
                             horizontalAlignment: HorizontalAlignment.Fill
                             verticalAlignment: VerticalAlignment.Fill
+
+                            ListItem.onInitializedChanged: {
+                                if (initialized && ListItem.indexPath[0] == 0) {
+                                    ListItem.view.loadingFinished();
+                                }
+                            }
 
                             Header {
                                 id: header
@@ -262,7 +285,7 @@ Page
                         listView.visible = !adm.isEmpty();
                         var trimmed = tftk.textField.text.trim();
                         
-                        if ( listView.visible && !isTurboQuery(trimmed) ) {
+                        if ( listView.visible && trimmed.length > 0 && !isTurboQuery(trimmed) ) {
                             offloader.decorateSearchResults(data, adm, extractTokens(trimmed) );
                         }
                     }

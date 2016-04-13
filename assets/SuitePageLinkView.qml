@@ -59,10 +59,30 @@ ListView
         } else if (id == QueryId.UpdateSortOrder) {
             persist.showToast( qsTr("Sort order updated!"), "images/dropdown/save_bio.png" );
             busy.delegateActive = false;
+        } else if (id == QueryId.SearchNarrations && data.length > 0) {
+            definition.source = "NarrationPickerPage.qml";
+            persist.showToast( qsTr("Similar narrations found. Choose the ones you want to link."), "images/toast/similar_found.png" );
+            var p = definition.createObject();
+            p.picked.connect(onNarrationsPicked);
+            p.populateAndSelect(data);
+            
+            navigationPane.push(p);
         }
         
         listView.visible = !adm.isEmpty();
         noElements.delegateActive = !listView.visible;
+    }
+    
+    function onNarrationsPicked(elements)
+    {
+        var all = [];
+        
+        for (var i = elements.length-1; i >= 0; i--) {
+            all.push(elements[i].narration_id);
+        }
+        
+        sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);
+        popToRoot();
     }
     
     function onPeoplePicked(ids)

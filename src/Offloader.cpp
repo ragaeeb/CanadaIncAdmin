@@ -3,7 +3,7 @@
 #include "Offloader.h"
 #include "Logger.h"
 #include "QueryId.h"
-#include "SimilarUtils.h"
+#include "SearchDecorator.h"
 #include "TextUtils.h"
 
 #define ATTRIBUTE_TYPE_BIO "bio"
@@ -17,7 +17,6 @@
 namespace admin {
 
 using namespace canadainc;
-using namespace islamiclib;
 
 Offloader::Offloader()
 {
@@ -233,7 +232,7 @@ QVariantMap Offloader::parseName(QString const& n)
 void Offloader::onResultsDecorated()
 {
     QFutureWatcher<SimilarReference>* qfw = static_cast< QFutureWatcher<SimilarReference>* >( sender() );
-    SimilarUtils::onResultsDecorated( qfw->result() );
+    SearchDecorator::onResultsDecorated( qfw->result() );
 
     sender()->deleteLater();
 }
@@ -246,7 +245,7 @@ void Offloader::decorateSearchResults(QVariantList const& input, bb::cascades::A
     QFutureWatcher<SimilarReference>* qfw = new QFutureWatcher<SimilarReference>(this);
     connect( qfw, SIGNAL( finished() ), this, SLOT( onResultsDecorated() ) );
 
-    QFuture<SimilarReference> future = QtConcurrent::run(&SimilarUtils::decorateResults, input, adm, queries);
+    QFuture<SimilarReference> future = QtConcurrent::run(&SearchDecorator::decorateResults, input, adm, queries);
     qfw->setFuture(future);
 }
 
