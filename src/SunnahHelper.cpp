@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "TextUtils.h"
 
-#define NARRATION_COLUMNS "x.id,x.collection_id,y.hadith_number,x.body,name"
+#define NARRATION_COLUMNS "x.id AS narration_id,x.collection_id,y.hadith_number,x.body,name"
 #define LIKE_CLAUSE QString("(x.body LIKE '%' || ? || '%')")
 
 namespace {
@@ -61,7 +61,7 @@ void SunnahHelper::fetchNarrationsForSuitePage(QObject* caller, qint64 suitePage
 {
     LOGGER(suitePageId);
 
-    QString query = QString("SELECT narration_explanations.id,link_type,narration_id,hadith_number,collection_id,body,collections.name AS collection_name FROM sunnah_english.narrations INNER JOIN narration_explanations ON narrations.id=narration_explanations.narration_id INNER JOIN collections ON collections.id=narrations.collection_id WHERE suite_page_id=%1").arg(suitePageId);
+    QString query = QString("SELECT narration_explanations.id,link_type,narration_id,hadith_number,collection_id,body,collections.name FROM sunnah_english.narrations INNER JOIN narration_explanations ON narrations.id=narration_explanations.narration_id INNER JOIN collections ON collections.id=narrations.collection_id WHERE suite_page_id=%1").arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::FetchNarrationsForSuitePage);
 }
 

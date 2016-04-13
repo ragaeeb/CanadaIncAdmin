@@ -82,7 +82,7 @@ Page
                 var all = [];
                 
                 for (var i = elements.length-1; i >= 0; i--) {
-                    all.push(elements[i].id);
+                    all.push(elements[i].narration_id);
                 }
                 
                 sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);

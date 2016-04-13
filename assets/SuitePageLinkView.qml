@@ -1,4 +1,4 @@
-import bb.cascades 1.3
+import bb.cascades 1.4
 import com.canadainc.data 1.0
 
 ListView
@@ -208,185 +208,68 @@ ListView
         }
     }
     
+    onSelectionChangeEnded: {        
+        linkAction.enabled = selectionList().length > 0;
+    }
+    
+    multiSelectHandler.actions: [
+        LinkActionItem {
+            id: linkAction
+        }
+    ]
+    
     listItemComponents: [
         ListItemComponent
         {
             type: "bio"
             
-            StandardListItem
-            {
-                id: bioRoot
-                title: ListItemData.target
-                imageSource: ListItemData.points > 1 ? "images/list/ic_tafsir.png" : ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/tabs/ic_bio.png"
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: bioRoot.title
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_bio_link_edit.png"
-                            title: qsTr("Edit") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: UpdateBioLink");
-                                bioRoot.ListItem.view.updateBioLink(bioRoot.ListItem);
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_birth_city.png"
-                            title: qsTr("Birth City") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreateBirthCityQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("Where was %1 born?"), qsTr("%1 was born in %2."), qsTr("Was %1 was born in %2?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_death_age.png"
-                            title: qsTr("Death Age") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreateDeathAgeQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("How old was %1 (رحمه الله) when he passed away?"), qsTr("%1 (رحمه الله) was %2 when he passed away."), qsTr("Was %1 (رحمه الله) %2 when he passed away?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_masters_univ.png"
-                            title: qsTr("Masters University") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreateMastersUnivQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his Masters Degree in?"), qsTr("%1 completed his Masters Degree in %2."), qsTr("Did %1 complete his Masters Degree in %2?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_masters_year.png"
-                            title: qsTr("Masters Year") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreateMastersYearQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his Masters Degree?"), qsTr("%1 completed his Masters Degree in %2 AH."), qsTr("Did %1 complete his Masters Degree in %2 AH?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_phd_univ.png"
-                            title: qsTr("PhD University") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreatePhDUnivQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What university did %1 complete his PhD in?"), qsTr("%1 completed his PhD in %2."), qsTr("Did %1 complete his PhD in %2?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_phd_year.png"
-                            title: qsTr("PhD Year") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreatePhDYearQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What year did %1 complete his PhD?"), qsTr("%1 completed his PhD in %2 AH."), qsTr("Did %1 complete his PhD in %2 AH?") );
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_tribe.png"
-                            title: qsTr("Tribe") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CreateTribeQuestion");
-                                bioRoot.ListItem.view.produceQuestion( ListItemData, qsTr("What tribe was %1 from?"), qsTr("%1 was from the tribe of %2."), qsTr("Was %1 from the tribe of %2?") );
-                            }
-                        }
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_bio.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: DeleteBioLink");
-                                bioRoot.ListItem.view.removeBioLink(bioRoot.ListItem);
-                            }
-                        }
-                    }
-                ]
-            }
+            BiographyListItem {}
         },
         
         ListItemComponent
         {
             type: "ayat"
             
-            StandardListItem
-            {
-                id: rootItem
-                description: ListItemData.from_verse_number+"-"+ListItemData.to_verse_number
-                imageSource: "images/list/ic_tafsir_ayat.png"
-                title: ListItemData.surah_id
-                status: ListItemData.id
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: rootItem.title
-                        subtitle: rootItem.status
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_edit_link.png"
-                            title: qsTr("Edit") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: UpdateAyatTafsirLink");
-                                rootItem.ListItem.view.updateLink(rootItem.ListItem);
-                            }
-                        }
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_unlink_tafsir_ayat.png"
-                            title: qsTr("Unlink") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: UnlinkAyatFromTafsir");
-                                rootItem.ListItem.view.unlink(rootItem.ListItem);
-                            }
-                        }
-                    }
-                ]
-            }
+            AyatListItem {}
         },
         
         ListItemComponent
         {
             type: "narration"
             
-            StandardListItem
+            Container
             {
-                id: narration
-                description: ListItemData.body
-                imageSource: "images/list/ic_narration.png"
-                title: ListItemData.collection_name
-                status: ListItemData.hadith_number
+                id: narrationRoot
+                horizontalAlignment: HorizontalAlignment.Fill
+                leftPadding: 10; rightPadding: 10; bottomPadding: 10
+                
+                Header {
+                    title: ListItemData.name
+                    subtitle: ListItemData.hadith_number
+                }
+                
+                Label {
+                    id: bodyLabel
+                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                    multiline: true
+                    text: ListItemData.body
+                }
                 
                 contextActions: [
                     ActionSet
                     {
-                        title: narration.title
-                        subtitle: narration.status
+                        title: ListItemData.name
+                        subtitle: ListItemData.hadith_number
+                        
+                        MultiSelectActionItem
+                        {
+                            id: msa
+                            imageSource: "images/menu/ic_more_items.png"
+                            
+                            onTriggered: {
+                                narrationRoot.ListItem.view.multiSelectHandler.active = true;
+                            }
+                        }
                         
                         DeleteActionItem
                         {
@@ -407,42 +290,7 @@ ListView
         {
             type: "question"
             
-            StandardListItem
-            {
-                id: qsli
-                imageSource: ListItemData.source_id ? "images/list/ic_question_alias.png" : "images/list/ic_question.png"
-                status: ListItemData.difficulty ? ListItemData.difficulty.toString() : ""
-                title: ListItemData.standard_body ? ListItemData.standard_body : ""
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: qsli.title
-                        subtitle: qsli.status
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_edit_link.png"
-                            title: qsTr("Duplicate") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: DuplicateQuestion");
-                                qsli.ListItem.view.duplicateQuestion(qsli.ListItem, ListItemData);
-                            }
-                        }
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_question.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveQuestion");
-                                qsli.ListItem.view.removeQuestion(qsli.ListItem, ListItemData);
-                            }
-                        }
-                    }
-                ]
-            }
+            QuestionListItem {}
         }
     ]
 }
