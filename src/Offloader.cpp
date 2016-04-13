@@ -238,14 +238,14 @@ void Offloader::onResultsDecorated()
 }
 
 
-void Offloader::decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries)
+void Offloader::decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries, QString const& key)
 {
     LOGGER(input.size() << queries);
 
     QFutureWatcher<SimilarReference>* qfw = new QFutureWatcher<SimilarReference>(this);
     connect( qfw, SIGNAL( finished() ), this, SLOT( onResultsDecorated() ) );
 
-    QFuture<SimilarReference> future = QtConcurrent::run(&SearchDecorator::decorateResults, input, adm, queries);
+    QFuture<SimilarReference> future = QtConcurrent::run(&SearchDecorator::decorateResults, input, adm, queries, key);
     qfw->setFuture(future);
 }
 

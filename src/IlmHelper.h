@@ -60,7 +60,8 @@ public:
     Q_INVOKABLE void removeTeacher(QObject* caller, qint64 individual, qint64 teacherId);
     Q_INVOKABLE void removeWebsite(QObject* caller, qint64 id);
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
-    Q_INVOKABLE void searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint=QString(), bool startsWith=false);
+    Q_INVOKABLE void searchIndividuals(QObject* caller, QVariantList const& terms);
+    Q_INVOKABLE void searchIndividualsByDeath(QObject* caller, int death);
     Q_INVOKABLE void tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag);
 
     void lazyInit();

@@ -26,7 +26,7 @@ public:
     Offloader();
     virtual ~Offloader();
 
-    Q_INVOKABLE void decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries);
+    Q_INVOKABLE void decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries, QString const& key);
     Q_INVOKABLE static QVariantList decorateWebsites(QVariantList input);
     Q_INVOKABLE static QVariantList fillType(QVariantList input, int queryId);
     Q_INVOKABLE QVariantMap parseName(QString const& n);

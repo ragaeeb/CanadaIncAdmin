@@ -13,6 +13,10 @@ Page
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
+    function isDeathQuery(term) {
+        return new RegExp("^\\d{1,4}$").test(term);
+    }
+    
     actions: [
         ActionItem
         {
@@ -55,18 +59,6 @@ Page
             }
         },
         
-        TextInputActionItem
-        {
-            id: andConstraint
-            hintText: qsTr("AND...") + Retranslate.onLanguageChanged
-            input.submitKey: SubmitKey.Search
-            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-            input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
-            input.onSubmitted: {
-                performSearch();
-            }
-        },
-        
         DeleteActionItem
         {
             imageSource: "images/menu/ic_reset_fields.png"
@@ -75,7 +67,6 @@ Page
             onTriggered: {
                 console.log("UserEvent: ResetFields");
                 
-                andConstraint.resetText();
                 tftk.textField.resetText();
                 timer.restart();
             }
@@ -93,11 +84,7 @@ Page
             textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
             textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
             textField.input.onSubmitted: {
-                if (andConstraint.text.length > 0) {
-                    andConstraint.requestFocus();
-                } else {
-                    performSearch();
-                }
+                performSearch();
             }
         }
         
@@ -149,7 +136,11 @@ Page
             busy.delegateActive = true;
             noElements.delegateActive = false;
             
-            ilmHelper.searchIndividuals( listView, trimmed, andConstraint.text.trim(), flagAction.flag == 1 );
+            if ( isDeathQuery(trimmed) ) {
+                ilmHelper.searchIndividualsByDeath( listView, parseInt(trimmed) );
+            } else {
+                ilmHelper.searchIndividuals( listView, global.extractTokens(trimmed) );
+            }
         } else {
             ilmHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
         }
@@ -220,12 +211,10 @@ Page
                 listItemComponents: [
                     ListItemComponent
                     {
-                        StandardListItem
+                        IndividualListItem
                         {
                             id: sli
-                            imageSource: ListItemData.hidden == 1 ? "images/list/ic_hidden.png" : ListItemData.is_companion == 1 ? "images/list/ic_companion.png" : ListItemData.female == 1 ? "images/list/ic_female.png" : "images/list/ic_individual.png"
-                            title: ListItemData.display_name
-                            
+
                             contextActions: [
                                 ActionSet
                                 {
@@ -255,6 +244,12 @@ Page
                         adm.append(data);
                         
                         refresh();
+                        
+                        var trimmed = tftk.textField.text.trim();
+
+                        if ( listView.visible && trimmed.length > 0 && !isDeathQuery(trimmed) ) {
+                            offloader.decorateSearchResults(data, adm, global.extractTokens(trimmed), "display_name" );
+                        }
                     }
                 }
                 

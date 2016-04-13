@@ -44,7 +44,7 @@ void SunnahHelper::lazyInit()
 
 void SunnahHelper::fetchAllCollections(QObject* caller)
 {
-    m_sql->executeQuery(caller, "SELECT * FROM collections", QueryId::FetchAllCollections);
+    m_sql->executeQuery(caller, "SELECT * FROM collections ORDER BY name", QueryId::FetchAllCollections);
 }
 
 
@@ -99,7 +99,7 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
     int n = params.size();
     QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE (%2").arg(NARRATION_COLUMNS).arg(LIKE_CLAUSE);
 
-    if ( params.size() > 1 ) {
+    if (n > 1) {
         query += QString(" AND %1").arg(LIKE_CLAUSE).repeated(n-1);
     }
 

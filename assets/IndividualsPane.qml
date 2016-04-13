@@ -115,11 +115,9 @@ NavigationPane
         pickerList.listItemComponents: [
             ListItemComponent
             {
-                StandardListItem
+                IndividualListItem
                 {
                     id: sli
-                    imageSource: ListItemData.hidden == 1 ? "images/list/ic_hidden.png" : ListItemData.is_companion == 1 ? "images/list/ic_companion.png" : ListItemData.female == 1 ? "images/list/ic_female.png" : "images/list/ic_individual.png"
-                    title: ListItemData.display_name
                     
                     contextActions: [
                         ActionSet

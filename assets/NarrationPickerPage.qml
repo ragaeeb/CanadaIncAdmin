@@ -15,17 +15,6 @@ Page
         return new RegExp("^[a-w]{1}\\d{1,4}$").test(term) && ( term.charAt(0) in collectionCodes );
     }
     
-    function extractTokens(trimmed)
-    {
-        var elements = trimmed.match(/(?:[^\s"]+|"[^"]*")+/g);
-        
-        for (var j = elements.length-1; j >= 0; j--) {
-            elements[j] = elements[j].replace(/^"(.*)"$/, '$1');
-        }
-        
-        return elements;
-    }
-    
     function populateAndSelect(data)
     {
         listView.onDataLoaded(QueryId.SearchNarrations, data);
@@ -70,7 +59,7 @@ Page
                     if ( isTurboQuery(trimmed) ) {
                         sunnah.fetchNarration(listView, collectionCodes[trimmed.charAt(0)], trimmed.substring(1));
                     } else {
-                        var elements = extractTokens(trimmed);
+                        var elements = global.extractTokens(trimmed);
                         
                         var included = [];
                         
@@ -286,7 +275,7 @@ Page
                         var trimmed = tftk.textField.text.trim();
                         
                         if ( listView.visible && trimmed.length > 0 && !isTurboQuery(trimmed) ) {
-                            offloader.decorateSearchResults(data, adm, extractTokens(trimmed) );
+                            offloader.decorateSearchResults(data, adm, global.extractTokens(trimmed), "body" );
                         }
                     }
                 }

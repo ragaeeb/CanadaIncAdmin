@@ -145,17 +145,33 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 }
 
 
-void IlmHelper::searchIndividuals(QObject* caller, QString const& trimmedText, QString const& andConstraint, bool startsWith)
+void IlmHelper::searchIndividuals(QObject* caller, QVariantList const& params)
 {
-    LOGGER(trimmedText << andConstraint << startsWith);
+    LOGGER(params);
 
-    if ( QRegExp("\\d+$").exactMatch(trimmedText) ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%1,is_companion,hidden,female FROM individuals i WHERE death=? ORDER BY display_name").arg( NAME_FIELD("i","display_name") ), QueryId::SearchIndividuals, QVariantList() << trimmedText);
-    } else if ( andConstraint.isEmpty() ) {
-        m_sql->executeQuery(caller, QString("SELECT id,%2,is_companion,hidden,female FROM individuals i WHERE %1 ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i","display_name") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText);
-    } else {
-        m_sql->executeQuery(caller, QString("SELECT id,%2,is_companion,hidden,female FROM individuals i WHERE ((%1) AND (%3)) ORDER BY display_name").arg( NAME_SEARCH_FLAGGED("i", startsWith) ).arg( NAME_FIELD("i","display_name") ).arg( NAME_SEARCH("i") ), QueryId::SearchIndividuals, QVariantList() << trimmedText << trimmedText << trimmedText << andConstraint << andConstraint << andConstraint);
+    int n = params.size();
+    QString query = QString("SELECT id,%1,death,is_companion,hidden,female FROM individuals i WHERE (%2) ").arg( NAME_FIELD("i","display_name") ).arg( NAME_SEARCH_FLAGGED("i", false) );
+
+    if (n > 1) {
+        query += QString(" AND (%1)").arg( NAME_SEARCH_FLAGGED("i", false) ).repeated(n-1);
     }
+
+    query += " ORDER BY display_name";
+
+    QVariantList actualParams;
+
+    foreach (QVariant const& p, params) {
+        actualParams << p << p << p;
+    }
+
+    m_sql->executeQuery(caller, query, QueryId::SearchIndividuals, actualParams);
+}
+
+
+void IlmHelper::searchIndividualsByDeath(QObject* caller, int death)
+{
+    LOGGER(death);
+    m_sql->executeQuery(caller, QString("SELECT id,%1,death,is_companion,hidden,female FROM individuals i WHERE death=%2").arg( NAME_FIELD("i","display_name") ).arg(death), QueryId::SearchIndividuals);
 }
 
 
