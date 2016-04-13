@@ -7,7 +7,6 @@
 #include "TextUtils.h"
 
 #define NARRATION_COLUMNS "x.id AS narration_id,x.collection_id,y.hadith_number,x.body,name"
-#define LIKE_CLAUSE QString("(x.body LIKE '%' || ? || '%')")
 
 namespace {
 
@@ -97,10 +96,10 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
     LOGGER(params << collections);
 
     int n = params.size();
-    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE (%2").arg(NARRATION_COLUMNS).arg(LIKE_CLAUSE);
+    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE (%2").arg(NARRATION_COLUMNS).arg( LIKE_CLAUSE("x.body") );
 
     if (n > 1) {
-        query += QString(" AND %1").arg(LIKE_CLAUSE).repeated(n-1);
+        query += QString(" AND %1").arg( LIKE_CLAUSE("x.body") ).repeated(n-1);
     }
 
     query += ")";
