@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "Persistance.h"
 #include "QueryId.h"
+#include "SearchDecorator.h"
 #include "TafsirHelper.h"
 #include "TextUtils.h"
 
@@ -91,6 +92,12 @@ QString InvokeHelper::invoked(bb::system::InvokeRequest const& request)
     m_request.setTarget(target);
 
     return qml;
+}
+
+
+void InvokeHelper::lazyInit()
+{
+    qmlRegisterType<canadainc::SearchDecorator>("com.canadainc.data", 1, 0, "SearchDecorator");
 }
 
 

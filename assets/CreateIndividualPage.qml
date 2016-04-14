@@ -60,7 +60,7 @@ Page
                     if ( textUtils.isUrl(uri) ) {
                         var x = ilmHelper.addWebsite(individualId, uri);
                         adm.append(x);
-                        persist.showToast( qsTr("Website added!"), "asset:///images/menu/ic_add_site.png" );
+                        persist.showToast( qsTr("Website added!"), imageSource.toString() );
                         listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
@@ -87,7 +87,7 @@ Page
                     if ( ciu.isValidEmail(email) ) {
                         var x = ilmHelper.addWebsite(individualId, email);
                         adm.append(x);
-                        persist.showToast( qsTr("Email added!"), "asset:///images/menu/ic_add_email.png" );
+                        persist.showToast( qsTr("Email added!"), imageSource.toString() );
                         listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_email.png" );
@@ -111,13 +111,13 @@ Page
                 
                 if (phone.length > 0)
                 {
-                    if ( ciu.isValidPhoneNumber(phone) ) {
+                    if ( deviceUtils.isValidPhoneNumber(phone) ) {
                         var x = ilmHelper.addWebsite(individualId, phone);
                         adm.append(x);
-                        persist.showToast( qsTr("Phone Number added!"), "asset:///images/menu/ic_add_phone.png" );
+                        persist.showToast( qsTr("Phone Number added!"), imageSource.toString() );
                         listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
-                        persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_phone.png" );
+                        persist.showToast( qsTr("Invalid phone number entered!"), "images/menu/ic_remove_phone.png" );
                         console.log("FailedRegex", phone);
                     }
                 }

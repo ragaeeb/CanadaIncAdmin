@@ -42,6 +42,7 @@ public:
 
     void init(QString const& qmlDoc, QMap<QString, QObject*> context, QObject* parent);
     QString invoked(bb::system::InvokeRequest const& request);
+    void lazyInit();
     void process();
     Q_INVOKABLE QString optimize(QString input);
 };

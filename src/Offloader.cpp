@@ -1,10 +1,10 @@
 #include "precompiled.h"
 
 #include "Offloader.h"
+#include "DeviceUtils.h"
 #include "Logger.h"
 #include "QueryId.h"
 #include "SearchDecorator.h"
-#include "TextUtils.h"
 
 #define ATTRIBUTE_TYPE_BIO "bio"
 #define KEY_ATTRIBUTE_TYPE "type"
@@ -30,7 +30,7 @@ QVariantList Offloader::decorateWebsites(QVariantList input)
         QVariantMap q = input[i].toMap();
         QString uri = q.value("uri").toString();
 
-        if ( TextUtils::isUrl(uri) )
+        if ( DeviceUtils::isUrl(uri) )
         {
             q["type"] = "website";
 
@@ -53,9 +53,9 @@ QVariantList Offloader::decorateWebsites(QVariantList input)
             }
 
             q["imageSource"] = uri;
-        } else if ( TextUtils::isEmail(uri) ) {
+        } else if ( DeviceUtils::isValidEmail(uri) ) {
             q["type"] = "email";
-        } else if ( TextUtils::isPhoneNumber(uri) ) {
+        } else if ( DeviceUtils::isValidPhoneNumber(uri) ) {
             q["type"] = "phone";
         }
 
@@ -111,20 +111,17 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
 
 QString Offloader::toTitleCase(QString const& s)
 {
-    static const QString matchWords = QString("\\b([\\w'%1%2]+)\\b").arg( QChar(8217) ).arg( QChar(8216) );
-    static const QString littleWords = "\\b(a|an|and|as|at|by|for|if|in|of|on|or|to|the|ibn|bin|bint|b\\.)\\b";
     QString result = s.toLower();
 
-    QRegExp wordRegExp(matchWords);
+    QRegExp wordRegExp( QString("\\b([\\w'%1%2]+)\\b").arg( QChar(8217) ).arg( QChar(8216) ) );
     int i = wordRegExp.indexIn( result );
     QString match = wordRegExp.cap(1);
     bool first = true;
 
-    QRegExp littleWordRegExp(littleWords);
+    QRegExp littleWordRegExp("\\b(a|an|and|as|at|by|for|if|in|of|on|or|to|the|ibn|bin|bint|b\\.)\\b");
     while (i > -1)
     {
-        if ( match == match.toLower() && ( first || !littleWordRegExp.exactMatch( match ) ) )
-        {
+        if ( match == match.toLower() && ( first || !littleWordRegExp.exactMatch( match ) ) ) {
             result[i] = result[i].toUpper();
         }
 
@@ -229,29 +226,8 @@ QVariantMap Offloader::parseName(QString const& n)
 }
 
 
-void Offloader::onResultsDecorated()
-{
-    QFutureWatcher<SimilarReference>* qfw = static_cast< QFutureWatcher<SimilarReference>* >( sender() );
-    SearchDecorator::onResultsDecorated( qfw->result() );
-
-    sender()->deleteLater();
-}
-
-
-void Offloader::decorateSearchResults(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QVariantList const& queries, QString const& key)
-{
-    LOGGER(input.size() << queries);
-
-    QFutureWatcher<SimilarReference>* qfw = new QFutureWatcher<SimilarReference>(this);
-    connect( qfw, SIGNAL( finished() ), this, SLOT( onResultsDecorated() ) );
-
-    QFuture<SimilarReference> future = QtConcurrent::run(&SearchDecorator::decorateResults, input, adm, queries, key);
-    qfw->setFuture(future);
-}
-
-
 Offloader::~Offloader()
 {
 }
 
-} /* namespace quran */
+} /* namespace admin */

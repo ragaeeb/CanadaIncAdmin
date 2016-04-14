@@ -248,7 +248,7 @@ Page
                         var trimmed = tftk.textField.text.trim();
 
                         if ( listView.visible && trimmed.length > 0 && !isDeathQuery(trimmed) ) {
-                            offloader.decorateSearchResults(data, adm, global.extractTokens(trimmed), "display_name" );
+                            decorator.decorateSearchResults(data, adm, global.extractTokens(trimmed), "display_name" );
                         }
                     }
                 }
@@ -258,6 +258,12 @@ Page
                     console.log("UserEvent: IndividualPicked", d.display_name);
                     picked(d.id, d.display_name);
                 }
+                
+                attachedObjects: [
+                    SearchDecorator {
+                        id: decorator
+                    }
+                ]
             }
         }
         

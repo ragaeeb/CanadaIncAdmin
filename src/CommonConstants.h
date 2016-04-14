@@ -17,7 +17,6 @@ namespace admin {
 
 struct CommonConstants
 {
-    static QUrl generateGeocodingUrl();
 };
 
 }

@@ -18,10 +18,9 @@ NavigationPane
         actions: [
             ActionItem
             {
-                backgroundColor: Color.Green
                 ActionBar.placement: ActionBarPlacement.Signature
                 imageSource: "images/menu/ic_upload_local.png"
-                title: qsTr("Upload Quran10") + Retranslate.onLanguageChanged
+                title: qsTr("Upload") + Retranslate.onLanguageChanged
                 
                 onTriggered: {
                     var yes = persist.showBlockingDialog( qsTr("Upload"), qsTr("This will completely replace the remote database with your local one. Are you sure you want to do this?") );

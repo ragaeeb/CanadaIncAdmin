@@ -275,7 +275,7 @@ Page
                         var trimmed = tftk.textField.text.trim();
                         
                         if ( listView.visible && trimmed.length > 0 && !isTurboQuery(trimmed) ) {
-                            offloader.decorateSearchResults(data, adm, global.extractTokens(trimmed), "body" );
+                            decorator.decorateSearchResults(data, adm, global.extractTokens(trimmed), "body" );
                         }
                     }
                 }
@@ -285,6 +285,12 @@ Page
                     multiSelectHandler.active = true;
                     toggleSelection(indexPath);
                 }
+                
+                attachedObjects: [
+                    SearchDecorator {
+                        id: decorator
+                    }
+                ]
             }
             
             EmptyDelegate
