@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "TextUtils.h"
 
-#define NARRATION_COLUMNS "x.id AS narration_id,x.collection_id,y.hadith_number,x.body,name"
+#define NARRATION_COLUMNS "narrations.id AS narration_id,collection_id,hadith_num_ar AS hadith_number,body,name"
 
 namespace {
 
@@ -36,8 +36,7 @@ SunnahHelper::SunnahHelper(DatabaseHelper* sql) : m_sql(sql)
 
 void SunnahHelper::lazyInit()
 {
-    m_sql->attachIfNecessary("sunnah_english");
-    m_sql->attachIfNecessary("sunnah_arabic");
+    m_sql->attachIfNecessary("sunnah10");
 }
 
 
@@ -51,7 +50,7 @@ void SunnahHelper::fetchNarration(QObject* caller, qint64 collectionId, QString 
 {
     LOGGER(collectionId << hadithNumber);
 
-    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON collections.id=x.collection_id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE x.collection_id=%2 AND (x.hadith_number='%3' OR y.hadith_number='%3' OR x.hadith_number LIKE '%3 %' OR y.hadith_number LIKE '%3 %')").arg(NARRATION_COLUMNS).arg(collectionId).arg(hadithNumber);
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collections.id=collection_id WHERE collection_id=%2 AND (hadith_num_ar='%3' OR hadith_num_en='%3' OR hadith_num_ar LIKE '%3 %' OR hadith_num_en LIKE '%3 %')").arg(NARRATION_COLUMNS).arg(collectionId).arg(hadithNumber);
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
 }
 
@@ -60,7 +59,7 @@ void SunnahHelper::fetchNarrationsForSuitePage(QObject* caller, qint64 suitePage
 {
     LOGGER(suitePageId);
 
-    QString query = QString("SELECT narration_explanations.id,link_type,narration_id,hadith_number,collection_id,body,collections.name FROM sunnah_english.narrations INNER JOIN narration_explanations ON narrations.id=narration_explanations.narration_id INNER JOIN collections ON collections.id=narrations.collection_id WHERE suite_page_id=%1").arg(suitePageId);
+    QString query = QString("SELECT narration_explanations.id,link_type,narration_id,hadith_num_ar AS hadith_number,collection_id,body,collections.name FROM narrations INNER JOIN narration_explanations ON narrations.id=narration_explanations.narration_id INNER JOIN collections ON collections.id=narrations.collection_id WHERE suite_page_id=%1").arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::FetchNarrationsForSuitePage);
 }
 
@@ -72,7 +71,7 @@ void SunnahHelper::fetchNextAvailableGroupNumber(QObject* caller) {
 
 void SunnahHelper::fetchGroupedNarrations(QObject* caller, QVariantList const& ids)
 {
-    QString query = "SELECT grouped_narrations.id,narration_id,group_number,name,body,hadith_number FROM grouped_narrations INNER JOIN narrations ON narrations.id=narration_id INNER JOIN collections ON collections.id=collection_id";
+    QString query = "SELECT grouped_narrations.id,narration_id,group_number,name,body,hadith_num_ar AS hadith_number FROM grouped_narrations INNER JOIN narrations ON narrations.id=narration_id INNER JOIN collections ON collections.id=collection_id";
 
     if ( !ids.isEmpty() ) {
         query += QString(" WHERE narration_id IN (%1)").arg( combine(ids) );
@@ -86,7 +85,7 @@ void SunnahHelper::fetchSimilarNarrations(QObject* caller, QVariantList const& i
 {
     LOGGER(ids);
 
-    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE x.id IN (SELECT narration_id FROM grouped_narrations WHERE group_number=(SELECT group_number FROM grouped_narrations WHERE narration_id IN (%2)))").arg(NARRATION_COLUMNS).arg( combine(ids) );
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE narrations.id IN (SELECT narration_id FROM grouped_narrations WHERE group_number=(SELECT group_number FROM grouped_narrations WHERE narration_id IN (%2))) AND narrations.id NOT IN (%2)").arg(NARRATION_COLUMNS).arg( combine(ids) );
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
 }
 
@@ -96,10 +95,10 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
     LOGGER(params << collections);
 
     int n = params.size();
-    QString query = QString("SELECT %1 FROM sunnah_english.narrations x INNER JOIN collections ON x.collection_id=collections.id LEFT JOIN sunnah_arabic.narrations y ON x.id=y.id WHERE (%2").arg(NARRATION_COLUMNS).arg( LIKE_CLAUSE("x.body") );
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE (%2").arg(NARRATION_COLUMNS).arg( LIKE_CLAUSE("body") );
 
     if (n > 1) {
-        query += QString(" AND %1").arg( LIKE_CLAUSE("x.body") ).repeated(n-1);
+        query += QString(" AND %1").arg( LIKE_CLAUSE("body") ).repeated(n-1);
     }
 
     query += ")";
@@ -112,11 +111,11 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
             all << QString::number( q.toLongLong() );
         }
 
-        query += QString(" AND x.collection_id IN (%1)").arg( all.join(",") );
+        query += QString(" AND collection_id IN (%1)").arg( all.join(",") );
     }
 
     if (restrictToShort) {
-        query += " AND length(x.body) < 600";
+        query += " AND length(body) < 600";
     }
 
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations, params);

@@ -84,7 +84,7 @@ Page
 
                 if (email.length > 0)
                 {
-                    if ( ciu.isValidEmail(email) ) {
+                    if ( deviceUtils.isValidEmail(email) ) {
                         var x = ilmHelper.addWebsite(individualId, email);
                         adm.append(x);
                         persist.showToast( qsTr("Email added!"), imageSource.toString() );
@@ -710,10 +710,6 @@ Page
                     name.requestFocus();
                 }
             }
-        },
-        
-        CanadaIncUtils {
-            id: ciu
         }
     ]
 }

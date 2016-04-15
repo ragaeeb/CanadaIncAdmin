@@ -21,6 +21,13 @@ Page
         listView.selectAllOnLoad = true;
     }
     
+    function popToRoot()
+    {
+        while (navigationPane.top != searchRoot) {
+            navigationPane.pop();
+        }
+    }
+    
     actions: [
         DeleteActionItem
         {

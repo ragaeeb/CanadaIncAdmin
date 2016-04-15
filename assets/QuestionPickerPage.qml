@@ -10,6 +10,7 @@ Page
     signal openSuitePage(variant suitePageId)
     signal orderChanged()
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+    function cleanUp() {}
     
     titleBar: TitleBar
     {

@@ -4,6 +4,8 @@ Page
 {
     signal picked(int id)
     
+    function cleanUp() {}
+    
     titleBar: TitleBar {
         title: qsTr("Select Group") + Retranslate.onLanguageChanged
     }

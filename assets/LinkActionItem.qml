@@ -41,7 +41,7 @@ ActionItem
             console.log("NextGroupNumberAvailable", nextGroupNumber);
         } else if (id == QueryId.GroupNarrations) {
             persist.showToast( qsTr("Narrations successfully linked!"), linkAction.imageSource.toString() );
-            global.popToRoot(navigationPane, searchRoot);
+            popToRoot();
         }
     }
     
