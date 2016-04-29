@@ -51,6 +51,7 @@ public:
         FetchChoicesForQuestion,
         FetchGroupedNarrations,
         FetchIndividualData,
+        FetchNarration,
         FetchNarrationsForSuitePage,
         FetchNextGroupNumber,
         FetchPageNumbers,

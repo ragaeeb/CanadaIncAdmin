@@ -29,7 +29,12 @@ public:
 	void lazyInit();
 
 	Q_INVOKABLE void fetchAllCollections(QObject* caller);
-	Q_INVOKABLE void fetchNarration(QObject* caller, qint64 collectionId, QString const& hadithNumber);
+
+	/**
+	 * @param terms Should be a QVariantList of QVariantMaps with {'collection_id': qint64 CollectionID, 'hadith_number': QString HadithNumber}
+	 */
+	Q_INVOKABLE void fetchNarration(QObject* caller, QVariantList const& terms);
+	Q_INVOKABLE void fetchNarration(QObject* caller, qint64 narrationId);
     Q_INVOKABLE void fetchNarrationsForSuitePage(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void fetchNextAvailableGroupNumber(QObject* caller);
     Q_INVOKABLE void fetchSimilarNarrations(QObject* caller, QVariantList const& ids);

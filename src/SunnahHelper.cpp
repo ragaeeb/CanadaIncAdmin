@@ -6,7 +6,9 @@
 #include "Logger.h"
 #include "TextUtils.h"
 
+#define LIKE_CLAUSE(field) QString("(%1 LIKE '%' || ? || '%')").arg(field)
 #define NARRATION_COLUMNS "narrations.id AS narration_id,collection_id,hadith_num_ar AS hadith_number,body,name"
+#define TURBO_CLAUSE(collectionId, hadithNumber) QString("(collection_id=%1 AND (hadith_num_ar='%2' OR hadith_num_en='%2' OR hadith_num_ar LIKE '%2 %' OR hadith_num_en LIKE '%2 %'))").arg(collectionId).arg(hadithNumber)
 
 namespace {
 
@@ -46,12 +48,30 @@ void SunnahHelper::fetchAllCollections(QObject* caller)
 }
 
 
-void SunnahHelper::fetchNarration(QObject* caller, qint64 collectionId, QString const& hadithNumber)
+void SunnahHelper::fetchNarration(QObject* caller, QVariantList const& terms)
 {
-    LOGGER(collectionId << hadithNumber);
+    LOGGER(terms);
 
-    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collections.id=collection_id WHERE collection_id=%2 AND (hadith_num_ar='%3' OR hadith_num_en='%3' OR hadith_num_ar LIKE '%3 %' OR hadith_num_en LIKE '%3 %')").arg(NARRATION_COLUMNS).arg(collectionId).arg(hadithNumber);
+    QStringList clauses;
+
+    foreach (QVariant const& q, terms)
+    {
+        QVariantMap qvm = q.toMap();
+        qint64 collectionId = qvm.value("collection_id").toLongLong();
+        QString hadithNumber = qvm.value("hadith_number").toString();
+        clauses << TURBO_CLAUSE(collectionId, hadithNumber);
+    }
+
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE %2").arg(NARRATION_COLUMNS).arg( clauses.join(" OR ") );
+
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
+}
+
+
+void SunnahHelper::fetchNarration(QObject* caller, qint64 narrationId)
+{
+    LOGGER(narrationId);
+    m_sql->executeQuery(caller, QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE narrations.id=%2").arg(NARRATION_COLUMNS).arg(narrationId), QueryId::FetchNarration);
 }
 
 

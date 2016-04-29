@@ -86,7 +86,11 @@ Page
                 }
                 
                 sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);
-                sunnah.fetchSimilarNarrations(listView, all);
+                
+                if ( persist.getValueFor("promptSimilar") == 1 ) {
+                    sunnah.fetchSimilarNarrations(listView, all);
+                }
+
                 popToRoot();
             }
             
@@ -215,7 +219,7 @@ Page
     titleBar: TitleBar
     {
         scrollBehavior: TitleBarScrollBehavior.NonSticky
-        title: qsTr("Ayats") + Retranslate.onLanguageChanged
+        title: qsTr("Links") + Retranslate.onLanguageChanged
         
         dismissAction: ActionItem
         {
@@ -247,7 +251,7 @@ Page
         {
 			id: lookupAction
             imageSource: "images/dropdown/search_reference.png"
-            title: qsTr("Picker") + Retranslate.onLanguageChanged
+            title: qsTr("Surah") + Retranslate.onLanguageChanged
             
             function onPicked(chapter, verse)
             {
@@ -287,7 +291,7 @@ Page
         {
             id: noElements
             graphic: "images/placeholders/empty_suite_ayats.png"
-            labelText: qsTr("No ayats linked. Tap on the Add button to add a new one.") + Retranslate.onLanguageChanged
+            labelText: qsTr("No links found. Tap on the Add button to add a new one.") + Retranslate.onLanguageChanged
             
             onImageTapped: {
                 addAction.triggered();

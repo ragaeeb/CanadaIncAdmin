@@ -32,6 +32,13 @@ Page
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
                 
+                PersistCheckBox
+                {
+                    id: promptSimilar
+                    text: qsTr("Prompt To Link Similar?") + Retranslate.onLanguageChanged
+                    key: "promptSimilar"
+                }
+                
                 PersistDropDown
                 {
                     title: qsTr("Ilm Language") + Retranslate.onLanguageChanged

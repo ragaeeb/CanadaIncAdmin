@@ -129,13 +129,17 @@ ListView
             prompt.indexPath = indexPath;
             navigationPane.push(page);
         } else if (t == "narration") {
-            persist.invoke("com.canadainc.Sunnah10.shortcut", "bb.action.VIEW", "", "sunnah://id/"+d.narration_id);
+            definition.source = "NarrationProfilePage.qml";
+            var page = definition.createObject();
+            page.narrationId = d.narration_id;
+            
+            navigationPane.push(page);
         } else {
             definition.source = "ProfilePage.qml";
             var page = definition.createObject();
             page.individualsPicked.connect(onPeoplePicked);
             page.individualId = d.target_id;
-            
+
             navigationPane.push(page);
         }
     }
@@ -235,6 +239,33 @@ ListView
     multiSelectHandler.actions: [
         LinkActionItem {
             id: linkAction
+        },
+        
+        DeleteActionItem
+        {
+            imageSource: "images/menu/ic_unlink_narration.png"
+            title: qsTr("Unlink") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: UnlinkNarrationsFromSuitePage");
+                var all = listView.selectionList();
+                var result = [];
+                var i = 0;
+                
+                for (i = all.length-1; i >= 0; i--) {
+                    result.push( listView.dataModel.data(all[i]).narration_id );
+                }
+                
+                for (i = adm.size()-1; i >= 0; i--)
+                {
+                    if ( result.indexOf( adm.value(i).narration_id ) != -1 ) {
+                        adm.removeAt(i);
+                    }
+                }
+
+                busy.delegateActive = true;
+                sunnah.unlinkNarrationsFromSuitePage(listView, result, suitePageId);
+            }
         }
     ]
     
@@ -298,7 +329,7 @@ ListView
                             
                             onTriggered: {
                                 console.log("UserEvent: UnlinkNarrationFromSuitePage");
-                                narration.ListItem.view.unlinkNarration(narration.ListItem);
+                                narrationRoot.ListItem.view.unlinkNarration(narrationRoot.ListItem);
                             }
                         }
                     }

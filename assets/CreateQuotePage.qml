@@ -71,18 +71,18 @@ Page
             verticalAlignment: VerticalAlignment.Fill
             topPadding: 10
             
-            IndividualTextField
+            AuthorControl
             {
                 id: authorField
-                text: qsTr("Author") + Retranslate.onLanguageChanged
+                label: qsTr("Author") + Retranslate.onLanguageChanged
                 table: "quotes"
             }
             
-            IndividualTextField
+            AuthorControl
             {
                 id: translatorField
                 field: "translator"
-                text: qsTr("Translator") + Retranslate.onLanguageChanged
+                label: qsTr("Translator") + Retranslate.onLanguageChanged
                 table: "quotes"
             }
             

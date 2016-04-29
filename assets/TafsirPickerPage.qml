@@ -49,6 +49,18 @@ Page
                     type: SystemShortcuts.CreateNew
                 }
             ]
+        },
+        
+        DeleteActionItem
+        {
+            id: clearAll
+            imageSource: "images/menu/ic_reset_search.png"
+            title: qsTr("Clear") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                tftk.textField.resetText();
+                tftk.textField.requestFocus();
+            }
         }
     ]
     

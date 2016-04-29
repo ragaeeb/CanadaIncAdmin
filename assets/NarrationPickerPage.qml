@@ -11,8 +11,21 @@ Page
     
     function cleanUp() {}
     
-    function isTurboQuery(term) {
-        return new RegExp("^[a-w]{1}\\d{1,4}$").test(term) && ( term.charAt(0) in collectionCodes );
+    function isTurboQuery(term)
+    {
+        var regex = new RegExp("^[a-w]{1}\\d{1,4}$");
+        var tokens = term.split(" ");
+        
+        for (var i = tokens.length-1 ; i >= 0; i--)
+        {
+            var current = tokens[i];
+            
+            if ( !regex.test(current) || !( current.charAt(0) in collectionCodes ) ) {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     function populateAndSelect(data)
@@ -29,6 +42,31 @@ Page
     }
     
     actions: [
+        ActionItem
+        {
+            ActionBar.placement: ActionBarPlacement.Signature
+            imageSource: "images/menu/ic_search_append.png"
+            title: qsTr("Append") + Retranslate.onLanguageChanged
+            
+            function onNarrationsSelected(all)
+            {
+                adm.insert(0, all);
+                
+                popToRoot();
+                updateState();
+                
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+            }
+            
+            onTriggered: {
+                definition.source = "NarrationPickerPage.qml";
+                var searchPage = definition.createObject();
+                searchPage.picked.connect(onNarrationsSelected);
+
+                navigationPane.push(searchPage);
+            }
+        },
+        
         DeleteActionItem
         {
             id: clearAll
@@ -63,14 +101,27 @@ Page
                 
                 if (trimmed.length > 0)
                 {
-                    if ( isTurboQuery(trimmed) ) {
-                        sunnah.fetchNarration(listView, collectionCodes[trimmed.charAt(0)], trimmed.substring(1));
+                    var i = 0;
+                    
+                    if ( isTurboQuery(trimmed) )
+                    {
+                        var terms = [];
+                        var tokens = trimmed.split(" ");
+                        
+                        for (i = tokens.length-1; i >= 0; i--)
+                        {
+                            var current = tokens[i];
+                            
+                            terms.push({'collection_id': collectionCodes[current.charAt(0)], 'hadith_number': current.substring(1)});
+                        }
+                        
+                        sunnah.fetchNarration(listView, terms);
                     } else {
                         var elements = global.extractTokens(trimmed);
                         
                         var included = [];
                         
-                        for (var i = includedCollections.length-1; i >= 0; i--) {
+                        for (i = includedCollections.length-1; i >= 0; i--) {
                             included.push(includedCollections[i].id);
                         }
                         
@@ -180,6 +231,15 @@ Page
                         selectAll();
                     }
                 }
+                
+                function openNarration(narration)
+                {
+                    definition.source = "NarrationProfilePage.qml";
+                    var page = definition.createObject();
+                    page.narrationId = narration.narration_id;
+
+                    navigationPane.push(page);
+                }
 
                 multiSelectHandler.actions: [
                     ActionItem
@@ -261,7 +321,7 @@ Page
                                         title: qsTr("Open") + Retranslate.onLanguageChanged
                                         
                                         onTriggered: {
-                                            persist.invoke("com.canadainc.Sunnah10.shortcut", "bb.action.VIEW", "", "sunnah://id/"+ListItemData.narration_id);
+                                            rootItem.ListItem.view.openNarration(ListItemData);
                                         }
                                     }
                                 }
@@ -276,9 +336,8 @@ Page
                     {
                         adm.clear();
                         adm.append(data);
-                        busy.delegateActive = false;
-                        noElements.delegateActive = adm.isEmpty();
-                        listView.visible = !adm.isEmpty();
+                        updateState();
+
                         var trimmed = tftk.textField.text.trim();
                         
                         if ( listView.visible && trimmed.length > 0 && !isTurboQuery(trimmed) ) {
@@ -318,6 +377,13 @@ Page
                 asset: "images/progress/loading_narrations.png"
             }
         }
+    }
+    
+    function updateState()
+    {
+        busy.delegateActive = false;
+        noElements.delegateActive = adm.isEmpty();
+        listView.visible = !adm.isEmpty();
     }
     
     attachedObjects: [
