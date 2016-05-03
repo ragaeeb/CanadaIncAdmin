@@ -13,7 +13,8 @@ Page
     
     function isTurboQuery(term)
     {
-        var regex = new RegExp("^[a-w]{1}\\d{1,4}$");
+        // w14 or w14-16
+        var regex = new RegExp("^[a-w]{1}\\d{1,4}(-\\d{1,4}){0,1}$");
         var tokens = term.split(" ");
         
         for (var i = tokens.length-1 ; i >= 0; i--)
@@ -99,7 +100,16 @@ Page
             textField.input.onSubmitted: {
                 var trimmed = tftk.textField.text.trim();
                 
-                if (trimmed.length > 0)
+                if ( new RegExp("^\\d+$").test(trimmed) )
+                {
+                    var confirmed = persist.showBlockingDialog( qsTr("Confirmation"), qsTr("Are you sure you want to search just a number?") );
+                    
+                    if (!confirmed) {
+                        return;
+                    }
+                }
+                
+                if (trimmed.length > 1)
                 {
                     var i = 0;
                     
@@ -111,8 +121,14 @@ Page
                         for (i = tokens.length-1; i >= 0; i--)
                         {
                             var current = tokens[i];
+                            var range = current.split("-");
+                            var collectionId = collectionCodes[range[0].charAt(0)];
+                            var start = parseInt( range[0].substring(1) );
+                            var end = range.length > 1 ? parseInt( range[1] ) : start;
                             
-                            terms.push({'collection_id': collectionCodes[current.charAt(0)], 'hadith_number': current.substring(1)});
+                            for (start; start <= end; start++) {
+                                terms.push({'collection_id': collectionId, 'hadith_number': start.toString()});
+                            }
                         }
                         
                         sunnah.fetchNarration(listView, terms);
