@@ -1,3 +1,4 @@
+import QtQuick 1.0
 import bb.cascades 1.0
 import com.canadainc.data 1.0
 
@@ -25,8 +26,11 @@ Page
         } else if (id == QueryId.SearchNarrations) {
             adm.clear();
             adm.append(data);
-            similar.subtitle = data.length;
-            similar.visible = !adm.isEmpty();
+            listView.visible = !adm.isEmpty();
+            
+            if ( !adm.isEmpty() && body.text.length < 600 ) {
+                decorator.decorateSimilar(data, adm, body, "body");
+            }
         }
     }
     
@@ -44,36 +48,55 @@ Page
             horizontalAlignment: HorizontalAlignment.Fill
             leftPadding: 10; rightPadding: 10; topPadding: 10
             
-            Label
+            ScrollView
             {
-                id: body
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
-                multiline: true
+                
+                Label
+                {
+                    id: body
+                    property string decorated
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    verticalAlignment: VerticalAlignment.Fill
+                    multiline: true
+                    
+                    onDecoratedChanged: {
+                        text = decorated;
+                    }
+                }
             }
-        }
-        
-        Header {
-            id: similar
-            title: qsTr("Similar") + Retranslate.onLanguageChanged
+            
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: listView.visible ? 1 : 0.5
+            }
         }
         
         ListView
         {
+            id: listView
             horizontalAlignment: HorizontalAlignment.Fill
             verticalAlignment: VerticalAlignment.Fill
-            visible: similar.visible
             
             dataModel: ArrayDataModel {
                 id: adm
             }
             
             listItemComponents: [
-                ListItemComponent
-                {
+                ListItemComponent {
                     NarrationListItem {}
                 }
             ]
+            
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: listView.visible ? 1 : 0.5
+            }
         }
     }
+    
+    attachedObjects: [
+        SearchDecorator {
+            id: decorator
+        }
+    ]
 }

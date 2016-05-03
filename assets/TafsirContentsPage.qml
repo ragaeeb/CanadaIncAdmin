@@ -82,6 +82,8 @@ Page
                 
                 popToRoot();
                 refresh();
+                
+                listView.triggered([0]); // open it up so user can add links
             }
             
             onTriggered: {
