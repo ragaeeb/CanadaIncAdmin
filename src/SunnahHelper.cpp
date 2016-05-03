@@ -94,7 +94,7 @@ void SunnahHelper::fetchGroupedNarrations(QObject* caller, QVariantList const& i
     QString query = "SELECT grouped_narrations.id,narration_id,group_number,name,body,hadith_num_ar AS hadith_number FROM grouped_narrations INNER JOIN narrations ON narrations.id=narration_id INNER JOIN collections ON collections.id=collection_id";
 
     if ( !ids.isEmpty() ) {
-        query += QString(" WHERE narration_id IN (%1) GROUP BY group_number").arg( combine(ids) );
+        query += QString(" WHERE narration_id IN (%1)").arg( combine(ids) );
     }
 
     m_sql->executeQuery(caller, query, QueryId::FetchGroupedNarrations);
