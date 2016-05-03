@@ -68,6 +68,22 @@ Page
             }
         },
         
+        ActionItem
+        {
+            id: selectAll
+            ActionBar.placement: ActionBarPlacement.OnBar
+            imageSource: "images/menu/ic_select_all_narrations.png"
+            enabled: false
+            title: qsTr("Select All") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: SelectAllNarrations");
+
+                listView.multiSelectHandler.active = true;
+                listView.selectAll();
+            }
+        },
+        
         DeleteActionItem
         {
             id: clearAll
@@ -281,6 +297,12 @@ Page
                     }
                 ]
                 
+                multiSelectHandler.onActiveChanged: {
+                    if (!active) {
+                        listView.clearSelection();
+                    }
+                }
+                
                 onSelectionChanged: {
                     var n = selectionList().length;
                     linkAction.enabled = n > 1;
@@ -400,6 +422,7 @@ Page
         busy.delegateActive = false;
         noElements.delegateActive = adm.isEmpty();
         listView.visible = !adm.isEmpty();
+        selectAll.enabled = listView.visible;
     }
     
     attachedObjects: [
