@@ -7,9 +7,18 @@
 
 namespace admin {
 
+struct UploadData
+{
+    QByteArray data;
+    QString md5;
+    bool notifyClients;
+
+    UploadData() : notifyClients(false) {}
+};
+
 struct ThreadUtils
 {
-    static QPair<QByteArray, QString> compressDatabase(QString const& tafsirPath);
+    static UploadData compressDatabase(QString const& tafsirPath, bool notifyClients);
 };
 
 } /* namespace quran */

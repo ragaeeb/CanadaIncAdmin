@@ -18,16 +18,20 @@ NavigationPane
         actions: [
             ActionItem
             {
+                id: upload
                 ActionBar.placement: ActionBarPlacement.Signature
                 imageSource: "images/menu/ic_upload_local.png"
                 title: qsTr("Upload") + Retranslate.onLanguageChanged
+
+                function onFinished(confirmed, notifyClients)
+                {
+                    if (confirmed) {
+                        app.compressIlmDatabase(notifyClients);
+                    }
+                }
                 
                 onTriggered: {
-                    var yes = persist.showBlockingDialog( qsTr("Upload"), qsTr("This will completely replace the remote database with your local one. Are you sure you want to do this?") );
-                    
-                    if (yes) {
-                        app.compressIlmDatabase();
-                    }
+                    var yes = persist.showDialog( upload, qsTr("Upload"), qsTr("This will completely replace the remote database with your local one. Are you sure you want to do this?"), qsTr("Yes"), qsTr("No"), qsTr("Notify Consumers?"), false );
                 }
             },
             

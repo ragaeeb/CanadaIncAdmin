@@ -8,9 +8,9 @@
 
 namespace admin {
 
-QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& dbPath)
+UploadData ThreadUtils::compressDatabase(QString const& dbPath, bool notifyClients)
 {
-    LOGGER(dbPath);
+    LOGGER(dbPath << notifyClients);
 
     QStringList toCompress;
     toCompress << QString("%1/%2.db").arg( QDir::homePath() ).arg(dbPath);
@@ -27,7 +27,12 @@ QPair<QByteArray, QString> ThreadUtils::compressDatabase(QString const& dbPath)
 
     LOGGER("CompressionComplete" << md5);
 
-    return qMakePair<QByteArray, QString>(qba, md5);
+    UploadData ud;
+    ud.notifyClients = notifyClients;
+    ud.data = qba;
+    ud.md5 = md5;
+
+    return ud;
 }
 
 

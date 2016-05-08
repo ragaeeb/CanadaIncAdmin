@@ -51,7 +51,7 @@ Page
             
             function onNarrationsSelected(all)
             {
-                adm.insert(0, all);
+                app.doDiff(all, adm, "narration_id");
                 
                 popToRoot();
                 updateState();

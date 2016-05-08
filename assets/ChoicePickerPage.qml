@@ -132,7 +132,8 @@ Page
                 
                 if (value.length > 0)
                 {
-                    ListItemData = ilmTest.editChoice(listView, ListItemData.id, value);
+                    ilmTest.editChoice(listView, ListItemData.id, value);
+                    ListItemData.value_text = value;
                     adm.replace(ListItem.indexPath[0], ListItemData);
                 }
             }

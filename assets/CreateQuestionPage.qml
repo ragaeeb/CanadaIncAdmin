@@ -27,7 +27,7 @@ Page
     function sourceFrom(questionId, sourceId)
     {
         ilmTest.fetchQuestion(createPage, questionId);
-        sourceIdField.text = sourceId.toString();
+        sourceIdField.text = sourceId ? sourceId.toString() : questionId.toString();
     }
     
     titleBar: TitleBar

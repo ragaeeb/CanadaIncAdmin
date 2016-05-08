@@ -12,6 +12,7 @@
 #include "SunnahHelper.h"
 #include "TafsirHelper.h"
 #include "TextUtils.h"
+#include "ThreadUtils.h"
 
 #include <bb/system/CardDoneMessage>
 
@@ -43,7 +44,7 @@ class ApplicationUI : public QObject
     QFile m_target;
     InvokeHelper m_invoke;
     TextUtils m_textUtils;
-    QFutureWatcher< QPair<QByteArray, QString> > m_compressor;
+    QFutureWatcher<UploadData> m_compressor;
     QString m_dbFile;
 
     void init(QString const& qml);
@@ -74,7 +75,7 @@ public:
     ApplicationUI(bb::system::InvokeManager* im);
     virtual ~ApplicationUI() {}
 
-    Q_SLOT void compressIlmDatabase();
+    Q_SLOT void compressIlmDatabase(bool notifyClients=false);
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
     Q_INVOKABLE void loadIlmDatabase();
     Q_INVOKABLE QString databasePath();
