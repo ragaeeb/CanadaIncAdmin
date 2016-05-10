@@ -12,7 +12,7 @@ Page
     function performSearch() {
         ilmTest.fetchAllChoices( listView, tftk.textField.text.trim() );
     }
-
+    
     titleBar: TitleBar
     {
         scrollBehavior: TitleBarScrollBehavior.NonSticky
@@ -114,7 +114,7 @@ Page
                         for (var i = all.length-1; i >= 0; i--)
                         {
                             var d = adm.data(all[i]);
-
+                            
                             if ( d.source_id.toString().length == 0 ) {
                                 result.push(d);
                             }
@@ -168,9 +168,10 @@ Page
                     StandardListItem
                     {
                         id: sli
+                        property bool nonAlias: ListItemData.source_id.toString().length == 0
                         imageSource: "images/list/ic_choice.png"
                         title: ListItemData.value_text
-                        enabled: ListItemData.source_id.toString().length == 0
+                        opacity: nonAlias ? 1 : 0.7
                         status: ListItemData.id.toString()
                         
                         contextActions: [
@@ -193,7 +194,7 @@ Page
                                 ActionItem
                                 {
                                     imageSource: "images/menu/ic_source_choice.png"
-                                    enabled: sli.enabled
+                                    enabled: sli.nonAlias
                                     title: qsTr("Create Alias") + Retranslate.onLanguageChanged
                                     
                                     onTriggered: {
@@ -230,7 +231,7 @@ Page
                         adm.clear();
                         adm.append(data);
                     }
-
+                    
                     busy.delegateActive = false;
                     noElements.delegateActive = adm.isEmpty();
                     listView.visible = !adm.isEmpty();
@@ -245,7 +246,7 @@ Page
             
             onTriggered: {
                 var d = dataModel.data(indexPath);
-
+                
                 console.log("UserEvent: ChoicePicked");
                 picked( d.source_id.toString().length == 0 ? d.id : d.source_id, d.value_text );
             }
@@ -281,7 +282,7 @@ Page
         addAction( createAction("images/menu/ic_preview.png", qsTr("Sins"), ["589-594", 651, "839-840", "1698-1699"]) );
         addAction( createAction("images/list/site_link.png", qsTr("Prayers"), ["678-686"]) );
         addAction( createAction("images/list/ic_geo_result.png", qsTr("Schools"), ["923-930", "943-946", "972-978"]) );
-
+        
         titleBar.acceptAction = createAction("images/list/ic_geo_search.png", qsTr("Rulings"), ["745-749", 758]);
         titleBar.dismissAction = createAction("images/tabs/ic_rijaal.png", qsTr("Angels"), ["1086-1091", "1340-1343", "1399-1402", "1417-1418", "1484-1489", "1497-1508"]);
     }

@@ -58,7 +58,7 @@ Page
                 bodyField.text = d.body;
             }
             
-            if (d.suite_pages_reference) {
+            if (d.reference) {
                 referenceField.text = d.reference;
             }
         }
