@@ -10,21 +10,6 @@
 #define NARRATION_COLUMNS "narrations.id AS narration_id,collection_id,hadith_num_ar AS hadith_number,body,name"
 #define TURBO_CLAUSE(collectionId, hadithNumber) QString("(collection_id=%1 AND (hadith_num_ar='%2' OR hadith_num_en='%2' OR hadith_num_ar LIKE '%2 %' OR hadith_num_en LIKE '%2 %'))").arg(collectionId).arg(hadithNumber)
 
-namespace {
-
-QString combine(QVariantList const& arabicIds)
-{
-    QStringList ids;
-
-    foreach (QVariant const& entry, arabicIds) {
-        ids << QString::number( entry.toInt() );
-    }
-
-    return ids.join(",");
-}
-
-}
-
 namespace sunnah {
 
 using namespace admin;

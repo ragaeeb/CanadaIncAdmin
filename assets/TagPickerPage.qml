@@ -5,13 +5,20 @@ Page
 {
     id: searchRoot
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+    property variant prepopulated
+    property string table: "grouped_suite_pages"
     signal picked(variant picked)
-    
     function cleanUp() {}
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(searchRoot, listView);
         fader.play();
+    }
+    
+    onPrepopulatedChanged: {
+        if (prepopulated) {
+            adm.append(prepopulated);
+        }
     }
     
     titleBar: TitleBar
@@ -27,11 +34,11 @@ Page
             textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
             
             textField.onTextChanging: {
-                salat.searchTags(listView, tftk.textField.text.trim());
+                salat.searchTags(listView, tftk.textField.text.trim(), table);
             }
             
             textField.input.onSubmitted: {
-                var trimmed = tftk.textField.text.trim();
+                var trimmed = tftk.textField.text.trim().toLowerCase();
 
                 if (trimmed.length > 0) {
                     picked({'tag': trimmed});
@@ -57,7 +64,10 @@ Page
                 
                 onEnded: {
                     tftk.textField.requestFocus();
-                    salat.searchTags(listView);
+                    
+                    if (!prepopulated || prepopulated.length == 0) {
+                        salat.searchTags(listView, "", table);
+                    }
                 }
             }
         ]

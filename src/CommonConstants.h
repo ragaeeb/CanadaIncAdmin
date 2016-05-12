@@ -15,9 +15,7 @@
 
 namespace admin {
 
-struct CommonConstants
-{
-};
+extern QString combine(QVariantList const& arabicIds);
 
 }
 

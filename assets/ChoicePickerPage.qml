@@ -9,8 +9,12 @@ Page
     signal picked(variant choiceId, string value)
     signal pickedMulti(variant values)
     
-    function performSearch() {
-        ilmTest.fetchAllChoices( listView, tftk.textField.text.trim() );
+    function performSearch()
+    {
+        var query = tftk.textField.text.trim();
+        
+        ilmTest.fetchAllChoices(listView, query);
+        salat.searchTags(listView, query, "grouped_choices");
     }
     
     titleBar: TitleBar
@@ -61,6 +65,33 @@ Page
         }
     }
     
+    actions: [
+        ActionItem
+        {
+            ActionBar.placement: ActionBarPlacement.Signature
+            imageSource: "images/menu/ic_search_append.png"
+            title: qsTr("Append") + Retranslate.onLanguageChanged
+            
+            function onPickedMulti(values)
+            {
+                app.doDiff(values, adm);
+                
+                navigationPane.pop();
+                updateState();
+                
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+            }
+            
+            onTriggered: {
+                definition.source = "ChoicePickerPage.qml";
+                var searchPage = definition.createObject();
+                searchPage.pickedMulti.connect(onPickedMulti);
+                
+                navigationPane.push(searchPage);
+            }
+        }
+    ]
+    
     Container
     {
         layout: DockLayout {}
@@ -87,10 +118,20 @@ Page
                 id: adm
             }
             
+            function itemType(data, indexPath)
+            {
+                if (data.value_text) {
+                    return "choice";
+                } else {
+                    return "tag";
+                }
+            }
+            
             onSelectionChanged: {
                 var n = selectionList().length;
                 multiSelectHandler.status = qsTr("%n choices selected", "", n);
                 selectMulti.enabled = n > 0;
+                linkChoices.enabled = n > 1;
             }
             
             multiSelectAction: MultiSelectActionItem {
@@ -115,13 +156,17 @@ Page
                         {
                             var d = adm.data(all[i]);
                             
-                            if ( d.source_id.toString().length == 0 ) {
+                            if ( d.source_id.toString().length == 0 && d.value_text ) { // make sure it's not a tag
                                 result.push(d);
                             }
                         }
                         
                         pickedMulti(result);
                     }
+                },
+                
+                LinkChoicesAction {
+                    id: linkChoices
                 }
             ]
             
@@ -165,12 +210,12 @@ Page
             listItemComponents: [
                 ListItemComponent
                 {
-                    StandardListItem
+                    type: "choice"
+                    
+                    ChoiceListItem
                     {
                         id: sli
                         property bool nonAlias: ListItemData.source_id.toString().length == 0
-                        imageSource: "images/list/ic_choice.png"
-                        title: ListItemData.value_text
                         opacity: nonAlias ? 1 : 0.7
                         status: ListItemData.id.toString()
                         
@@ -215,6 +260,18 @@ Page
                             }
                         ]
                     }
+                },
+                
+                ListItemComponent
+                {
+                    type: "tag"
+                    
+                    StandardListItem
+                    {
+                        id: tagRoot
+                        imageSource: "images/list/ic_tag.png"
+                        title: ListItemData.tag
+                    }
                 }
             ]
             
@@ -222,19 +279,12 @@ Page
             {
                 if (id == QueryId.FetchAllChoices)
                 {
-                    if ( data.length == adm.size() )
-                    {
-                        for (var i = data.length-1; i >= 0; i--) {
-                            adm.replace(i, data[i]);
-                        }
-                    } else {
-                        adm.clear();
-                        adm.append(data);
-                    }
-                    
-                    busy.delegateActive = false;
-                    noElements.delegateActive = adm.isEmpty();
-                    listView.visible = !adm.isEmpty();
+                    adm.clear();
+                    adm.append(data);
+                    updateState();
+                } else if (id == QueryId.SearchTags) {
+                    adm.insert(0, data);
+                    updateState();
                 } else if (id == QueryId.AddChoice) {
                     persist.showToast( qsTr("Choice added!"), "images/menu/ic_add_choice.png" );
                 } else if (id == QueryId.RemoveChoice) {
@@ -248,7 +298,12 @@ Page
                 var d = dataModel.data(indexPath);
                 
                 console.log("UserEvent: ChoicePicked");
-                picked( d.source_id.toString().length == 0 ? d.id : d.source_id, d.value_text );
+                
+                if ( itemType(d, indexPath) == "tag" ) {
+                    ilmTest.fetchChoicesForTag(listView, d.tag);
+                } else {
+                    picked( d.source_id.toString().length == 0 ? d.id : d.source_id, d.value_text );
+                }
             }
         }
         
@@ -259,32 +314,15 @@ Page
         }
     }
     
-    function createAction(imageSource, title, data)
+    function updateState()
     {
-        var x = actionDef.createObject();
-        x.imageSource = imageSource;
-        x.title = title;
-        x.data = data;
-        
-        return x;
+        busy.delegateActive = false;
+        noElements.delegateActive = adm.isEmpty();
+        listView.visible = !adm.isEmpty();
     }
     
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(choicePage, listView);
-        
-        addAction( createAction("images/menu/ic_search_location.png", qsTr("Locations"), ["32-43", 85, 86, "178-185", 913, 931, "950-962", 1047, "1527-1538", "1612-1613", "1617-1622", "1636-1637"]) );
-        addAction( createAction("images/menu/ic_search_rijaal.png", qsTr("Sects"), ["214-217", "317-322", 334, 507, "515-517", "530-532", 563, "579-583", "693-699", "805-810", "658-662", "1268-1270", "1276-1277", "1623-1626", "1683-1687", 1708]) );
-        addAction( createAction("images/menu/ic_tribe.png", qsTr("Tribes"), ["203-212", 1610]) );
-        addAction( createAction("images/menu/ic_find_duplicate_quotes.png", qsTr("Occupations"), ["165-170", "916-920", 942, "979-987", "1049-1052"]) );
-        addAction( createAction("images/list/ic_book.png", qsTr("Books"), ["416-419", "1675-1682"]) );
-        addAction( createAction("images/list/ic_like.png", qsTr("Names of Allah"), [493, "495-499"]) );
-        addAction( createAction("images/menu/ic_edit_bio.png", qsTr("Fields"), ["508-514", "934-939", "1638-1639"]) );
-        addAction( createAction("images/menu/ic_preview.png", qsTr("Sins"), ["589-594", 651, "839-840", "1698-1699"]) );
-        addAction( createAction("images/list/site_link.png", qsTr("Prayers"), ["678-686"]) );
-        addAction( createAction("images/list/ic_geo_result.png", qsTr("Schools"), ["923-930", "943-946", "972-978"]) );
-        
-        titleBar.acceptAction = createAction("images/list/ic_geo_search.png", qsTr("Rulings"), ["745-749", 758]);
-        titleBar.dismissAction = createAction("images/tabs/ic_rijaal.png", qsTr("Angels"), ["1086-1091", "1340-1343", "1399-1402", "1417-1418", "1484-1489", "1497-1508"]);
     }
     
     function cleanUp() {}
@@ -297,22 +335,6 @@ Page
             
             onTriggered: {
                 tftk.textField.requestFocus();
-            }
-        },
-        
-        ComponentDefinition
-        {
-            id: actionDef
-            
-            ActionItem
-            {
-                property variant data
-                ActionBar.placement: ActionBarPlacement.OnBar
-                
-                onTriggered: {
-                    console.log("UserEvent: Get"+title.split(" ").join("")+"Choices" )
-                    ilmTest.fetchChoicesWithIds(listView, data);
-                }
             }
         }
     ]

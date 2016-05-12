@@ -62,14 +62,14 @@ QVariantMap SalatHelper::editCenter(QObject* caller, qint64 id, QString const& n
 }
 
 
-QVariantMap SalatHelper::editTag(QObject* caller, qint64 id, QString const& tag)
+QVariantMap SalatHelper::editTag(QObject* caller, qint64 id, QString const& tag, QString const& table)
 {
     LOGGER(id << tag);
 
     QVariantMap keyValues;
     keyValues["tag"] = tag;
 
-    m_sql->executeUpdate(caller, "tags", keyValues, QueryId::EditTag, id);
+    m_sql->executeUpdate(caller, table, keyValues, QueryId::EditTag, id);
     SET_AND_RETURN;
 }
 
@@ -104,24 +104,24 @@ void SalatHelper::fetchTagsForSuitePage(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
 
-    QString query = QString("SELECT id,tag FROM tags WHERE suite_page_id=%1").arg(suitePageId);
+    QString query = QString("SELECT id,tag FROM grouped_suite_pages WHERE suite_page_id=%1 ORDER BY tag").arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::FetchTagsForSuitePage);
 }
 
 
-void SalatHelper::removeTag(QObject* caller, qint64 id)
+void SalatHelper::removeTag(QObject* caller, qint64 id, QString const& table)
 {
     LOGGER(id);
-    REMOVE_ELEMENT("tags", QueryId::RemoveTag);
+    REMOVE_ELEMENT(table, QueryId::RemoveTag);
 }
 
 
-void SalatHelper::searchTags(QObject* caller, QString const& term)
+void SalatHelper::searchTags(QObject* caller, QString const& term, QString const& table)
 {
     LOGGER(term);
 
     QVariantList params;
-    QString query = "SELECT DISTINCT(tag) FROM tags";
+    QString query = "SELECT DISTINCT(tag) FROM "+table;
 
     if ( !term.isEmpty() )
     {
@@ -140,7 +140,7 @@ QVariantMap SalatHelper::tagSuitePage(qint64 const& suitePageId, QString const& 
     LOGGER(suitePageId << tag);
 
     QVariantMap keyValues = getTokensForTags(suitePageId, tag);
-    qint64 id = m_sql->executeInsert("tags", keyValues);
+    qint64 id = m_sql->executeInsert("grouped_suite_pages", keyValues);
     SET_AND_RETURN;
 }
 
@@ -152,7 +152,7 @@ void SalatHelper::tagSuites(QObject* caller, QVariantList const& suiteIds, QStri
     m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
 
     foreach (QVariant const& suiteId, suiteIds) {
-        m_sql->executeQuery(caller, QString("INSERT INTO tags (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), InternalQueryId::PendingTransaction, QVariantList() << suiteId);
+        m_sql->executeQuery(caller, QString("INSERT INTO grouped_suite_pages (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), InternalQueryId::PendingTransaction, QVariantList() << suiteId);
     }
 
     m_sql->endTransaction(caller, QueryId::TagSuites);

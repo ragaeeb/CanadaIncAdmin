@@ -33,11 +33,14 @@ public:
     Q_INVOKABLE void fetchAllQuestions(QObject* caller, QString const& query=QString());
     Q_INVOKABLE void fetchQuestion(QObject* caller, qint64 questionId);
     Q_INVOKABLE void fetchChoicesForQuestion(QObject* caller, qint64 questionId);
+    Q_INVOKABLE void fetchChoicesForTag(QObject* caller, QString const& tag);
+    Q_INVOKABLE void fetchTagsForChoices(QObject* caller, QVariantList const& choiceIds);
     Q_INVOKABLE void fetchQuestionsForSuitePage(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void removeAnswer(QObject* caller, qint64 id);
     Q_INVOKABLE void removeChoice(QObject* caller, qint64 id);
     Q_INVOKABLE void removeQuestion(QObject* caller, qint64 id);
     Q_INVOKABLE QVariantMap sourceChoice(qint64 originalChoiceId, QString const& value);
+    Q_INVOKABLE void tagChoices(QObject* caller, QVariantList const& choiceIds, QString const& tag);
     Q_INVOKABLE void updateQuestionOrders(QObject* caller, QVariantList const& qvl);
     Q_INVOKABLE void updateSortOrders(QObject* caller, QVariantList const& qvl);
 

@@ -455,6 +455,23 @@ Page
                     }
                 }
             ]
+            
+            onSelectionChanged: {
+                var n = selectionList().length;
+                multiSelectHandler.status = qsTr("%n choices selected", "", n);
+                linkChoices.enabled = n > 1;
+            }
+            
+            multiSelectAction: MultiSelectActionItem {
+                imageSource: "images/menu/ic_select_choices.png"
+            }
+            
+            multiSelectHandler.actions: [
+                LinkChoicesAction {
+                    id: linkChoices
+                    key: "choice_id"
+                }
+            ]
         }
     }
     

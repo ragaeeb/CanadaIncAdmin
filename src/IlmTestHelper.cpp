@@ -156,6 +156,15 @@ void IlmTestHelper::fetchAllQuestions(QObject* caller, QString const& query)
 }
 
 
+void IlmTestHelper::fetchTagsForChoices(QObject* caller, QVariantList const& choiceIds)
+{
+    LOGGER(choiceIds);
+
+    QString query = QString("SELECT DISTINCT(tag) FROM grouped_choices WHERE choice_id IN (%1) ORDER BY tag").arg( combine(choiceIds) );
+    m_sql->executeQuery(caller, query, QueryId::FetchTagsForChoices);
+}
+
+
 void IlmTestHelper::fetchQuestion(QObject* caller, qint64 questionId)
 {
     LOGGER(questionId);
@@ -182,8 +191,17 @@ void IlmTestHelper::fetchChoicesForQuestion(QObject* caller, qint64 questionId)
 {
     LOGGER(questionId);
 
-    QStringList fields = QStringList() << "answers.id AS id" << FIELD_VALUE_TEXT << FIELD_SORT_ORDER << "correct";
+    QStringList fields = QStringList() << "answers.id AS id" << FIELD_VALUE_TEXT << FIELD_SORT_ORDER << "correct" << "choice_id";
     m_sql->executeQuery(caller, QString("SELECT %1 FROM answers INNER JOIN choices ON answers.choice_id=choices.id WHERE question_id=%2 ORDER BY %3").arg( fields.join(",") ).arg(questionId).arg(FIELD_SORT_ORDER), QueryId::FetchChoicesForQuestion);
+}
+
+
+void IlmTestHelper::fetchChoicesForTag(QObject* caller, QString const& tag)
+{
+    LOGGER(tag);
+
+    QString q = QString("SELECT * FROM choices WHERE id IN (SELECT choice_id FROM grouped_choices WHERE tag=?) ORDER BY %1").arg(FIELD_VALUE_TEXT);
+    m_sql->executeQuery(caller, q, QueryId::FetchAllChoices, QVariantList() << tag);
 }
 
 
@@ -218,6 +236,20 @@ QVariantMap IlmTestHelper::sourceChoice(qint64 originalChoiceId, QString const& 
     SET_KEY_VALUE_ID;
 
     return keyValues;
+}
+
+
+void IlmTestHelper::tagChoices(QObject* caller, QVariantList const& choiceIds, QString const& tag)
+{
+    LOGGER(choiceIds << tag);
+
+    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
+
+    foreach (QVariant const& choiceId, choiceIds) {
+        m_sql->executeQuery(caller, QString("INSERT INTO grouped_choices (choice_id,tag) VALUES (?,?)").arg( choiceId.toLongLong() ).arg(tag), InternalQueryId::PendingTransaction, QVariantList() << choiceId << tag);
+    }
+
+    m_sql->endTransaction(caller, QueryId::TagChoices);
 }
 
 

@@ -108,12 +108,27 @@ Page
             listItemComponents: [
                 ListItemComponent
                 {
-                    StandardListItem
+                    Container
                     {
                         id: qsli
-                        imageSource: ListItemData.source_id ? "images/list/ic_question_alias.png" : "images/list/ic_question.png"
-                        status: ListItemData.difficulty ? ListItemData.difficulty.toString() : ""
-                        title: ListItemData.standard_body ? ListItemData.standard_body : ""
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        
+                        Header {
+                            title: ListItemData.difficulty ? ListItemData.difficulty.toString() : ListItemData.id.toString()
+                        }
+                        
+                        Container
+                        {
+                            leftPadding: 10; rightPadding: 10; bottomPadding: 5; topPadding: 5
+                            horizontalAlignment: HorizontalAlignment.Fill
+                            
+                            Label {
+                                id: bodyLabel
+                                content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                                multiline: true
+                                text: ListItemData.standard_body
+                            }
+                        }
                         
                         contextActions: [
                             ActionSet
