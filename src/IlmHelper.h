@@ -62,7 +62,6 @@ public:
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
     Q_INVOKABLE void searchIndividuals(QObject* caller, QVariantList const& terms);
     Q_INVOKABLE void searchIndividualsByDeath(QObject* caller, int death);
-    Q_INVOKABLE void tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag);
 
     void lazyInit();
     void setDatabaseName(QString const& name);

@@ -39,7 +39,7 @@ NavigationPane
             {
                 id: reorder
                 imageSource: "images/menu/ic_reorder.png"
-                title: qsTr("Reorder") + Retranslate.onLanguageChanged
+                title: qsTr("XX") + Retranslate.onLanguageChanged
                 
                 function onDataLoaded(id, data)
                 {
@@ -51,6 +51,9 @@ NavigationPane
                 }
                 
                 onTriggered: {
+                    app.createContacts();
+                    persist.showToast("DONE!");
+                    return;
                     console.log("UserEvent: Reorder");
                     sql.fetchAllIds(reorder, "locations");
                     sql.fetchAllIds(reorder, "individuals");

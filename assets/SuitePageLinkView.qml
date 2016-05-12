@@ -12,7 +12,7 @@ ListView
     
     function onDataLoaded(id, data)
     {
-        if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchNarrationsForSuitePage || id == QueryId.FetchBioMetadata || id == QueryId.FetchQuestionsForSuitePage)
+        if (id == QueryId.FetchAyatsForTafsir || id == QueryId.FetchNarrationsForSuitePage || id == QueryId.FetchBioMetadata || id == QueryId.FetchQuestionsForSuitePage || id == QueryId.FetchTagsForSuitePage)
         {
             if ( adm.isEmpty() ) {
                 adm.append(data);
@@ -27,6 +27,9 @@ ListView
             busy.delegateActive = false;
         } else if (id == QueryId.UnlinkNarrationsFromSuitePage) {
             persist.showToast( qsTr("Narration unlinked from suite page"), "images/menu/ic_unlink_narration.png" );
+            busy.delegateActive = false;
+        } else if (id == QueryId.EditTag) {
+            persist.showToast( qsTr("Tag updated!"), "images/toast/edited_tags.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.LinkNarrationsToSuitePage) {
             persist.showToast( qsTr("Narration linked to suite page"), "images/menu/ic_add_narration.png" );
@@ -51,6 +54,9 @@ ListView
             busy.delegateActive = false;
         } else if (id == QueryId.RemoveQuestion) {
             persist.showToast( qsTr("Question removed!"), "images/menu/ic_remove_question.png" );
+            busy.delegateActive = false;
+        } else if (id == QueryId.RemoveTag) {
+            persist.showToast( qsTr("Tag removed!"), "images/menu/ic_remove_tag.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.AddBioLink) {
             persist.showToast( qsTr("Biography linked!"), "images/dropdown/save_bio.png" );
@@ -132,8 +138,15 @@ ListView
             definition.source = "NarrationProfilePage.qml";
             var page = definition.createObject();
             page.narrationId = d.narration_id;
-            
             navigationPane.push(page);
+        } else if (t == "tag") {
+            var tag = persist.showBlockingPrompt( qsTr("Enter tag"), qsTr("Please enter a tag for this suite page"), "", qsTr("Enter value"), 50, true, qsTr("Save"), qsTr("Cancel") ).trim().toLowerCase();
+            
+            if (tag.length > 0)
+            {
+                var edited = salat.editTag(listView, d.id, tag);
+                adm.replace(indexPath[0], edited);
+            }
         } else {
             definition.source = "ProfilePage.qml";
             var page = definition.createObject();
@@ -173,6 +186,13 @@ ListView
     {
         busy.delegateActive = true;
         ilmTest.removeQuestion(listView, ListItemData.id);
+        adm.removeAt(ListItem.indexPath[0]);
+    }
+    
+    function removeTag(ListItem)
+    {
+        busy.delegateActive = true;
+        salat.removeTag(listView, ListItem.data.id);
         adm.removeAt(ListItem.indexPath[0]);
     }
     
@@ -227,6 +247,8 @@ ListView
             return "question"
         } else if (data.narration_id) {
             return "narration"
+        } else if (data.tag) {
+            return "tag"
         } else {
             return "bio";
         }
@@ -342,6 +364,36 @@ ListView
             type: "question"
             
             QuestionListItem {}
+        },
+        
+        ListItemComponent
+        {
+            type: "tag"
+            
+            StandardListItem
+            {
+                id: tagRoot
+                imageSource: "images/list/ic_tag.png"
+                title: ListItemData.tag
+                
+                contextActions: [
+                    ActionSet
+                    {
+                        title: tagRoot.title
+                        
+                        DeleteActionItem
+                        {
+                            imageSource: "images/menu/ic_remove_tag.png"
+                            title: qsTr("Remove") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: RemoveTag");
+                                tagRoot.ListItem.view.removeTag(tagRoot.ListItem);
+                            }
+                        }
+                    }
+                ]
+            }
         }
     ]
 }

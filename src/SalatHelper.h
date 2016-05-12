@@ -24,8 +24,14 @@ public:
 
     Q_INVOKABLE QVariantMap addCenter(QString const& name, QString const& website, qint64 location);
     Q_INVOKABLE QVariantMap editCenter(QObject* caller, qint64 id, QString const& name, QString const& website, qint64 location);
+    Q_INVOKABLE QVariantMap editTag(QObject* caller, qint64 id, QString const& tag);
     Q_INVOKABLE void fetchAllCenters(QObject* caller, QString const& name=QString());
     Q_INVOKABLE void fetchCenter(QObject* caller, qint64 id);
+    Q_INVOKABLE void fetchTagsForSuitePage(QObject* caller, qint64 suitePageId);
+    Q_INVOKABLE void removeTag(QObject* caller, qint64 id);
+    Q_INVOKABLE void searchTags(QObject* caller, QString const& term=QString());
+    Q_INVOKABLE void tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag);
+    Q_INVOKABLE QVariantMap tagSuitePage(qint64 const& suitePageId, QString const& tag);
 
     void lazyInit();
 };

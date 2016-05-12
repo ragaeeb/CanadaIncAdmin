@@ -16,6 +16,7 @@ Page
             ilmHelper.fetchBioMetadata(listView, suitePageId);
             ilmTest.fetchQuestionsForSuitePage(listView, suitePageId);
             sunnah.fetchNarrationsForSuitePage(listView, suitePageId);
+            salat.fetchTagsForSuitePage(listView, suitePageId);
         }
     }
     
@@ -140,13 +141,19 @@ Page
                 page.saveQuestion.connect(onQuestionSaved);
                 navigationPane.push(page);
             }
+            
+            shortcuts: [
+                Shortcut {
+                    key: qsTr("Q") + Retranslate.onLanguageChanged
+                }
+            ]
         },
         
         ActionItem
         {
             id: searchAction
             imageSource: "images/menu/ic_search_choices.png"
-            title: qsTr("Search") + Retranslate.onLanguageChanged
+            title: qsTr("Qur'an Search") + Retranslate.onLanguageChanged
             
             function onPicked(chapter, verse)
             {
@@ -162,6 +169,41 @@ Page
                 console.log("UserEvent: SearchForText");
                 persist.invoke("com.canadainc.Quran10.search.picker", "searchPicked");
             }
+        },
+        
+        ActionItem
+        {
+            id: tagSuitePage
+            imageSource: "images/menu/ic_add_tag.png"
+            title: qsTr("Tag") + Retranslate.onLanguageChanged
+            
+            function onPicked(tagObj)
+            {
+                var tagValue = tagObj.tag;
+                
+                var result = salat.tagSuitePage(suitePageId, tagValue);
+                persist.showToast( qsTr("Tagged page as '%1'").arg(tagValue), imageSource.toString() );
+
+                adm.insert(0, result);
+                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                
+                popToRoot();
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: AddTag");
+                definition.source = "TagPickerPage.qml";
+                var p = definition.createObject();
+                p.picked.connect(onPicked);
+                
+                navigationPane.push(p);
+            }
+            
+            shortcuts: [
+                Shortcut {
+                    key: qsTr("G") + Retranslate.onLanguageChanged
+                }
+            ]
         },
         
         ActionItem
