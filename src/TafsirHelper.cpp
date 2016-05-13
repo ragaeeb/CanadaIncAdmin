@@ -147,8 +147,8 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
 }
 
 
-void TafsirHelper::lazyInit() {
-    m_sql->attachIfNecessary("tafsir_english", true);
+void TafsirHelper::lazyInit()
+{
 }
 
 
