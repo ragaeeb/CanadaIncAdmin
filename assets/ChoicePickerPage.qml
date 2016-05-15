@@ -6,8 +6,7 @@ Page
 {
     id: choicePage
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
-    signal picked(variant choiceId, string value)
-    signal pickedMulti(variant values)
+    signal picked(variant values)
     
     function performSearch()
     {
@@ -85,7 +84,7 @@ Page
             onTriggered: {
                 definition.source = "ChoicePickerPage.qml";
                 var searchPage = definition.createObject();
-                searchPage.pickedMulti.connect(onPickedMulti);
+                searchPage.picked.connect(onPickedMulti);
                 
                 navigationPane.push(searchPage);
             }
@@ -134,10 +133,6 @@ Page
                 linkChoices.enabled = n > 1;
             }
             
-            multiSelectAction: MultiSelectActionItem {
-                imageSource: "images/menu/ic_select_choices.png"
-            }
-            
             multiSelectHandler.actions: [
                 ActionItem
                 {
@@ -156,12 +151,12 @@ Page
                         {
                             var d = adm.data(all[i]);
                             
-                            if ( d.source_id.toString().length == 0 && d.value_text ) { // make sure it's not a tag
+                            if (d.value_text) { // make sure it's not a tag
                                 result.push(d);
                             }
                         }
                         
-                        pickedMulti(result);
+                        picked(result);
                     }
                 },
                 
@@ -187,6 +182,10 @@ Page
             {
                 ilmTest.removeChoice(listView, ListItemData.id);
                 adm.removeAt(ListItem.indexPath[0]);
+            }
+            
+            function findAdjacent(ListItem, ListItemData) {
+                ilmTest.fetchAdjacentChoices(listView, ListItemData.source_id.toString().length == 0 ? ListItemData.id : ListItemData.source_id);
             }
             
             function sourceChoice(ListItem, ListItemData)
@@ -248,6 +247,17 @@ Page
                                     }
                                 }
                                 
+                                ActionItem
+                                {
+                                    imageSource: "images/menu/ic_adjacent_choices.png"
+                                    title: qsTr("Find Adjacent") + Retranslate.onLanguageChanged
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: FindAdjacent");
+                                        sli.ListItem.view.findAdjacent(sli.ListItem, ListItemData);
+                                    }
+                                }
+                                
                                 DeleteActionItem
                                 {
                                     imageSource: "images/menu/ic_remove_choice.png"
@@ -282,8 +292,8 @@ Page
                     adm.clear();
                     adm.append(data);
                     updateState();
-                } else if (id == QueryId.SearchTags) {
-                    adm.insert(0, data);
+                } else if (id == QueryId.SearchTags || id == QueryId.FetchAdjacentChoices) {
+                    app.doDiff(data, adm);
                     updateState();
                 } else if (id == QueryId.AddChoice) {
                     persist.showToast( qsTr("Choice added!"), "images/menu/ic_add_choice.png" );
@@ -302,7 +312,8 @@ Page
                 if ( itemType(d, indexPath) == "tag" ) {
                     ilmTest.fetchChoicesForTag(listView, d.tag);
                 } else {
-                    picked( d.source_id.toString().length == 0 ? d.id : d.source_id, d.value_text );
+                    multiSelectHandler.active = true;
+                    toggleSelection(indexPath);
                 }
             }
         }

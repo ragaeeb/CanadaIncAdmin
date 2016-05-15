@@ -259,7 +259,7 @@ ListView
             StandardListItem
             {
                 description: ListItemData.heading ? ListItemData.heading : ListItemData.title ? ListItemData.title : ""
-                imageSource: "images/list/ic_tafsir.png"
+                imageSource: "images/list/ic_unique_narration.png"
                 title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
             }
         },

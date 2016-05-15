@@ -96,7 +96,7 @@ Page
                     mode: ValidationMode.FocusLost
                     
                     onValidate: {
-                        valid = textUtils.isUrl( website.text.trim() );
+                        valid = deviceUtils.isUrl( website.text.trim() );
                     }
                 }
                 

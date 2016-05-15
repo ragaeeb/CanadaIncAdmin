@@ -92,6 +92,14 @@ QVariantMap IlmTestHelper::editQuestion(QObject* caller, qint64 id, QString cons
 }
 
 
+void IlmTestHelper::fetchAdjacentChoices(QObject* caller, qint64 choiceId)
+{
+    LOGGER(choiceId);
+    QString q = QString("SELECT choice_id AS id,value_text,source_id FROM answers INNER JOIN choices ON answers.choice_id=choices.id WHERE question_id=(SELECT question_id FROM answers WHERE choice_id=%1) AND answers.choice_id <> %1 ORDER BY value_text").arg(choiceId);
+    m_sql->executeQuery(caller, q, QueryId::FetchAdjacentChoices);
+}
+
+
 void IlmTestHelper::fetchAllChoices(QObject* caller, QString const& choice)
 {
     LOGGER(choice);

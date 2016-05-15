@@ -183,14 +183,6 @@ Page
                 listView.refresh();
             }
             
-            function onPicked(choiceId, value)
-            {
-                var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
-                process(choiceId, value, yes);
-                
-                scrollAndRefresh();
-            }
-            
             function onPickedMulti(values)
             {
                 var yes = persist.showBlockingDialog( qsTr("Correct?"), qsTr("Is this a correct answer?") );
@@ -198,7 +190,7 @@ Page
                 for (var i = values.length-1; i >= 0; i--)
                 {
                     var current = values[i];
-                    process(current.id, current.value_text, yes);
+                    process(current.source_id.toString().length == 0 ? current.id : current.source_id, current.value_text, yes);
                 }
 
                 scrollAndRefresh();
@@ -208,8 +200,7 @@ Page
                 console.log("UserEvent: AddChoice");
                 definition.source = "ChoicePickerPage.qml";
                 var picker = definition.createObject();
-                picker.picked.connect(onPicked);
-                picker.pickedMulti.connect(onPickedMulti);
+                picker.picked.connect(onPickedMulti);
                 navigationPane.push(picker);
             }
             

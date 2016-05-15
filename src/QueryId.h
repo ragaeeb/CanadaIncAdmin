@@ -29,7 +29,7 @@ public:
         EditSuite,
         EditSuitePage,
         EditTag,
-        FetchAdjacentAyat,
+        FetchAdjacentChoices,
         FetchAllCenters,
         FetchAllChoices,
         FetchAllCollections,
