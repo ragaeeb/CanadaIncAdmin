@@ -24,9 +24,7 @@ Page
             function onCreate(id, author, translator, explainer, title, description, reference)
             {
                 var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference);
-                adm.insert(0, x); // add the latest value to avoid refreshing entire list
-                listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                navigationPane.parent.unreadContentCount += 1;
+                tafsirHelper.fetchAllTafsir(x.id);
                 
                 persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
                 
@@ -386,11 +384,9 @@ Page
                 {
                     if (id == QueryId.FetchAllTafsir && data.length > 0)
                     {
-                        adm.append(data);
-                        
-                        if (navigationPane.parent.unreadContentCount != undefined) {
-                            navigationPane.parent.unreadContentCount = data.length;
-                        }
+                        adm.insert(0, data);
+                        navigationPane.parent.unreadContentCount = adm.size();
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else if (id == QueryId.RemoveSuite) {
                         persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
                     } else if (id == QueryId.EditSuite) {

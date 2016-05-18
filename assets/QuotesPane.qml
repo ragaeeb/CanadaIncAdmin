@@ -50,10 +50,7 @@ NavigationPane
                 function onCreate(id, author, translator, body, reference, suiteId, uri)
                 {
                     var x = tafsirHelper.addQuote(author, translator, body, reference, suiteId, uri);
-                    
-                    adm.insert(0,x); // add the latest value to avoid refreshing entire list
-                    listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    navigationPane.parent.unreadContentCount += 1;
+                    tafsirHelper.fetchAllQuotes(listView, x.id);
                     
                     persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );
                     
@@ -116,7 +113,8 @@ NavigationPane
                 textField.input.onSubmitted: {
                     var query = searchField.text.trim();
                     
-                    if (query.length == 0) {
+                    if (query.length == 0)
+                    {
                         adm.clear();
                         reload();
                     } else {
@@ -192,8 +190,10 @@ NavigationPane
                     {
                         if (id == QueryId.FetchAllQuotes && data.length > 0)
                         {
-                            adm.append(data);
-                            navigationPane.parent.unreadContentCount = data.length;
+                            adm.insert(0, data);
+                            navigationPane.parent.unreadContentCount = adm.size();
+                            
+                            listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                         } else if (id == QueryId.RemoveQuote) {
                             persist.showToast( qsTr("Quote removed!"), "images/menu/ic_delete_quote.png" );
                         } else if (id == QueryId.EditQuote) {
@@ -206,9 +206,7 @@ NavigationPane
                             adm.append(data);
                         }
                         
-                        busy.delegateActive = false;
-                        listView.visible = !adm.isEmpty();
-                        noElements.delegateActive = !listView.visible;
+                        updateState();
                     }
                     
                     function onEdit(id, author, translator, body, reference, suiteId, uri)
@@ -260,7 +258,8 @@ NavigationPane
                         page.createQuote.connect(onEdit);
                     }
                     
-                    function removeItem(ListItemData) {
+                    function removeItem(ListItemData)
+                    {
                         busy.delegateActive = true;
                         tafsirHelper.removeQuote(listView, ListItemData.id);
                     }
@@ -358,6 +357,13 @@ NavigationPane
                 asset: "images/progress/loading_quotes.png"
             }
         }
+    }
+    
+    function updateState()
+    {
+        busy.delegateActive = false;
+        listView.visible = !adm.isEmpty();
+        noElements.delegateActive = !listView.visible;
     }
     
     attachedObjects: [

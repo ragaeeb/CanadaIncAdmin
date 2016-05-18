@@ -19,6 +19,8 @@ Page
         }
     }
     
+    function cleanUp() {}
+    
     function onDataLoaded(id, results)
     {
         if (id == QueryId.FetchQuote && results.length > 0)
@@ -32,8 +34,6 @@ Page
             
             if (data.suite_id) {
                 suiteId.pickedId = data.suite_id;
-            } else {
-                suiteId.reset();
             }
             
             if (data.uri) {
@@ -41,6 +41,71 @@ Page
             }
         }
     }
+    
+    function toSentenceCase(inputString)
+    {
+        inputString = "." + inputString;
+        var result = "";
+        if (inputString.length == 0) {
+            return result;
+        }
+        
+        var terminalCharacterEncountered = false;
+        var terminalCharacters = [".", "?", "!"];
+        var n = inputString.length;
+
+        for (var i = 0; i < n; i++)
+        {
+            var currentChar = inputString.charAt(i);
+
+            if (terminalCharacterEncountered)
+            {
+                if (currentChar == ' ') {
+                    result = result + currentChar;
+                } else {
+                    result = result + currentChar.toUpperCase();
+                    terminalCharacterEncountered = false;
+                }
+            } else {
+                var currentToLower = currentChar.toLowerCase();
+                var prev = i > 0 ? inputString.charAt(i-1) : '';
+                var next = i < n-1 ? inputString.charAt(i+1) : '';
+                
+                if (currentToLower == 'i' && prev == ' ' && next == ' ') {
+                    currentToLower = currentChar.toUpperCase();
+                }
+
+                result = result + currentToLower;
+            }
+
+            for (var j = 0; j < terminalCharacters.length; j++)
+            {
+                if (currentChar == terminalCharacters[j])
+                {
+                    terminalCharacterEncountered = true;
+                    break;
+                }
+            }
+        }
+
+        result = result.substring(1, result.length);
+        return result;
+    }
+    
+    actions: [
+        ActionItem
+        {
+            enabled: bodyField.text.length > 0
+            imageSource: "images/tabs/ic_utils.png"
+            title: qsTr("Fix Body") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            
+            onTriggered: {
+                console.log("UserEvent: FixQuoteBody");
+                bodyField.text = toSentenceCase(bodyField.text);
+            }
+        }
+    ]
     
     titleBar: TitleBar
     {
@@ -153,6 +218,10 @@ Page
                         } else {
                             reset();
                         }
+                    }
+                    
+                    onCreationCompleted: {
+                        reset();
                     }
                     
                     function onDataLoaded(id, data)

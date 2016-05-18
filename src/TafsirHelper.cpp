@@ -78,14 +78,14 @@ QVariantMap TafsirHelper::editQuote(QObject* caller, qint64 id, qint64 author, q
 }
 
 
-void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 individualId)
+void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 id)
 {
-    LOGGER(individualId);
+    LOGGER(id);
 
     QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,title FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
 
-    if (individualId) {
-        queryParams << QString("WHERE (author=%1 OR translator=%1 OR explainer=%1)").arg(individualId);
+    if (id) {
+        queryParams << QString("WHERE suites.id=%1").arg(id);
     }
 
     queryParams << "ORDER BY id DESC";
@@ -131,14 +131,14 @@ void TafsirHelper::fetchTafsirContent(QObject* caller, qint64 suitePageId)
 }
 
 
-void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 individualId)
+void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id)
 {
-    LOGGER(individualId);
+    LOGGER(id);
 
     QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i","author") );
 
-    if (individualId) {
-        queryParams << QString("WHERE quotes.author=%1").arg(individualId);
+    if (id) {
+        queryParams << QString("WHERE quotes.id=%1").arg(id);
     }
 
     queryParams << "ORDER BY id DESC";

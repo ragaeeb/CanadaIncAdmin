@@ -28,8 +28,8 @@ public:
     Q_INVOKABLE QVariantMap editQuote(QObject* caller, qint64 quoteId, qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
     Q_INVOKABLE QVariantMap editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference);
     Q_INVOKABLE QVariantMap editSuitePage(QObject* caller, qint64 suitePageId, QString const& body, QString const& heading, QString const& reference);
-    Q_INVOKABLE void fetchAllQuotes(QObject* caller, qint64 individualId=0);
-    Q_INVOKABLE void fetchAllTafsir(QObject* caller, qint64 individualId=0);
+    Q_INVOKABLE void fetchAllQuotes(QObject* caller, qint64 id=0);
+    Q_INVOKABLE void fetchAllTafsir(QObject* caller, qint64 id=0);
     Q_INVOKABLE void fetchAllTafsirForSuite(QObject* caller, qint64 suiteId);
     Q_INVOKABLE void fetchQuote(QObject* caller, qint64 id);
     Q_INVOKABLE void fetchTafsirContent(QObject* caller, qint64 suitePageId);
