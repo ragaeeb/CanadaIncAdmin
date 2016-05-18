@@ -31,7 +31,9 @@ Page
             referenceField.text = data.reference;
             
             if (data.suite_id) {
-                suiteId.text = data.suite_id.toString();
+                suiteId.pickedId = data.suite_id;
+            } else {
+                suiteId.reset();
             }
             
             if (data.uri) {
@@ -54,7 +56,7 @@ Page
                 console.log("UserEvent: CreateQuoteSaveTriggered");
                 
                 if ( authorField.pickedId && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) ) {
-                    createQuote( quoteId, authorField.pickedId, translatorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.text.trim(), uriField.text.trim() );
+                    createQuote( quoteId, authorField.pickedId, translatorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.pickedId, uriField.text.trim() );
                 }
             }
         }
@@ -123,44 +125,86 @@ Page
                 ]
             }
             
-            Button
+            Container
             {
-                id: suiteId
-                property variant pickedId
                 horizontalAlignment: HorizontalAlignment.Fill
-                text: qsTr("Suite ID...") + Retranslate.onLanguageChanged
                 
-                onPickedIdChanged: {
-                    if (pickedId) {
-                        tafsirHelper.fetchTafsirMetadata(suiteId, pickedId);
-                    }
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
                 }
                 
-                function onDataLoaded(id, data)
+                Button
                 {
-                    if (id == QueryId.FetchTafsirHeader && data.length > 0)
+                    id: suiteId
+                    property variant pickedId
+                    property string label: qsTr("Suite ID...") + Retranslate.onLanguageChanged
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    leftMargin: 0; rightMargin: 0
+                    
+                    function reset()
                     {
-                        imageSource = "images/list/ic_book.png"
-                        text = data[0].title;
+                        text = label;
+                        resetImageSource();
+                    }
+                    
+                    onPickedIdChanged: {
+                        if (pickedId) {
+                            tafsirHelper.fetchTafsirMetadata(suiteId, pickedId);
+                        } else {
+                            reset();
+                        }
+                    }
+                    
+                    function onDataLoaded(id, data)
+                    {
+                        if (id == QueryId.FetchTafsirHeader)
+                        {
+                            if (data.length > 0) {
+                                imageSource = "images/list/ic_book.png"
+                                text = data[0].title;
+                            } else {
+                                reset();
+                            }
+                        }
+                    }
+                    
+                    function onPicked(data)
+                    {
+                        pickedId = data[0].id;
+                        navigationPane.pop();
+                    }
+                    
+                    onClicked: {
+                        console.log("UserEvent: QuoteSuiteDoubleTapped");
+                        definition.source = "TafsirPickerPage.qml";
+                        
+                        var p = definition.createObject();
+                        p.tafsirPicked.connect(onPicked);
+                        p.autoFocus = true;
+                        p.reload();
+                        
+                        navigationPane.push(p);
+                    }
+                    
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 0.95
                     }
                 }
                 
-                function onPicked(data)
+                Button
                 {
-                    pickedId = data[0].id;
-                    navigationPane.pop();
-                }
-                
-                onClicked: {
-                    console.log("UserEvent: QuoteSuiteDoubleTapped");
-                    definition.source = "TafsirPickerPage.qml";
+                    imageSource: "images/dropdown/cancel.png"
+                    leftMargin: 0; rightMargin: 0
+                    horizontalAlignment: HorizontalAlignment.Right
                     
-                    var p = definition.createObject();
-                    p.tafsirPicked.connect(onPicked);
-                    p.autoFocus = true;
-                    p.reload();
+                    onClicked: {
+                        console.log("UserEvent: CancelSuite");
+                        suiteId.pickedId = undefined;
+                    }
                     
-                    navigationPane.push(p);
+                    layoutProperties: StackLayoutProperties {
+                        spaceQuota: 0.05
+                    }
                 }
             }
             

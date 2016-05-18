@@ -57,7 +57,7 @@ Page
                     
                     uri = uri.replace("//www.", "//");
                     
-                    if ( textUtils.isUrl(uri) ) {
+                    if ( deviceUtils.isUrl(uri) ) {
                         var x = ilmHelper.addWebsite(individualId, uri);
                         adm.append(x);
                         persist.showToast( qsTr("Website added!"), imageSource.toString() );

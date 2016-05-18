@@ -188,6 +188,9 @@ Page
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 
                 popToRoot();
+                
+                listView.visible = !adm.isEmpty();
+                noElements.delegateActive = !listView.visible;
             }
             
             onTriggered: {

@@ -51,7 +51,7 @@ Page
                     } else {
                         value = offloader.toTitleCase(value);
                         var x = ilmTest.addChoice(value);
-                        picked(x.id, x.value_text);
+                        picked([x]);
                     }
                 }
                 

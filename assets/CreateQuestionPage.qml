@@ -190,7 +190,7 @@ Page
                 for (var i = values.length-1; i >= 0; i--)
                 {
                     var current = values[i];
-                    process(current.source_id.toString().length == 0 ? current.id : current.source_id, current.value_text, yes);
+                    process(current.source_id && current.source_id.toString().length > 0 ? current.source_id : current.id, current.value_text, yes);
                 }
 
                 scrollAndRefresh();

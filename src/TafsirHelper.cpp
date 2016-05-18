@@ -19,7 +19,7 @@ TafsirHelper::TafsirHelper(DatabaseHelper* sql) : m_sql(sql)
 
 QVariantMap TafsirHelper::addQuote(qint64 authorId, qint64 translatorId, QString const& body, QString const& reference, qint64 suiteId, QString const& uri)
 {
-    LOGGER(authorId << translatorId << body << reference << suiteId << uri);
+    LOGGER(authorId << translatorId << suiteId);
 
     QVariantMap keyValues = TokenHelper::getTokensForQuote(authorId, translatorId, body, reference, suiteId, uri);
     qint64 id = m_sql->executeInsert("quotes", keyValues);
