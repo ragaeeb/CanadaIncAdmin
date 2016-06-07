@@ -135,7 +135,7 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id)
 {
     LOGGER(id);
 
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author").arg( NAME_FIELD("i","author") );
+    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") );
 
     if (id) {
         queryParams << QString("WHERE quotes.id=%1").arg(id);
@@ -230,13 +230,13 @@ void TafsirHelper::searchQuote(QObject* caller, QString fieldName, QString const
 
     if (fieldName == "author")
     {
-        query = QString("SELECT quotes.id,%1,%3,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author INNER JOIN individuals j ON j.id=quotes.translator WHERE %2 OR %4 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg( NAME_FIELD("j","translator") ).arg( NAME_SEARCH("j") );
+        query = QString("SELECT quotes.id,%1,%3,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author INNER JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %2 OR %4 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg( NAME_FIELD("j","translator") ).arg( NAME_SEARCH("j") );
 
         for (int i = 0; i < 5; i++) {
             args << searchTerm;
         }
     } else {
-        query = QString("SELECT quotes.id,%2,body,reference FROM quotes INNER JOIN individuals i ON i.id=quotes.author WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") );
+        query = QString("SELECT quotes.id,%2,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") );
     }
 
     m_sql->executeQuery(caller, query, QueryId::SearchQuote, args);

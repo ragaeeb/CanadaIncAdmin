@@ -15,13 +15,27 @@ Page
         }
     }
     
+    actions: [
+        ActionItem
+        {
+            imageSource: "images/menu/ic_preview_hadith.png"
+            title: qsTr("Copy") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.Signature
+            
+            onTriggered: {
+                console.log("UserEvent: CopyHadith");
+                persist.copyToClipboard( body.original+"\n\n"+tb.title);
+            }
+        }
+    ]
+    
     function onDataLoaded(id, data)
     {
         if (id == QueryId.FetchNarration && data.length > 0)
         {
             var hadith = data[0];
 
-            body.text = hadith.body;
+            body.text = body.original = hadith.body;
             tb.title = hadith.name+" "+hadith.hadith_number;
         } else if (id == QueryId.SearchNarrations) {
             adm.clear();
@@ -57,11 +71,13 @@ Page
                 {
                     id: body
                     property string decorated
+                    property string original
                     horizontalAlignment: HorizontalAlignment.Fill
                     verticalAlignment: VerticalAlignment.Fill
                     multiline: true
                     
                     onDecoratedChanged: {
+                        original = text;
                         text = decorated;
                     }
                 }

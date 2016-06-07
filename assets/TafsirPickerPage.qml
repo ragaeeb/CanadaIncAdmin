@@ -24,13 +24,15 @@ Page
             function onCreate(id, author, translator, explainer, title, description, reference)
             {
                 var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference);
-                tafsirHelper.fetchAllTafsir(x.id);
+                tafsirHelper.fetchAllTafsir(listView, x.id);
                 
                 persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
                 
                 while (navigationPane.top != tafsirPickerPage) {
                     navigationPane.pop();
                 }
+                
+                tafsirPicked([x]);
             }
             
             onTriggered: {

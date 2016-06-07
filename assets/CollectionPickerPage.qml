@@ -34,6 +34,10 @@ Page
                     {
                         imageSource: "images/list/ic_book.png"
                         title: ListItemData.name
+                        
+                        contextActions: [
+                            ActionSet {}
+                        ]
                     }
                 }
             ]
@@ -59,8 +63,7 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: CollectionTapped");
-                multiSelectHandler.active = true;
-                toggleSelection(indexPath);
+                picked( [ dataModel.data(indexPath) ] );
             }
         }
     }

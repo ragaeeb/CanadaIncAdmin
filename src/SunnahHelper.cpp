@@ -47,7 +47,7 @@ void SunnahHelper::fetchNarration(QObject* caller, QVariantList const& terms)
         clauses << TURBO_CLAUSE(collectionId, hadithNumber);
     }
 
-    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE %2 ORDER BY narration_id").arg(NARRATION_COLUMNS).arg( clauses.join(" OR ") );
+    QString query = QString("SELECT %1,grouped_narrations.group_number AS group_id FROM narrations INNER JOIN collections ON collection_id=collections.id LEFT JOIN grouped_narrations ON narrations.id=grouped_narrations.narration_id WHERE %2 ORDER BY narration_id").arg(NARRATION_COLUMNS).arg( clauses.join(" OR ") );
 
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
 }
@@ -100,7 +100,7 @@ void SunnahHelper::searchNarrations(QObject* caller, QVariantList const& params,
     LOGGER(params << collections);
 
     int n = params.size();
-    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE (%2").arg(NARRATION_COLUMNS).arg( LIKE_CLAUSE("body") );
+    QString query = QString("SELECT %1,grouped_narrations.group_number AS group_id FROM narrations INNER JOIN collections ON collection_id=collections.id LEFT JOIN grouped_narrations ON narrations.id=grouped_narrations.narration_id WHERE (%2").arg(NARRATION_COLUMNS).arg( LIKE_CLAUSE("body") );
 
     if (n > 1) {
         query += QString(" AND %1").arg( LIKE_CLAUSE("body") ).repeated(n-1);

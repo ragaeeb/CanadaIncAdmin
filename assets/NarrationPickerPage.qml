@@ -316,54 +316,17 @@ Page
                 listItemComponents: [
                     ListItemComponent
                     {
-                        Container
+                        NarrationListItem
                         {
                             id: rootItem
                             horizontalAlignment: HorizontalAlignment.Fill
-                            verticalAlignment: VerticalAlignment.Fill
+                            labelBackground: ListItemData.group_id ? Color.create(0,0.15,0) : SystemDefaults.Paints.ContainerBackground
 
                             ListItem.onInitializedChanged: {
                                 if (initialized && ListItem.indexPath[0] == 0) {
                                     ListItem.view.loadingFinished();
                                 }
                             }
-
-                            Header {
-                                id: header
-                                title: ListItemData.name
-                                subtitle: ListItemData.hadith_number
-                            }
-                            
-                            Container
-                            {
-                                horizontalAlignment: HorizontalAlignment.Fill
-                                leftPadding: 10; rightPadding: 10; bottomPadding: 10
-                                
-                                Label {
-                                    id: bodyLabel
-                                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-                                    multiline: true
-                                    text: ListItemData.body
-                                }
-                            }
-
-                            contextActions: [
-                                ActionSet
-                                {
-                                    title: header.title
-                                    subtitle: bodyLabel.text.substring( 0, Math.min(bodyLabel.text.length, 15) ).replace(/\n/g, " ")
-                                    
-                                    ActionItem
-                                    {
-                                        imageSource: "images/menu/ic_preview_hadith.png"
-                                        title: qsTr("Open") + Retranslate.onLanguageChanged
-                                        
-                                        onTriggered: {
-                                            rootItem.ListItem.view.openNarration(ListItemData);
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     }
                 ]

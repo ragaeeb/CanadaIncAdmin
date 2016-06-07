@@ -56,6 +56,10 @@ QtObject
         return n;
     }
     
+    function plainText(input) {
+        return input.replace(/<[^>]*>/gi, "");
+    }
+    
     function getCapitalizedClipboard()
     {
         var x = persist.getClipboardText();

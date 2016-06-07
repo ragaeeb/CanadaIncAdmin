@@ -165,7 +165,7 @@ NavigationPane
                         description: qsTr("Search reference field") + Retranslate.onLanguageChanged
                         imageSource: "images/dropdown/search_quote_reference.png"
                         text: qsTr("Reference") + Retranslate.onLanguageChanged
-                        value: "reference"
+                        value: "quotes.reference"
                     }
                     
                     Option {
@@ -288,7 +288,14 @@ NavigationPane
                                             
                                             onTriggered: {
                                                 console.log("UserEvent: CopyQuote");
-                                                var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(ListItemData.reference);
+                                                
+                                                var reference = ListItemData.reference;
+                                                
+                                                if (ListItemData.title) {
+                                                    reference = ListItemData.title + " "+reference;
+                                                }
+                                                
+                                                var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(reference);
                                                 persist.copyToClipboard(body);
                                             }
                                         }

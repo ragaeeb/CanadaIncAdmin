@@ -132,7 +132,7 @@ NavigationPane
                                 
                                 onTriggered: {
                                     console.log("UserEvent: CopyIndividual");
-                                    persist.copyToClipboard(sli.title);
+                                    persist.copyToClipboard( global.plainText(sli.title) );
                                 }
                             }
                             
