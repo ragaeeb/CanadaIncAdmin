@@ -4,6 +4,7 @@
 #include "CommonConstants.h"
 #include "DatabaseHelper.h"
 #include "Logger.h"
+#include "SharedConstants.h"
 #include "TextUtils.h"
 
 #define LIKE_CLAUSE(field) QString("(%1 LIKE '%' || ? || '%')").arg(field)
@@ -33,6 +34,13 @@ void SunnahHelper::fetchAllCollections(QObject* caller)
 }
 
 
+void SunnahHelper::fetchExplanationsFor(QObject* caller, qint64 narrationId)
+{
+    LOGGER(narrationId);
+    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,%3,title,substr(body,-5) AS body,heading FROM narration_explanations INNER JOIN suite_pages ON suite_pages.id=narration_explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE narration_explanations.narration_id=%1 ORDER BY author,title,heading").arg(narrationId).arg( NAME_FIELD("i", "author") ), QueryId::FetchExplanationsFor);
+}
+
+
 void SunnahHelper::fetchNarration(QObject* caller, QVariantList const& terms)
 {
     LOGGER(terms);
@@ -50,6 +58,22 @@ void SunnahHelper::fetchNarration(QObject* caller, QVariantList const& terms)
     QString query = QString("SELECT %1,grouped_narrations.group_number AS group_id FROM narrations INNER JOIN collections ON collection_id=collections.id LEFT JOIN grouped_narrations ON narrations.id=grouped_narrations.narration_id WHERE %2 ORDER BY narration_id").arg(NARRATION_COLUMNS).arg( clauses.join(" OR ") );
 
     m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
+}
+
+
+void SunnahHelper::fetchNarrationsInGroup(QObject* caller, int groupNumber)
+{
+    LOGGER(groupNumber);
+
+    QString query = QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE narrations.id IN (SELECT narration_id FROM grouped_narrations WHERE group_number=%2)").arg(NARRATION_COLUMNS).arg(groupNumber);
+    m_sql->executeQuery(caller, query, QueryId::SearchNarrations);
+}
+
+
+void SunnahHelper::fetchGroupsForNarration(QObject* caller, qint64 narrationId)
+{
+    LOGGER(narrationId);
+    m_sql->executeQuery(caller, QString("SELECT id,group_number FROM grouped_narrations WHERE narration_id=%1 ORDER BY group_number").arg(narrationId), QueryId::FetchGroupsForNarration);
 }
 
 
