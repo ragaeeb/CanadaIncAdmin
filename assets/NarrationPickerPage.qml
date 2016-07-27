@@ -9,7 +9,6 @@ Page
     property alias narrationList: listView
     property variant collectionCodes: {'d': 1, 'a': 2, 'b': 3, 'g': 4, 'i': 5, 'k': 6, 'm': 7, 'n': 8, 'w': 9, 'q': 10, 'r': 11, 't': 12}
     signal picked(variant picked)
-    
     function cleanUp() {}
     
     function isTurboQuery(term)

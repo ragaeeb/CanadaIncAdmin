@@ -75,6 +75,7 @@ public:
     ApplicationUI(bb::system::InvokeManager* im);
     virtual ~ApplicationUI() {}
 
+    Q_SLOT void createContacts(QString const& filePath);
     Q_SLOT void compressIlmDatabase(bool notifyClients=false);
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
     Q_INVOKABLE void loadIlmDatabase();
@@ -83,7 +84,6 @@ public:
     Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);
     Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
     Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
-    Q_INVOKABLE void createContacts();
 };
 
 }

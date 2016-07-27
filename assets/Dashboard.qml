@@ -39,7 +39,7 @@ NavigationPane
             {
                 id: reorder
                 imageSource: "images/menu/ic_reorder.png"
-                title: qsTr("XX") + Retranslate.onLanguageChanged
+                title: qsTr("Reorder") + Retranslate.onLanguageChanged
                 
                 function onDataLoaded(id, data)
                 {
@@ -51,16 +51,36 @@ NavigationPane
                 }
                 
                 onTriggered: {
-                    app.createContacts();
-                    persist.showToast("DONE!");
-                    return;
                     console.log("UserEvent: Reorder");
-                    sql.fetchAllIds(reorder, "locations");
-                    sql.fetchAllIds(reorder, "individuals");
-                    sql.fetchAllIds(reorder, "mentions");
-                    //sql.fetchAllIds(reorder, "answers");
-                    sql.fetchAllIds(reorder, "choices");
-                    //sql.fetchAllIds(reorder, "questions");
+                    app.fetchAllIds(reorder, "locations");
+                    app.fetchAllIds(reorder, "individuals");
+                    app.fetchAllIds(reorder, "mentions");
+                    //app.fetchAllIds(reorder, "answers");
+                    app.fetchAllIds(reorder, "choices");
+                    //app.fetchAllIds(reorder, "questions");
+                }
+            },
+            
+            ActionItem
+            {
+                id: createContacts
+                imageSource: "images/menu/ic_reorder.png"
+                title: qsTr("Create Contacts") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    app.createContacts("/accounts/1000/shared/misc/nigeria.txt");
+                    persist.showToast("DONE!");
+                }
+            },
+            
+            ActionItem
+            {
+                id: uploadChats
+                imageSource: "images/menu/ic_reorder.png"
+                title: qsTr("Upload Chats") + Retranslate.onLanguageChanged
+
+                onTriggered: {
+                    app.uploadChats("/var/tmp/master.db");
                 }
             },
             

@@ -1,4 +1,4 @@
-import bb.cascades 1.0
+import bb.cascades 1.3
 import com.canadainc.data 1.0
 
 Page
@@ -9,8 +9,34 @@ Page
     
     function onDataLoaded(id, data)
     {
-        if (id == QueryId.FetchAllCollections) {
+        if (id == QueryId.FetchAllCollections)
+        {
+            adm.clear();
             adm.append(data);
+        }
+    }
+    
+    titleBar: TitleBar
+    {
+        id: tb
+        kind: TitleBarKind.TextField
+        kindProperties: TextFieldTitleBarKindProperties
+        {
+            id: tftk
+            textField.hintText: qsTr("Enter text to search...") + Retranslate.onLanguageChanged
+            textField.input.submitKey: SubmitKey.Submit
+            textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+            textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
+            textField.onTextChanging: {
+                var trimmed = tftk.textField.text.trim();
+                sunnah.fetchAllCollections(root, trimmed);
+            }
+            
+            textField.input.onSubmitted: {
+                if ( adm.size() == 1 ) {
+                    listView.triggered([0]);
+                }
+            }
         }
     }
     
@@ -18,6 +44,24 @@ Page
     {
         horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Fill
+        
+        animations: [
+            FadeTransition {
+                fromOpacity: 0
+                toOpacity: 1
+                duration: 100
+                delay: 15
+                
+                onCreationCompleted: {
+                    play();
+                }
+                
+                onEnded: {
+                    tftk.textField.textChanging("");
+                    tftk.textField.requestFocus();
+                }
+            }
+        ]
         
         ListView
         {
@@ -66,9 +110,5 @@ Page
                 picked( [ dataModel.data(indexPath) ] );
             }
         }
-    }
-    
-    onCreationCompleted: {
-        sunnah.fetchAllCollections(root);
     }
 }

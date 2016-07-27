@@ -28,9 +28,19 @@ void SunnahHelper::lazyInit()
 }
 
 
-void SunnahHelper::fetchAllCollections(QObject* caller)
+void SunnahHelper::fetchAllCollections(QObject* caller, QString const& query)
 {
-    m_sql->executeQuery(caller, "SELECT * FROM collections ORDER BY name", QueryId::FetchAllCollections);
+    QStringList terms = QStringList() << "SELECT * FROM collections";
+    QVariantList params;
+
+    if ( !query.isEmpty() ) {
+        terms << QString("WHERE %1").arg( LIKE_CLAUSE("name") );
+        params << query;
+    }
+
+    terms << "ORDER BY name";
+
+    m_sql->executeQuery(caller, terms.join(" "), QueryId::FetchAllCollections, params);
 }
 
 

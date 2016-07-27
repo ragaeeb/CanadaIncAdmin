@@ -34,7 +34,7 @@ Page
         if (id == QueryId.FetchNarration && data.length > 0)
         {
             var hadith = data[0];
-            tb.title = hadith.name+" "+hadith.hadith_number;
+            tb.title = "%1 %2".arg(hadith.name).arg(hadith.hadith_number);
             adm.append(data);
         } else if (id == QueryId.FetchGroupsForNarration || id == QueryId.FetchExplanationsFor) {
             adm.append(data);
@@ -49,8 +49,13 @@ Page
         }
     }
     
-    titleBar: TitleBar {
+    titleBar: TitleBar
+    {
         id: tb
+        
+        acceptAction: ActionItem {
+            title: narrationId ? narrationId.toString() : ""
+        }
     }
     
     Container

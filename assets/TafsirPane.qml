@@ -37,12 +37,19 @@ NavigationPane
                 
                 persist.showPrompt( tafsirPicker, qsTr("Enter tag"), qsTr("You can use this tag to categorize the articles."), "salat10", qsTr("Tag..."), 30, "onFinished", all );
             } else {
-                definition.source = "TafsirContentsPage.qml";
-                var page = definition.createObject();
-                page.title = data[0].title;
-                page.suiteId = data[0].id;
-                
-                navigationPane.push(page);
+                if (data[0].suite_page_id)
+                {
+                    definition.source = "CreateSuitePage.qml";
+                    var page = definition.createObject();
+                    page.suitePageId = data[0].suite_page_id;
+                    navigationPane.push(page);
+                } else {
+                    definition.source = "TafsirContentsPage.qml";
+                    var page = definition.createObject();
+                    page.title = data[0].title;
+                    page.suiteId = data[0].id;
+                    navigationPane.push(page);
+                }
             }
         }
         

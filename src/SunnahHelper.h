@@ -28,7 +28,7 @@ public:
 
 	void lazyInit();
 
-	Q_INVOKABLE void fetchAllCollections(QObject* caller);
+	Q_INVOKABLE void fetchAllCollections(QObject* caller, QString const& query=QString());
     Q_INVOKABLE void fetchExplanationsFor(QObject* caller, qint64 narrationId);
     Q_INVOKABLE void fetchGroupsForNarration(QObject* caller, qint64 narrationId);
 

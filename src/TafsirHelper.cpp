@@ -256,11 +256,11 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
             query = QString("SELECT suites.id,%1,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") );
             args << searchTerm << searchTerm;
         } else {
-            query = QString("SELECT suites.id,%2,title FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN individuals t ON t.id=suites.%1 WHERE %3 ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") );
+            query = QString("SELECT suites.id,%2,title FROM suites LEFT JOIN individuals i ON i.id=suites.%4 INNER JOIN individuals t ON t.id=suites.%1 WHERE %3 ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg(fieldName);
             args << searchTerm << searchTerm;
         }
     } else if (fieldName == "body") {
-        query = QString("SELECT suites.id,%1,title FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suites.id=suite_pages.suite_id WHERE body LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg( NAME_FIELD("i","author") );
+        query = QString("SELECT suites.id,%1,title,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suites.id=suite_pages.suite_id WHERE body LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg( NAME_FIELD("i","author") );
     } else {
         query = QString("SELECT suites.id,%2,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %1 LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") );
     }

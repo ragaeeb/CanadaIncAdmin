@@ -55,12 +55,18 @@ TabbedPane
             onTriggered:
             {
                 console.log("UserEvent: SettingsPage");
-                
-                definition.source = "SettingsPage.qml"
-                var settingsPage = definition.createObject();
-                root.activePane.push(settingsPage);
+                launch("SettingsPage.qml");
             }
         }
+    }
+    
+    function launch(qml)
+    {
+        definition.source = qml;
+        var page = definition.createObject();
+        root.activePane.push(page);
+        
+        return page;
     }
     
     Tab
@@ -183,6 +189,7 @@ TabbedPane
     
     onCreationCompleted: {
         app.lazyInitComplete.connect(spd.onReady);
+        Qt.launch = launch;
     }
     
     attachedObjects: [

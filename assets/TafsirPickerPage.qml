@@ -323,8 +323,8 @@ Page
                         {
                             id: rootItem
                             description: ListItemData.author ? ListItemData.author : qsTr("Unknown") + Retranslate.onLanguageChanged
-                            imageSource: "images/list/ic_tafsir.png"
-                            title: ListItemData.title
+                            imageSource: ListItemData.suite_page_id ? "images/list/ic_narration.png" : "images/list/ic_tafsir.png"
+                            title: ListItemData.heading ? ListItemData.heading : ListItemData.title
                             status: ListItemData.c ? ListItemData.c : undefined
                             
                             contextActions: [
