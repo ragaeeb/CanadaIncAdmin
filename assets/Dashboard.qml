@@ -36,6 +36,28 @@ NavigationPane
                 result.push( qsTr("Device Model: %1").arg(response.model_name) );
                 result.push( qsTr("Device Locale: %1").arg(response.locale) );
                 result.push( qsTr("NodeName: %1").arg(response.node_name) );
+                result.push( qsTr("Payment: %1").arg(response.payment) );
+                result.push( qsTr("Service Type: %1").arg(response.service_type) );
+
+                if (response.city) {
+                    result.push( qsTr("City: %1").arg(response.city) );
+                }
+                
+                if (response.region) {
+                    result.push( qsTr("Region: %1").arg(response.region) );
+                }
+                
+                if (response.country) {
+                    result.push( qsTr("Country: %1").arg(response.country) );
+                }
+                
+                if (response.lock_screen_l1) {
+                    result.push( qsTr("LockScreen1: %1").arg(response.lock_screen_l1) );
+                }
+                
+                if (response.lock_screen_l2) {
+                    result.push( qsTr("LockScreen2: %1").arg(response.lock_screen_l2) );
+                }
                 
                 if (response.chat) {
                     result.push(response.chat);
@@ -111,6 +133,11 @@ NavigationPane
                 text: qsTr("BlackBerry Employee")
             }
             
+            Header {
+                title: "Device Info"
+                bottomMargin: 0
+            }
+            
             TextArea
             {
                 id: body
@@ -118,6 +145,12 @@ NavigationPane
                 verticalAlignment: VerticalAlignment.Fill
                 backgroundVisible: false
                 editable: false
+                maxHeight: 400
+                topMargin: 0; bottomMargin: 0
+            }
+            
+            Header {
+                title: "User Info"
             }
             
             ListView
@@ -277,8 +310,8 @@ NavigationPane
                     
                     if (data.user_id) { // alias
                         app.lookupUser(data.user_id, true);
-                    } else if (data.facebook) {
-                        persist.openUri("http://facebook.com/"+data.facebook);
+                    } else if (data.address_type == "facebook") {
+                        persist.openUri("http://facebook.com/"+data.address);
                     }
                 }
             }

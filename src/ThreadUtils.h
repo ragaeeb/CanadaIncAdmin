@@ -12,6 +12,7 @@ struct UploadData
     QByteArray data;
     QString md5;
     bool notifyClients;
+    QString cookie;
 
     UploadData() : notifyClients(false) {}
 };
