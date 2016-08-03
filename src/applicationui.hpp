@@ -60,6 +60,7 @@ signals:
     void requestComplete();
     void transferProgress(QVariant const& cookie, qint64 bytesSent, qint64 bytesTotal);
     void textualChange();
+    void userFound(QVariant const& user);
 
 private slots:
     void childCardDone(bb::system::CardDoneMessage const& message=bb::system::CardDoneMessage());
@@ -83,6 +84,7 @@ public:
     Q_INVOKABLE void geoLookup(QString const& location);
     Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);
     Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
+    Q_INVOKABLE void lookupUser(QString const& address, bool userId=false);
     Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
 };
 

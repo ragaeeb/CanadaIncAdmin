@@ -226,6 +226,15 @@ QVariantMap Offloader::parseName(QString const& n)
 }
 
 
+int Offloader::diffSecs(QString const& input)
+{
+    QDateTime then = QDateTime::fromString(input, "yyyy-MM-dd HH:mm:ss");
+    QDateTime now = QDateTime::currentDateTime();
+
+    return then.secsTo(now);
+}
+
+
 Offloader::~Offloader()
 {
 }

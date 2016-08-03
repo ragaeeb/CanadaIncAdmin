@@ -10,10 +10,279 @@ NavigationPane
         deviceUtils.cleanUpAndDestroy(page);
     }
     
+    function onUserFound(response)
+    {
+        if (response.result == "200 OK")
+        {
+            if (response.message) {
+                persist.showToast(response.message, "images/menu/ic_remove_parent.png");
+            } else if (response.user_id) {
+                scrollView.visible = true;
+                adm.clear();
+                internal.checked = response.internal == "1";
+                
+                var result = [];
+                var registered = offloader.diffSecs(response.registered_on);
+
+                if (registered < 3600) { // less than an hour ago: 60s/min * 60mins/hr
+                    result.push( qsTr("Registered %n mins ago", "", registered/60) );
+                } else if (registered < 60*60*24) {
+                    result.push( qsTr("Registered %n hours ago", "", registered/3600) );
+                } else {
+                    result.push( qsTr("Registered %n days ago", "", registered/(3600*24)) );
+                }
+                
+                result.push( qsTr("OS Version: %1").arg(response.os_version) );
+                result.push( qsTr("Device Model: %1").arg(response.model_name) );
+                result.push( qsTr("Device Locale: %1").arg(response.locale) );
+                result.push( qsTr("NodeName: %1").arg(response.node_name) );
+                
+                if (response.chat) {
+                    result.push(response.chat);
+                }
+                
+                if (response.apps) {
+                    adm.append(response.apps);
+                }
+                
+                if (response.addresses) {
+                    adm.append(response.addresses);
+                }
+                
+                if (response.aliases) {
+                    adm.append(response.aliases);
+                }
+                
+                body.text = result.join("\n\n");
+            } else {
+                persist.showToast("Unknown error: "+JSON.stringify(response), "images/menu/ic_remove_answer.png");
+            }
+        } else {
+            persist.showToast("Error during lookup: "+JSON.stringify(response), "images/menu/ic_remove_answer.png");
+        }
+    }
+
+    onCreationCompleted: {
+        app.userFound.connect(onUserFound);
+    }
+    
     Page
     {
         id: dashboard
         actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+        
+        titleBar: TitleBar
+        {
+            scrollBehavior: TitleBarScrollBehavior.Sticky
+            kind: TitleBarKind.TextField
+            kindProperties: TextFieldTitleBarKindProperties
+            {
+                id: tftk
+                
+                textField {
+                    hintText: qsTr("Enter address to search...") + Retranslate.onLanguageChanged
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                    input.keyLayout: KeyLayout.Text
+                    inputMode: TextFieldInputMode.Text
+                    input.submitKey: SubmitKey.Search
+                    input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
+                    
+                    input.onSubmitted: {
+                        app.lookupUser( textField.text.trim() );
+                    }
+                }
+            }
+        }
+        
+        Container
+        {
+            id: scrollView
+            horizontalAlignment: HorizontalAlignment.Fill
+            verticalAlignment: VerticalAlignment.Fill
+            visible: false
+            
+            CheckBox
+            {
+                id: internal
+                horizontalAlignment: HorizontalAlignment.Fill
+                enabled: false
+                text: qsTr("BlackBerry Employee")
+            }
+            
+            TextArea
+            {
+                id: body
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+                backgroundVisible: false
+                editable: false
+            }
+            
+            ListView
+            {
+                id: listView
+                
+                dataModel: ArrayDataModel {
+                    id: adm
+                }
+                
+                function itemType(data, indexPath)
+                {
+                    if (data.address) {
+                        return data.address_type ? data.address_type : data.address.indexOf("@") > 0 ? "email" : "unknown_address";
+                    } else if (data.version) {
+                        return "app";
+                    } else if (data.user_id) {
+                        return "user";
+                    } else {
+                        return "unknown"
+                    }
+                }
+                
+                listItemComponents: [
+                    ListItemComponent
+                    {
+                        type: "whatsapp"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "WhatsApp"
+                            imageSource: "images/list/ic_whatsapp.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "bbm"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "BBM"
+                            imageSource: "file:///usr/share/icons/ic_start_bbm_chat.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "unknown_address"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Unknown"
+                            imageSource: "images/menu/ic_help.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "known_name"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Name"
+                            imageSource: "images/list/ic_parent.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "facebook"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Facebook"
+                            imageSource: "images/list/site_facebook.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "instagram"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Instagram"
+                            imageSource: "images/list/site_instagram.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "phone"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Phone"
+                            imageSource: "images/list/ic_phone.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "email"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Email"
+                            imageSource: "images/list/ic_email.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "app"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.name
+                            description: ListItemData.version
+                            imageSource: "images/menu/ic_accept_narrations.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "user"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.user_id
+                            description: "Alias"
+                            imageSource: "images/list/ic_companion.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
+                        type: "unknown"
+                        
+                        Divider
+                        {
+                        }
+                    }
+                ]
+                
+                onTriggered: {
+                    var data = dataModel.data(indexPath);
+                    
+                    if (data.user_id) { // alias
+                        app.lookupUser(data.user_id, true);
+                    } else if (data.facebook) {
+                        persist.openUri("http://facebook.com/"+data.facebook);
+                    }
+                }
+            }
+        }
         
         actions: [
             ActionItem
@@ -31,7 +300,7 @@ NavigationPane
                 }
                 
                 onTriggered: {
-                    var yes = persist.showDialog( upload, qsTr("Upload"), qsTr("This will completely replace the remote database with your local one. Are you sure you want to do this?"), qsTr("Yes"), qsTr("No"), qsTr("Notify Consumers?"), false );
+                    persist.showDialog( upload, qsTr("Upload"), qsTr("This will completely replace the remote database with your local one. Are you sure you want to do this?"), qsTr("Yes"), qsTr("No"), qsTr("Notify Consumers?"), false );
                 }
             },
             
