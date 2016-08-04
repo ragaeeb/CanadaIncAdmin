@@ -95,6 +95,17 @@ NavigationPane
         
         titleBar: TitleBar
         {
+            dismissAction: ActionItem
+            {
+                enabled: tftk.textField.text.length > 0
+                title: qsTr("UserID")
+                imageSource: "images/toast/ic_add_tag.png"
+                
+                onTriggered: {
+                    app.lookupUser( tftk.textField.text.trim(), true );
+                }
+            }
+            
             scrollBehavior: TitleBarScrollBehavior.Sticky
             kind: TitleBarKind.TextField
             kindProperties: TextFieldTitleBarKindProperties
@@ -114,6 +125,14 @@ NavigationPane
                     input.onSubmitted: {
                         app.lookupUser( textField.text.trim() );
                     }
+                    
+                    gestureHandlers: [
+                        DoubleTapHandler {
+                            onDoubleTapped: {
+                                tftk.textField.text = persist.getClipboardText();
+                            }
+                        }
+                    ]
                 }
             }
         }
@@ -253,7 +272,7 @@ NavigationPane
                         
                         StandardListItem
                         {
-                            title: ListItemData.address
+                            title: "+"+ListItemData.address
                             description: "Phone"
                             imageSource: "images/list/ic_phone.png"
                         }
@@ -312,6 +331,30 @@ NavigationPane
                         app.lookupUser(data.user_id, true);
                     } else if (data.address_type == "facebook") {
                         persist.openUri("http://facebook.com/"+data.address);
+                    } else if (data.address_type == "whatsapp" || data.address_type == "bbm") {
+                        var name = "";
+                        var whatsapp = [];
+                        var bbm = [];
+
+                        for (var i = 0; i < adm.size(); i++)
+                        {
+                            var current = adm.value(i);
+                            
+                            if ( current.address_type == "known_name" ) {
+                                name = current.address;
+                            } else if (current.address_type == "bbm") {
+                                bbm.push(current.address);
+                            } else if (current.address_type == "whatsapp") {
+                                whatsapp.push(current.address);
+                            }
+                        }
+
+                        name = persist.showBlockingPrompt( qsTr("Enter name text"), qsTr("Please enter the new name of this contact:"), name, qsTr("Enter name"), 100, true, qsTr("Submit"), qsTr("Cancel") ).trim();
+                        
+                        if (name.length > 0 && (whatsapp.length > 0 || bbm.length > 0)) {
+                            app.createContactCard(name, whatsapp, bbm);
+                            persist.showToast( qsTr("%1 added to contact list").arg(name), "images/menu/ic_accept.png" );
+                        }
                     }
                 }
             }
@@ -428,6 +471,18 @@ NavigationPane
                 
                 onTriggered: {
                     query.updateQuery();
+                }
+            },
+            
+            DeleteActionItem
+            {
+                id: clearAll
+                imageSource: "images/menu/ic_reset_search.png"
+                title: qsTr("Clear") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    tftk.textField.resetText();
+                    tftk.textField.requestFocus();
                 }
             }
         ]

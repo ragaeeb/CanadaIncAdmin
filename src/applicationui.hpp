@@ -86,6 +86,7 @@ public:
     Q_INVOKABLE void fetchAllIds(QObject* caller, QString const& table);
     Q_INVOKABLE void lookupUser(QString const& address, bool userId=false);
     Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
+    Q_INVOKABLE void createContactCard(QString const& name, QStringList const& whatsapp, QStringList const& bbm);
 };
 
 }
