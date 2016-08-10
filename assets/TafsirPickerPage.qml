@@ -176,7 +176,7 @@ Page
                     imageSource: "images/dropdown/search_translator.png"
                     text: qsTr("Translator") + Retranslate.onLanguageChanged
                     value: "translator"
-                }        
+                }
                 
                 Option {
                     description: qsTr("Search title field") + Retranslate.onLanguageChanged
@@ -251,6 +251,7 @@ Page
                 {
                     busy.delegateActive = true;
                     var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference);
+
                     dataModel.replace(editIndexPath[0], current);
                     
                     global.popToRoot(navigationPane, tafsirPickerPage);
