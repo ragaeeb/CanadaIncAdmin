@@ -8,12 +8,12 @@
 
 namespace admin {
 
-UploadData ThreadUtils::compressDatabase(QString const& dbPath, bool notifyClients)
+UploadData ThreadUtils::compressDatabase(QString const& dbName, bool notifyClients, QString const& folder, QString const& cookie)
 {
-    LOGGER(dbPath << notifyClients);
+    LOGGER(dbName << notifyClients);
 
     QStringList toCompress;
-    toCompress << QString("%1/%2.db").arg( QDir::homePath() ).arg(dbPath);
+    toCompress << QString("%1/%2.db").arg(folder).arg(dbName);
 
     JlCompress::compressFiles(ILM_DB_ARCHIVE_DESTINATION, toCompress, ILM_ARCHIVE_PASSWORD);
 
@@ -31,6 +31,7 @@ UploadData ThreadUtils::compressDatabase(QString const& dbPath, bool notifyClien
     ud.notifyClients = notifyClients;
     ud.data = qba;
     ud.md5 = md5;
+    ud.cookie = cookie;
 
     return ud;
 }

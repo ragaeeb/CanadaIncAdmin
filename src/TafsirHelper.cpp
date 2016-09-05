@@ -131,17 +131,31 @@ void TafsirHelper::fetchTafsirContent(QObject* caller, qint64 suitePageId)
 }
 
 
-void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id)
+void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, int limit)
 {
     LOGGER(id);
 
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") );
+    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,%2,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
+
+    QStringList whereClauses;
 
     if (id) {
-        queryParams << QString("WHERE quotes.id=%1").arg(id);
+        whereClauses << QString("quotes.id=%1").arg(id);
+    }
+
+    if (author) {
+        whereClauses << QString("quotes.author=%1").arg(author);
+    }
+
+    if ( !whereClauses.isEmpty() ) {
+        queryParams << QString("WHERE %1").arg( whereClauses.join(" AND ") );
     }
 
     queryParams << "ORDER BY id DESC";
+
+    if (limit > 0) {
+        queryParams << QString("LIMIT %1").arg(limit);
+    }
 
     m_sql->executeQuery(caller, queryParams.join(" "), QueryId::FetchAllQuotes);
 }

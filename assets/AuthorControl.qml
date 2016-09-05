@@ -8,10 +8,17 @@ Container
     property string label
     property variant pickedId
     property string table: "suites"
+    property string where
     horizontalAlignment: HorizontalAlignment.Fill
     
     layout: StackLayout {
         orientation: LayoutOrientation.LeftToRight
+    }
+    
+    onWhereChanged: {
+        if (where.length > 0 && !pickedId) {
+            ilmHelper.fetchFrequentIndividuals(itf, table, field, 1, where);
+        }
     }
     
     function reset()
@@ -39,6 +46,8 @@ Container
             } else {
                 reset();
             }
+        } else if (id == QueryId.FetchAllIndividuals && data.length > 0) {
+            pickedId = data[0].id;
         }
     }
     
@@ -61,7 +70,7 @@ Container
             
             var p = definition.createObject();
             p.picked.connect(onPicked);
-            ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field, 12);
+            ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field, 12, where);
             
             navigationPane.push(p);
         }

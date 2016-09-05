@@ -104,6 +104,18 @@ Page
                 console.log("UserEvent: FixQuoteBody");
                 bodyField.text = toSentenceCase(bodyField.text);
             }
+        },
+        
+        ActionItem
+        {
+            imageSource: "images/list/ic_geo_search.png"
+            title: qsTr("Find Source") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            
+            onTriggered: {
+                console.log("UserEvent: FindSource");
+                persist.openUri( uriField.text.length == 0 ? "https://www.google.ca/search?q=\"%1\"&ie=UTF-8".arg( encodeURIComponent(body) ) : uriField.text );
+            }
         }
     ]
     
@@ -231,6 +243,10 @@ Page
                             if (data.length > 0) {
                                 imageSource = "images/list/ic_book.png"
                                 text = data[0].title;
+                                
+                                if (!authorField.pickedId) {
+                                    authorField.pickedId = data[0].author;
+                                }
                             } else {
                                 reset();
                             }
@@ -286,10 +302,21 @@ Page
                 hintText: qsTr("URL (for reference purposes only)") + Retranslate.onLanguageChanged
                 
                 gestureHandlers: [
-                    DoubleTapHandler {
+                    DoubleTapHandler
+                    {
                         onDoubleTapped: {
                             console.log("UserEvent: QuoteUriDoubleTapped");
-                            uriField.text = persist.getClipboardText();
+                            var value = persist.getClipboardText();
+                            uriField.text = value;
+                            
+                            if (!translatorField.pickedId)
+                            {
+                                var host = offloader.extractHost(value);
+                                
+                                if (host.length > 0) {
+                                    translatorField.where = "uri LIKE '%%1%'".arg(host);
+                                }
+                            }
                         }
                     }
                 ]

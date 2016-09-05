@@ -171,7 +171,17 @@ Page
                     {
                         onDoubleTapped: {
                             console.log("UserEvent: TafsirRefDoubleTapped");
-                            referenceField.text = persist.getClipboardText();
+                            var value = persist.getClipboardText();
+                            referenceField.text = value;
+
+                            var host = offloader.extractHost(value);
+                            
+                            if (host.length > 0)
+                            {
+                                if (!translatorField.pickedId) {
+                                    translatorField.where = "reference LIKE '%%1%'".arg(host);
+                                }
+                            }
                         }
                     }
                 ]

@@ -35,6 +35,8 @@ ListView
             return qsTr("Children");
         } else if (ListItemData == "book") {
             return qsTr("Books");
+        } else if (ListItemData == "quote") {
+            return qsTr("Quotes");
         }
     }
     
@@ -436,6 +438,36 @@ ListView
                     }
                 ]
             }
+        },
+        
+        ListItemComponent
+        {
+            type: "quote"
+            
+            StandardListItem
+            {
+                id: quoteSli
+                imageSource: "images/list/ic_book.png"
+                title: ListItemData.title ? "%1 %2".arg(ListItemData.title).arg(ListItemData.reference) : ListItemData.reference
+                description: ListItemData.body
+                
+                contextActions: [
+                    ActionSet
+                    {
+                        title: quoteSli.title
+                        
+                        DeleteActionItem
+                        {
+                            imageSource: "images/menu/ic_delete_quote.png"
+                            
+                            onTriggered: {
+                                console.log("UserEvent: RemoveQuote");
+                                quoteSli.ListItem.view.removeQuote(quoteSli.ListItem);
+                            }
+                        }
+                    }
+                ]
+            }
         }
     ]
     
@@ -462,6 +494,23 @@ ListView
             page.createSuitePage.connect(onEditSuitePage);
             
             navigationPane.push(page);
+        } else if (d.type == "quote") {
+            editIndexPath = indexPath;
+            definition.source = "CreateQuotePage.qml";
+            var page = definition.createObject();
+            page.createQuote.connect(onEdit);
+            page.quoteId = d.id;
+            
+            navigationPane.push(page);
+        }
+    }
+    
+    function onEdit(id, author, translator, body, reference, suiteId, uri)
+    {
+        tafsirHelper.editQuote(bioPage, id, author, translator, body, reference, suiteId, uri);
+        
+        while (navigationPane.top != bioPage) {
+            navigationPane.pop();
         }
     }
     

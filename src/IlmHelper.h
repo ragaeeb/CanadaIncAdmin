@@ -42,7 +42,7 @@ public:
     Q_INVOKABLE void fetchBooksForAuthor(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchBioMetadata(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void fetchChildren(QObject* caller, qint64 individualId);
-    Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7);
+    Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7, QString const& where=QString());
     Q_INVOKABLE void fetchIndividualData(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchParents(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchSiblings(QObject* caller, qint64 individualId);

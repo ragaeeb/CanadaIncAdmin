@@ -95,17 +95,6 @@ NavigationPane
         
         titleBar: TitleBar
         {
-            dismissAction: ActionItem
-            {
-                enabled: tftk.textField.text.length > 0
-                title: qsTr("UserID")
-                imageSource: "images/toast/ic_add_tag.png"
-                
-                onTriggered: {
-                    app.lookupUser( tftk.textField.text.trim(), true );
-                }
-            }
-            
             scrollBehavior: TitleBarScrollBehavior.Sticky
             kind: TitleBarKind.TextField
             kindProperties: TextFieldTitleBarKindProperties
@@ -130,6 +119,7 @@ NavigationPane
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 tftk.textField.text = persist.getClipboardText();
+                                app.lookupUser( tftk.textField.text.trim() );
                             }
                         }
                     ]
@@ -143,6 +133,11 @@ NavigationPane
             horizontalAlignment: HorizontalAlignment.Fill
             verticalAlignment: VerticalAlignment.Fill
             visible: false
+            
+            ActivityIndicator {
+                id: busy
+                running: false
+            }
             
             CheckBox
             {
@@ -425,7 +420,7 @@ NavigationPane
                 title: qsTr("Upload Chats") + Retranslate.onLanguageChanged
 
                 onTriggered: {
-                    app.uploadChats("/var/tmp/master.db");
+                    app.uploadChats();
                 }
             },
             

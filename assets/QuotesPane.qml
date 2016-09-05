@@ -296,6 +296,11 @@ NavigationPane
                                                 }
                                                 
                                                 var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(reference);
+                                                
+                                                if (ListItemData.translator) {
+                                                    body += "\n\nTranslated by: %1".arg(ListItemData.translator);
+                                                }
+                                                
                                                 persist.copyToClipboard(body);
                                             }
                                         }
@@ -339,7 +344,7 @@ NavigationPane
                     ]
                     
                     onTriggered: {
-                        console.log("UserEvent: AdminQuoteTriggered");
+                        console.log("UserEvent: QuoteTriggered");
                         var d = dataModel.data(indexPath);
                         duplicateQuote(d);
                     }

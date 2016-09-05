@@ -77,6 +77,7 @@ QVariantList Offloader::fillType(QVariantList input, int queryId)
     map[QueryId::FetchChildren] = "child";
     map[QueryId::FetchAllWebsites] = "website";
     map[QueryId::FetchBooksForAuthor] = "book";
+    map[QueryId::FetchAllQuotes] = "quote";
 
     if (queryId == QueryId::FetchAllWebsites) {
         input = decorateWebsites(input);
@@ -232,6 +233,18 @@ int Offloader::diffSecs(QString const& input)
     QDateTime now = QDateTime::currentDateTime();
 
     return then.secsTo(now);
+}
+
+
+QString Offloader::extractHost(QString const& uri)
+{
+    QUrl result(uri);
+
+    if ( result.host() == "twitter.com" ) {
+        return QString("%1/%2").arg( result.host() ).arg( result.path().split("/").first() );
+    } else {
+        return result.host();
+    }
 }
 
 

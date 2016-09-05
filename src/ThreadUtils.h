@@ -19,7 +19,7 @@ struct UploadData
 
 struct ThreadUtils
 {
-    static UploadData compressDatabase(QString const& tafsirPath, bool notifyClients);
+    static UploadData compressDatabase(QString const& tafsirPath, bool notifyClients, QString const& folder, QString const& cookie);
 };
 
 } /* namespace quran */

@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE QVariantMap parseName(QString const& n);
     Q_INVOKABLE static QString toTitleCase(QString const& input);
     Q_INVOKABLE static int diffSecs(QString const& input);
+    Q_INVOKABLE static QString extractHost(QString const& uri);
 };
 
 } /* namespace quran */

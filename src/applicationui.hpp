@@ -60,6 +60,7 @@ signals:
     void requestComplete();
     void transferProgress(QVariant const& cookie, qint64 bytesSent, qint64 bytesTotal);
     void textualChange();
+    void titleFound(QString const& title);
     void userFound(QVariant const& user);
 
 private slots:
@@ -87,6 +88,7 @@ public:
     Q_INVOKABLE void lookupUser(QString const& address, bool userId=false);
     Q_INVOKABLE void setIndexAsId(QObject* caller, QVariantList const& q, QVariantList const& intersection=QVariantList());
     Q_INVOKABLE void createContactCard(QString const& name, QStringList const& whatsapp, QStringList const& bbm);
+    Q_INVOKABLE void uploadChats();
 };
 
 }

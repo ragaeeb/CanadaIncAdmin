@@ -191,6 +191,7 @@ Page
             ilmHelper.fetchSiblings(bioPage, individualId);
             ilmHelper.fetchChildren(bioPage, individualId);
             ilmHelper.fetchBooksForAuthor(bioPage, individualId);
+            tafsirHelper.fetchAllQuotes(bioPage, 0, individualId)
         }
     }
 
@@ -261,6 +262,8 @@ Page
             persist.showToast( qsTr("Book added!"), "images/menu/ic_add_sibling.png" );
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
+        } else if (id == QueryId.EditQuote) {
+            persist.showToast( qsTr("Quote updated!"), "images/menu/ic_edit_quote.png" );
         } else if (id == QueryId.ReplaceSuite) {
             persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge_into.png" );
             global.popToRoot(navigationPane, bioPage);

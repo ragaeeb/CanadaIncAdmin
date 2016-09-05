@@ -416,9 +416,19 @@ void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
 }
 
 
-void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, QString const& field, int n)
+void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, QString const& field, int n, QString const& where)
 {
-    m_sql->executeQuery(caller, QString("SELECT %4 AS id,%2,is_companion,female FROM (SELECT %4,COUNT(%4) AS n FROM %3 GROUP BY %4 ORDER BY n DESC LIMIT %1) INNER JOIN individuals i ON i.id=%4 GROUP BY i.id ORDER BY display_name").arg(n).arg( NAME_FIELD("i","display_name") ).arg(table).arg(field), QueryId::FetchAllIndividuals);
+    QStringList innerParts;
+
+    if ( !where.isEmpty() ) {
+        innerParts << QString("WHERE %1").arg(where);
+    }
+
+    innerParts << QString("GROUP BY %1").arg(field) << "ORDER BY n DESC" << QString("LIMIT %1").arg(n);
+
+    QString innerClause = QString("SELECT %1,COUNT(%1) AS n FROM %2 %3").arg(field).arg(table).arg( innerParts.join(" ") );
+
+    m_sql->executeQuery(caller, QString("SELECT %1 AS id,%2,is_companion,female FROM (%3) INNER JOIN individuals i ON i.id=%1 GROUP BY i.id ORDER BY display_name").arg(field).arg( NAME_FIELD("i","display_name") ).arg(innerClause), QueryId::FetchAllIndividuals);
 }
 
 
