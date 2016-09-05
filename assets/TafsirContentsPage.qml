@@ -5,6 +5,7 @@ Page
 {
     id: tafsirContentsPage
     property variant suiteId
+    property variant searchData
     property alias title: tb.title
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -124,6 +125,21 @@ Page
                     if ( adm.isEmpty() ) {
                         addAction.triggered();
                     }
+                    
+                    if (searchData)
+                    {
+                        var suitePageId = searchData.suitePageId;
+                        var query = searchData.query;
+                        
+                        for (var i = data.length-1; i >= 0; i--)
+                        {
+                            if (data[0].id == suitePageId) {
+                                decorator.decorateSearchResults(data, adm, [query], "body", i);
+                                break;
+                            }
+                        }
+                    }    
+                    
                 } else if (id == QueryId.MoveToSuite) {
                     persist.showToast( qsTr("Suite page moved!"), "images/menu/ic_merge.png" );
                 } else if (id == QueryId.RemoveSuitePage) {
@@ -386,6 +402,10 @@ Page
                 var marker = persist.getValueFor("suitePageMarker");
                 listView.scrollToItem([marker.indexPath], ScrollAnimation.None)
             }
+        },
+        
+        SearchDecorator {
+            id: decorator
         }
     ]
 }
