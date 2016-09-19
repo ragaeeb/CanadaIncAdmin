@@ -89,6 +89,15 @@ NavigationPane
         Qt.navigationPane = navigationPane;
     }
     
+    function searchUser()
+    {
+        var address = textField.text.trim();
+        
+        if (address.length > 0) {
+            app.lookupUser(address);
+        }
+    }
+    
     Page
     {
         id: dashboard
@@ -113,14 +122,14 @@ NavigationPane
                     input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
                     
                     input.onSubmitted: {
-                        app.lookupUser( textField.text.trim() );
+                        searchUser();
                     }
                     
                     gestureHandlers: [
                         DoubleTapHandler {
                             onDoubleTapped: {
                                 tftk.textField.text = persist.getClipboardText();
-                                app.lookupUser( tftk.textField.text.trim() );
+                                searchUser();
                             }
                         }
                     ]
