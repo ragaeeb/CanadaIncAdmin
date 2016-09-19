@@ -178,7 +178,7 @@ Page
             
             function scrollAndRefresh()
             {
-                navigationPane.pop();
+                Qt.popToRoot(createPage);
                 listView.scrollToPosition(ScrollPosition.End, ScrollAnimation.Smooth);
                 listView.refresh();
             }
@@ -198,10 +198,8 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: AddChoice");
-                definition.source = "ChoicePickerPage.qml";
-                var picker = definition.createObject();
+                var picker = Qt.launch("ChoicePickerPage.qml");
                 picker.picked.connect(onPickedMulti);
-                navigationPane.push(picker);
             }
             
             shortcuts: [

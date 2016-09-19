@@ -67,7 +67,7 @@ TextField
             {
                 location.text = id.toString();
                 location.hintText = name;
-                navigationPane.pop();
+                Qt.navigationPane.pop();
             }
             
             onDoubleTapped: {

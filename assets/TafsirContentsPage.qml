@@ -32,13 +32,6 @@ Page
         noElements.delegateActive = !listView.visible;
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != tafsirContentsPage) {
-            navigationPane.pop();
-        }
-    }
-    
     function cleanUp() {
         app.textualChange.disconnect(reload);
     }
@@ -81,7 +74,7 @@ Page
                 persist.showToast( qsTr("Suite page added!"), "images/menu/ic_add_suite_page.png" );
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 
-                popToRoot();
+                Qt.popToRoot(tafsirContentsPage);
                 refresh();
                 
                 listView.triggered([0]); // open it up so user can add links
@@ -90,12 +83,9 @@ Page
             onTriggered: {
                 console.log("UserEvent: TafsirContentAddTriggered");
 
-                definition.source = "CreateSuitePage.qml";
-                var c = definition.createObject();
+                var c = Qt.launch("CreateSuitePage.qml");
                 c.createSuitePage.connect(onCreateSuitePage);
                 c.focusable = true;
-                
-                navigationPane.push(c);
             }
         }
     ]
@@ -133,8 +123,13 @@ Page
                         
                         for (var i = data.length-1; i >= 0; i--)
                         {
-                            if (data[0].id == suitePageId) {
-                                decorator.decorateSearchResults(data, adm, [query], "body", i);
+                            if (data[i].id == suitePageId)
+                            {
+                                if (query) {
+                                    decorator.decorateSearchResults(data, adm, [query], "body", i);
+                                }
+                                
+                                listView.scrollToItem([i], ScrollAnimation.None);
                                 break;
                             }
                         }
@@ -146,7 +141,7 @@ Page
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
                 } else if (id == QueryId.EditSuitePage) {
                     persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
-                    popToRoot();
+                    Qt.popToRoot(tafsirContentsPage);
                 } else if (id == QueryId.TranslateSuitePage) {
                     persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_translate.png" );
                     persist.saveValueFor("translation", "arabic");
@@ -175,13 +170,11 @@ Page
             function editItem(indexPath, ListItemData)
             {
                 editIndexPath = indexPath;
-                definition.source = "CreateSuitePage.qml";
-                var c = definition.createObject();
+                var c = Qt.launch("CreateSuitePage.qml");
                 c.createSuitePage.connect(onEditSuitePage);
                 
                 c.suitePageId = ListItemData.id;
                 c.focusable = true;
-                navigationPane.push(c);
             }
             
             function onActualPicked(destination)
@@ -198,18 +191,15 @@ Page
                     persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/same_suites.png" );
                 }
                 
-                popToRoot();
+                Qt.popToRoot(tafsirContentsPage);
             }
             
             function moveSuitePage(indexPath, ListItemData)
             {
                 editIndexPath = indexPath;
-                definition.source = "TafsirPickerPage.qml";
-                var ipp = definition.createObject();
+                var ipp = Qt.launch("TafsirPickerPage.qml");
                 ipp.autoFocus = true;
                 ipp.tafsirPicked.connect(onActualPicked);
-                
-                navigationPane.push(ipp);
             }
             
             function setSuitePageMarker(ListItem)
@@ -226,20 +216,14 @@ Page
             
             function quiz(indexPath, ListItemData)
             {
-                definition.source = "SuitePageQuestionsPage.qml";
-                var page = definition.createObject();
+                var page = Qt.launch("SuitePageQuestionsPage.qml");
                 page.suitePageId = ListItemData.id;
-                
-                navigationPane.push(page);
             }
             
             onTriggered: {
                 console.log("UserEvent: TafsirContentTriggered");
-                definition.source = "SuitePageLinks.qml";
-                var page = definition.createObject();
+                var page = Qt.launch("SuitePageLinks.qml");
                 page.suitePageId = dataModel.data(indexPath).id;
-                
-                navigationPane.push(page);
             }
             
             listItemComponents: [
@@ -262,7 +246,16 @@ Page
                             horizontalAlignment: HorizontalAlignment.Fill
                             verticalAlignment: VerticalAlignment.Fill
                             multiline: true
-                            text: ListItemData.body + (ListItemData.reference ? "\n\n"+ListItemData.reference : "")
+                            text: ListItemData.body
+                        }
+                        
+                        Label {
+                            content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                            horizontalAlignment: HorizontalAlignment.Fill
+                            multiline: true
+                            text: ListItemData.reference
+                            topMargin: 20
+                            visible: text.length > 0
                         }
                         
                         contextActions: [

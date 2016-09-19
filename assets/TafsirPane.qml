@@ -14,16 +14,20 @@ NavigationPane
         id: tafsirPicker
         
         onTafsirPicked: {            
-            definition.source = "TafsirContentsPage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("TafsirContentsPage.qml");
             page.title = data[0].title;
             page.suiteId = data[0].id;
-            
-            if (data[0].suite_page_id && searchField.text.length > 0) {
-                page.searchData = {'query': searchField.text, 'suitePageId': data[0].suite_page_id};
+
+            if (data[0].suite_page_id != null && searchField.text.trim().length > 0)
+            {
+                var searchData = {'suitePageId': data[0].suite_page_id};
+                
+                if (tafsirPicker.filter == "body") {
+                    searchData.query = searchField.text.trim();
+                }
+
+                page.searchData = searchData;
             }
-            
-            navigationPane.push(page);
         }
         
         actions: [
@@ -51,10 +55,4 @@ NavigationPane
             reload();
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

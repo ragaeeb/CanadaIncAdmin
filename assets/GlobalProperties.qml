@@ -25,14 +25,6 @@ QtObject
     }
     
     
-    function popToRoot(navigationPane,page)
-    {
-        while (navigationPane.top != page) {
-            navigationPane.pop();
-        }
-    }
-    
-    
     function extractTokens(trimmed)
     {
         var elements = trimmed.match(/(?:[^\s"]+|"[^"]*")+/g);

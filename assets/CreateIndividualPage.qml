@@ -13,117 +13,12 @@ Page
     actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
     onIndividualIdChanged: {
-        if (individualId)
-        {
+        if (individualId) {
             ilmHelper.fetchIndividualData(createRijaal, individualId);
-            ilmHelper.fetchAllWebsites(createRijaal, individualId);
         }
     }
     
     function cleanUp() {}
-    
-    actions: [
-        ActionItem
-        {
-            id: addSite
-            imageSource: "images/menu/ic_add_site.png"
-            title: qsTr("Add Website") + Retranslate.onLanguageChanged
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
-            enabled: individualId != undefined
-            
-            shortcuts: [
-                SystemShortcut {
-                    type: SystemShortcuts.CreateNew
-                }
-            ]
-            
-            function endsWith(str, suffix) {
-                return str.indexOf(suffix, str.length - suffix.length) !== -1;
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: NewSite");
-                var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
-                
-                if (uri.length > 0)
-                {
-                    if ( endsWith(uri, "/") ) {
-                        uri = uri.substring(0, uri.length-1);
-                    }
-                    
-                    if ( uri.indexOf("http://") == -1 && uri.indexOf("https://") == -1 ) {
-                        uri = "http://"+uri;
-                    }
-                    
-                    uri = uri.replace("//www.", "//");
-                    
-                    if ( deviceUtils.isUrl(uri) ) {
-                        var x = ilmHelper.addWebsite(individualId, uri);
-                        adm.append(x);
-                        persist.showToast( qsTr("Website added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    } else {
-                        persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
-                        console.log("FailedRegex", uri);
-                    }
-                }
-            }
-        },
-        
-        ActionItem
-        {
-            id: addEmail
-            imageSource: "images/menu/ic_add_email.png"
-            title: qsTr("Add Email") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            enabled: individualId != undefined
-            
-            onTriggered: {
-                console.log("UserEvent: NewEmail");
-                var email = persist.showBlockingPrompt( qsTr("Enter email"), qsTr("Please enter the email address for this individual:"), "", qsTr("Enter email (ie: abc@hotmail.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Email ).trim().toLowerCase();
-
-                if (email.length > 0)
-                {
-                    if ( deviceUtils.isValidEmail(email) ) {
-                        var x = ilmHelper.addWebsite(individualId, email);
-                        adm.append(x);
-                        persist.showToast( qsTr("Email added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    } else {
-                        persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_email.png" );
-                        console.log("FailedRegex", email);
-                    }
-                }
-            }
-        },
-        
-        ActionItem
-        {
-            id: addPhone
-            imageSource: "images/menu/ic_add_phone.png"
-            title: qsTr("Add Phone") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            enabled: individualId != undefined
-            
-            onTriggered: {
-                console.log("UserEvent: NewPhone");
-                var phone = persist.showBlockingPrompt( qsTr("Enter phone number"), qsTr("Please enter the phone number for this individual:"), "", qsTr("Enter phone (ie: +44133441623)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Phone ).trim();
-                
-                if (phone.length > 0)
-                {
-                    if ( deviceUtils.isValidPhoneNumber(phone) ) {
-                        var x = ilmHelper.addWebsite(individualId, phone);
-                        adm.append(x);
-                        persist.showToast( qsTr("Phone Number added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    } else {
-                        persist.showToast( qsTr("Invalid phone number entered!"), "images/menu/ic_remove_phone.png" );
-                        console.log("FailedRegex", phone);
-                    }
-                }
-            }
-        }
-    ]
     
     function onDataLoaded(id, results)
     {
@@ -184,14 +79,6 @@ Page
             if (data.notes) {
                 descriptionField.text = data.notes;
             }
-        } else if (id == QueryId.FetchAllWebsites) {
-            sites.count = results.length;
-            results = offloader.fillType(results, id);
-            adm.clear();
-            adm.append(results);
-        } else if (id == QueryId.RemoveWebsite) {
-            persist.showToast( qsTr("Entry removed!"), "asset:///images/menu/ic_remove_site.png" );
-            ilmHelper.fetchAllWebsites(createRijaal, individualId);
         }
     }
     
@@ -557,144 +444,12 @@ Page
                 }
             }
         }
-        
-        Header {
-            id: sites
-            property int count: 0
-            title: qsTr("Websites, & Contact Information") + Retranslate.onLanguageChanged
-            visible: count > 0
-            subtitle: count
-        }
-        
-        ListView
-        {
-            id: listView
-            visible: sites.visible
-            scrollRole: ScrollRole.Main
-            
-            onCreationCompleted: {
-                maxHeight = deviceUtils.pixelSize.height/3;
-            }
-            
-            dataModel: ArrayDataModel {
-                id: adm
-            }
-            
-            function itemType(data, indexPath) {
-                return data.type;
-            }
-            
-            function deleteSite(ListItemData)
-            {
-                ilmHelper.removeWebsite(createRijaal, ListItemData.id);
-                
-                if (ListItemData.type == "email") {
-                    persist.showToast( qsTr("Email address removed!"), "images/menu/ic_remove_email.png" );
-                } else if (ListItemData.type == "phone") {
-                    persist.showToast( qsTr("Phone number removed!"), "images/menu/ic_remove_phone.png" );
-                } else if (ListItemData.type == "uri") {
-                    persist.showToast( qsTr("Website address removed!"), "images/menu/ic_remove_site.png" );
-                }
-            }
-            
-            listItemComponents: [
-                ListItemComponent
-                {
-                    type: "website"
-                    
-                    StandardListItem
-                    {
-                        id: sli
-                        imageSource: ListItemData.imageSource
-                        title: ListItemData.uri
-                        
-                        contextActions: [
-                            ActionSet
-                            {
-                                title: sli.title
-                                
-                                DeleteActionItem
-                                {
-                                    imageSource: "images/menu/ic_remove_site.png"
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: DeleteSite");
-                                        sli.ListItem.view.deleteSite(ListItemData);
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                
-                ListItemComponent
-                {
-                    type: "email"
-                    
-                    StandardListItem
-                    {
-                        id: sliEmail
-                        imageSource: "images/list/ic_email.png"
-                        title: ListItemData.uri
-                        
-                        contextActions: [
-                            ActionSet
-                            {
-                                title: sliEmail.title
-                                
-                                DeleteActionItem
-                                {
-                                    imageSource: "images/menu/ic_remove_email.png"
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: DeleteSite");
-                                        sliEmail.ListItem.view.deleteSite(ListItemData);
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                
-                ListItemComponent
-                {
-                    type: "phone"
-                    
-                    StandardListItem
-                    {
-                        id: sliPhone
-                        imageSource: "images/list/ic_phone.png"
-                        title: ListItemData.uri
-                        
-                        contextActions: [
-                            ActionSet
-                            {
-                                title: sliPhone.title
-                                
-                                DeleteActionItem
-                                {
-                                    imageSource: "images/menu/ic_remove_phone.png"
-                                    
-                                    onTriggered: {
-                                        console.log("UserEvent: DeleteSite");
-                                        sliPhone.ListItem.view.deleteSite(ListItemData);
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
     }
     
     function createLocationPicker(dth)
     {
-        definition.source = "LocationPickerPage.qml";
-        var p = definition.createObject();
+        var p = Qt.launch("LocationPickerPage.qml");
         p.picked.connect(dth.onPicked);
-        
-        navigationPane.push(p);
         
         return p;
     }

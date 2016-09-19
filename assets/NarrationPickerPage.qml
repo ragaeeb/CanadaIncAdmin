@@ -35,11 +35,8 @@ Page
         listView.selectAllOnLoad = true;
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != searchRoot) {
-            navigationPane.pop();
-        }
+    function popToRoot() {
+        Qt.popToRoot(searchRoot);
     }
     
     actions: [
@@ -60,11 +57,8 @@ Page
             }
             
             onTriggered: {
-                definition.source = "NarrationPickerPage.qml";
-                var searchPage = definition.createObject();
+                var searchPage = Qt.launch("NarrationPickerPage.qml");
                 searchPage.picked.connect(onNarrationsSelected);
-
-                navigationPane.push(searchPage);
             }
         },
         
@@ -215,16 +209,13 @@ Page
             function onPicked(all)
             {
                 process(all);
-                global.popToRoot(navigationPane, searchRoot);
+                popToRoot();
                 tftk.textField.requestFocus();
             }
             
             onClicked: {
-                definition.source = "CollectionPickerPage.qml";
-                var picker = definition.createObject();
+                var picker = Qt.launch("CollectionPickerPage.qml");
                 picker.picked.connect(onPicked);
-                
-                navigationPane.push(picker);
             }
             
             animations: [
@@ -266,11 +257,8 @@ Page
                 
                 function openNarration(narration)
                 {
-                    definition.source = "NarrationProfilePage.qml";
-                    var page = definition.createObject();
+                    var page = Qt.launch("NarrationProfilePage.qml");
                     page.narrationId = narration.narration_id;
-
-                    navigationPane.push(page);
                 }
 
                 multiSelectHandler.actions: [
@@ -387,10 +375,4 @@ Page
         listView.visible = !adm.isEmpty();
         selectAll.enabled = listView.visible;
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

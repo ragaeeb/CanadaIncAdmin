@@ -256,19 +256,16 @@ Page
                     function onPicked(data)
                     {
                         pickedId = data[0].id;
-                        navigationPane.pop();
+                        Qt.popToRoot(createPage);
                     }
                     
                     onClicked: {
                         console.log("UserEvent: QuoteSuiteDoubleTapped");
-                        definition.source = "TafsirPickerPage.qml";
-                        
-                        var p = definition.createObject();
+
+                        var p = Qt.launch("TafsirPickerPage.qml");
                         p.tafsirPicked.connect(onPicked);
                         p.autoFocus = true;
                         p.reload();
-                        
-                        navigationPane.push(p);
                     }
                     
                     layoutProperties: StackLayoutProperties {
@@ -333,10 +330,4 @@ Page
             }
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

@@ -60,6 +60,15 @@ TabbedPane
         }
     }
     
+    function popToRoot(page)
+    {
+        var ap = root.activePane;
+        
+        while (ap.top != page) {
+            ap.pop();
+        }
+    }
+    
     function launch(qml)
     {
         definition.source = qml;
@@ -67,6 +76,10 @@ TabbedPane
         root.activePane.push(page);
         
         return page;
+    }
+    
+    onActivePaneChanged: {
+        Qt.navigationPane = activePane;
     }
     
     Tab
@@ -190,6 +203,7 @@ TabbedPane
     onCreationCompleted: {
         app.lazyInitComplete.connect(spd.onReady);
         Qt.launch = launch;
+        Qt.popToRoot = popToRoot;
     }
     
     attachedObjects: [

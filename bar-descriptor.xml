@@ -108,6 +108,11 @@
             <property var="uris" value="file://,http://,https://"/>
         </filter>
         <filter>
+            <action>bb.action.INSTALL_BAR</action>
+            <mime-type>*</mime-type>
+            <property var="uris" value="file://,http://,https://"/>
+        </filter>
+        <filter>
             <action>bb.action.SHARE</action>
             <mime-type>filelist/audio</mime-type>
             <mime-type>filelist/video</mime-type>

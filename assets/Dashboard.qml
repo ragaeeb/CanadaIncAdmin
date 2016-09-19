@@ -86,6 +86,7 @@ NavigationPane
 
     onCreationCompleted: {
         app.userFound.connect(onUserFound);
+        Qt.navigationPane = navigationPane;
     }
     
     Page
@@ -486,10 +487,4 @@ NavigationPane
     function process()
     {
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

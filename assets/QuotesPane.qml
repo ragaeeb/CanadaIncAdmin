@@ -54,17 +54,12 @@ NavigationPane
                     
                     persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );
                     
-                    while (navigationPane.top != quotePickerPage) {
-                        navigationPane.pop();
-                    }
+                    Qt.popToRoot(quotePickerPage);
                 }
                 
                 onTriggered: {
-                    definition.source = "CreateQuotePage.qml";
-                    var page = definition.createObject();
+                    var page = Qt.launch("CreateQuotePage.qml")
                     page.createQuote.connect(onCreate);
-                    
-                    navigationPane.push(page);
                 }
             },
             
@@ -222,18 +217,13 @@ NavigationPane
 
                         dataModel.replace(editIndexPath[0], current);
 
-                        while (navigationPane.top != quotePickerPage) {
-                            navigationPane.pop();
-                        }
+                        Qt.popToRoot(quotePickerPage);
                     }
                     
                     function openQuote(ListItemData)
                     {
-                        definition.source = "CreateQuotePage.qml";
-                        var page = definition.createObject();
+                        var page = Qt.launch("CreateQuotePage.qml")
                         page.quoteId = ListItemData.id;
-                        
-                        navigationPane.push(page);
                         
                         return page;
                     }
@@ -377,10 +367,4 @@ NavigationPane
         listView.visible = !adm.isEmpty();
         noElements.delegateActive = !listView.visible;
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

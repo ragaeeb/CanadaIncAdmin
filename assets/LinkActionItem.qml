@@ -27,12 +27,9 @@ ActionItem
         if (id == QueryId.FetchGroupedNarrations)
         {
             if (data.length > 0) { // at least one of these narrations already belongs to a group, ask user if they want to merge these new narrations into one of the existing groups or not
-                definition.source = "NarrationGroupPicker.qml";
-                var ngp = definition.createObject();
+                var ngp = Qt.launch("NarrationGroupPicker.qml");
                 ngp.picked.connect(onPicked);
                 ngp.apply(data);
-                
-                navigationPane.push(ngp);
             } else { // these narrations don't already belong to a group, create a new one
                 createNewGroup();
             }

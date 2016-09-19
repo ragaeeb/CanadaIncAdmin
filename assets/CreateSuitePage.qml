@@ -10,7 +10,7 @@ Page
     signal createSuitePage(variant id, string body, string header, string reference)
     
     function cleanUp() {
-        navigationPane.pushTransitionEnded.disconnect(checkFocus);
+        Qt.navigationPane.pushTransitionEnded.disconnect(checkFocus);
     }
     
     function getIndicesOf(searchStr, str, caseSensitive)
@@ -33,7 +33,7 @@ Page
     
     function checkFocus()
     {
-        navigationPane.pushTransitionEnded.disconnect(checkFocus);
+        Qt.navigationPane.pushTransitionEnded.disconnect(checkFocus);
         
         if (focusable) {
             bodyField.editable = true;
@@ -41,7 +41,7 @@ Page
     }
     
     onCreationCompleted: {
-        navigationPane.pushTransitionEnded.connect(checkFocus);
+        Qt.navigationPane.pushTransitionEnded.connect(checkFocus);
     }
     
     function onDataLoaded(id, data)
@@ -93,10 +93,9 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: OpenLinks");
-                definition.source = "SuitePageLinks.qml";
-                var page = definition.createObject();
+                
+                var page = Qt.launch("SuitePageLinks.qml");
                 page.suitePageId = suitePageId;
-                navigationPane.push(page);
             }
         },
         

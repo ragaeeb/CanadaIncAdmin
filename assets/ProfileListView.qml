@@ -13,15 +13,13 @@ ListView
     dataModel: GroupDataModel
     {
         id: bioModel
-        sortingKeys: ["type", "uri", "teacher", "student", "name"]
+        sortingKeys: ["item_type", "uri", "name", "title", "heading"]
         grouping: ItemGrouping.ByFullValue
     }
     
     function getHeaderName(ListItemData)
     {
-        if (ListItemData == "bio") {
-            return qsTr("Biographies");
-        } else if (ListItemData == "citing") {
+        if (ListItemData == "citing") {
             return qsTr("Citings");
         } else if (ListItemData == "teacher") {
             return qsTr("Teachers");
@@ -33,10 +31,12 @@ ListView
             return qsTr("Siblings");
         } else if (ListItemData == "child") {
             return qsTr("Children");
-        } else if (ListItemData == "book") {
-            return qsTr("Books");
+        } else if (ListItemData == "work") {
+            return qsTr("Works");
         } else if (ListItemData == "quote") {
             return qsTr("Quotes");
+        } else if (ListItemData == "address") {
+            return qsTr("Contact Info");
         }
     }
     
@@ -44,8 +44,26 @@ ListView
     {
         if (indexPath.length == 1) {
             return "header";
+        } else if (data.individual && data.other_id) { // relationship
+            if (data.type == 1) { // parent/child
+                return data.other_id == individualId ? "child" : "parent";
+            } else if (data.type == 2) {
+                return data.other_id == individualId ? "student" : "teacher";
+            } else if (data.type == 3) {
+                return "sibling";
+            } else {
+                return "friend";
+            }
+        } else if (data.points) {
+            return data.points == 3 ? "work" : "citing";
+        } else if (data.uri) {
+            return "address";
+        } else if (data.book_name) {
+            return "book";
+        } else if (data.title) {
+            return "work";
         } else {
-            return data.type;
+            return "quote";
         }
     }
     
@@ -58,20 +76,8 @@ ListView
     function merge(ListItem)
     {
         editIndexPath = ListItem.indexPath;
-        definition.source = "TafsirPickerPage.qml";
-        var ipp = definition.createObject();
+        var ipp = Qt.launch("TafsirPickerPage.qml");
         ipp.tafsirPicked.connect(onDestinationPicked);
-        
-        navigationPane.push(ipp);
-    }
-    
-    function checkLinks(ListItemData)
-    {
-        definition.source = "SuitePageLinks.qml";
-        var ipp = definition.createObject();
-        ipp.suitePageId = ListItemData.suite_page_id;
-        
-        navigationPane.push(ipp);
     }
     
     function onEditSuitePage(id, body, header, reference)
@@ -101,48 +107,22 @@ ListView
     {
         editIndexPath = ListItem.indexPath;
         
-        definition.source = "CreateTafsirPage.qml";
-        var ipp = definition.createObject();
+        var ipp = Qt.launch("CreateTafsirPage.qml");
         ipp.createTafsir.connect(onEditSuite);
-        ipp.suiteId = ListItemData.suite_id;
         ipp.deleteTafsir.connect(onDelete);
-        
-        navigationPane.push(ipp);
+        ipp.suiteId = ListItemData.suite_id ? ListItemData.suite_id : ListItemData.id;
     }
     
-    function removeStudent(ListItem)
+    function deleteSite(ListItem, ListItemData)
     {
-        ilmHelper.removeStudent(bioPage, individualId, ListItem.data.id);
+        ilmHelper.removeWebsite(bioPage, ListItemData.id);
         bioModel.removeAt(ListItem.indexPath);
+        persist.showToast( qsTr("Contact info removed!"), "images/menu/ic_remove_site.png" )
     }
     
-    function removeChild(ListItem)
+    function removeRelation(ListItem, ListItemData)
     {
-        ilmHelper.removeChild(bioPage, individualId, ListItem.data.id);
-        bioModel.removeAt(ListItem.indexPath);
-    }
-    
-    function removeTeacher(ListItem)
-    {
-        ilmHelper.removeTeacher(bioPage, individualId, ListItem.data.id);
-        bioModel.removeAt(ListItem.indexPath);
-    }
-    
-    function removeSibling(ListItem)
-    {
-        ilmHelper.removeSibling(bioPage, individualId, ListItem.data.id);
-        bioModel.removeAt(ListItem.indexPath);
-    }
-    
-    function removeParent(ListItem)
-    {
-        ilmHelper.removeParent(bioPage, individualId, ListItem.data.id);
-        bioModel.removeAt(ListItem.indexPath);
-    }
-    
-    function removeBook(ListItem)
-    {
-        ilmHelper.removeBook(bioPage, ListItem.data.id);
+        ilmHelper.removeRelation(bioPage, ListItemData.id);
         bioModel.removeAt(ListItem.indexPath);
     }
     
@@ -202,13 +182,13 @@ ListView
         
         ListItemComponent
         {
-            type: "bio"
+            type: "citing"
             
             StandardListItem
             {
                 id: bioSli
                 description: ListItemData.heading ? ListItemData.heading : ListItemData.title ? ListItemData.title : ""
-                imageSource: ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/list/ic_bio.png"
+                imageSource: ListItemData.points > 1 ? "images/list/ic_unique_narration.png" : ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/list/ic_bio.png"
                 title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
                 
                 contextActions: [
@@ -216,17 +196,6 @@ ListView
                     {
                         title: bioSli.title
                         subtitle: bioSli.description
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_update_link.png"
-                            title: qsTr("Check Links") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: CheckLinks");
-                                bioSli.ListItem.view.checkLinks(ListItemData);
-                            }
-                        }
                         
                         ActionItem
                         {
@@ -256,13 +225,61 @@ ListView
         
         ListItemComponent
         {
-            type: "citing"
+            type: "work"
             
             StandardListItem
             {
-                description: ListItemData.heading ? ListItemData.heading : ListItemData.title ? ListItemData.title : ""
-                imageSource: "images/list/ic_unique_narration.png"
+                id: workSli
+                description: ListItemData.title
+                imageSource: "images/list/ic_book.png"
                 title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
+                
+                contextActions: [
+                    ActionSet
+                    {
+                        title: workSli.title
+                        
+                        ActionItem
+                        {
+                            imageSource: "images/menu/ic_edit_bio.png"
+                            title: qsTr("Edit") + Retranslate.onLanguageChanged
+                            
+                            onTriggered: {
+                                console.log("UserEvent: EditBio");
+                                workSli.ListItem.view.editBio(workSli.ListItem, ListItemData);
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        
+        ListItemComponent
+        {
+            type: "address"
+            
+            StandardListItem
+            {
+                id: addressSli
+                imageSource: deviceUtils.isUrl(ListItemData.uri) ? ListItemData.uri.indexOf("wordpress.com") ? "images/list/site_wordpress.png" : ListItemData.uri.indexOf("twitter.com") ? "images/list/site_twitter.png" : ListItemData.uri.indexOf("facebook.com") ? "images/list/site_facebook.png" : ListItemData.uri.indexOf("soundcloud.com") ? "images/list/site_soundcloud.png" : ListItemData.uri.indexOf("youtube.com") ? "images/list/site_youtube.png" : "images/list/ic_phone.png" : deviceUtils.isValidEmail(ListItemData.uri) ? "images/list/ic_email.png" : "images/list/ic_phone.png"
+                title: ListItemData.uri
+                
+                contextActions: [
+                    ActionSet
+                    {
+                        title: addressSli.title
+                        
+                        DeleteActionItem
+                        {
+                            imageSource: "images/menu/ic_remove_phone.png"
+                            
+                            onTriggered: {
+                                console.log("UserEvent: DeleteSite");
+                                addressSli.ListItem.view.deleteSite(addressSli.ListItem, ListItemData);
+                            }
+                        }
+                    }
+                ]
             }
         },
         
@@ -270,28 +287,10 @@ ListView
         {
             type: "teacher"
             
-            StandardListItem
+            RelationItem
             {
-                id: teacherSli
                 imageSource: ListItemData.female ? "images/list/ic_teacher_female.png" : "images/list/ic_teacher.png"
-                title: ListItemData.teacher
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: teacherSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_teacher.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveTeacher");
-                                teacherSli.ListItem.view.removeTeacher(teacherSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+                delImage: "images/menu/ic_remove_teacher.png"
             }
         },
         
@@ -299,28 +298,10 @@ ListView
         {
             type: "student"
             
-            StandardListItem
+            RelationItem
             {
-                id: studentSli
                 imageSource: ListItemData.female ? "images/list/ic_student_female.png" : "images/list/ic_student.png"
-                title: ListItemData.student
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: studentSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_student.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveStudent");
-                                studentSli.ListItem.view.removeStudent(studentSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+                delImage: "images/menu/ic_remove_student.png"
             }
         },
         
@@ -328,28 +309,10 @@ ListView
         {
             type: "child"
             
-            StandardListItem
+            RelationItem
             {
-                id: childSli
                 imageSource: ListItemData.female ? "images/list/ic_child_female.png" : "images/list/ic_child.png"
-                title: ListItemData.child
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: childSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_child.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveChild");
-                                childSli.ListItem.view.removeChild(childSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+                delImage: "images/menu/ic_remove_child.png"
             }
         },
         
@@ -357,28 +320,10 @@ ListView
         {
             type: "parent"
             
-            StandardListItem
+            RelationItem
             {
-                id: parentSli
                 imageSource: ListItemData.female ? "images/list/ic_parent_female.png" : "images/list/ic_parent.png"
-                title: ListItemData.parent
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: parentSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_parent.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveParent");
-                                parentSli.ListItem.view.removeParent(parentSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+                delImage: "images/menu/ic_remove_parent.png"
             }
         },
         
@@ -386,57 +331,10 @@ ListView
         {
             type: "sibling"
             
-            StandardListItem
+            RelationItem
             {
-                id: siblingSli
                 imageSource: ListItemData.female ? "images/list/ic_sibling_female.png" : "images/list/ic_sibling.png"
-                title: ListItemData.sibling
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: siblingSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_sibling.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveSibling");
-                                siblingSli.ListItem.view.removeSibling(siblingSli.ListItem);
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        
-        ListItemComponent
-        {
-            type: "book"
-            
-            StandardListItem
-            {
-                id: bookSli
-                imageSource: "images/list/ic_book.png"
-                title: ListItemData.name
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: bookSli.title
-                        
-                        DeleteActionItem
-                        {
-                            imageSource: "images/menu/ic_remove_book.png"
-                            
-                            onTriggered: {
-                                console.log("UserEvent: RemoveBook");
-                                bookSli.ListItem.view.removeBook(bookSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+                delImage: "images/menu/ic_remove_sibling.png"
             }
         },
         
@@ -447,7 +345,7 @@ ListView
             StandardListItem
             {
                 id: quoteSli
-                imageSource: "images/list/ic_book.png"
+                imageSource: "images/list/ic_quote.png"
                 title: ListItemData.title ? "%1 %2".arg(ListItemData.title).arg(ListItemData.reference) : ListItemData.reference
                 description: ListItemData.body
                 
@@ -472,46 +370,35 @@ ListView
     ]
     
     onTriggered: {
-        if (indexPath.length == 1) {
-            console.log("UserEvent: HeaderTapped");
-            return;
-        }
-        
-        var d = dataModel.data(indexPath);
-        console.log("UserEvent: AttributeTapped", d.type);
-        
-        if (d.type == "student" || d.type == "teacher" || d.type == "child" || d.type == "parent" || d.type == "sibling") {
-            definition.source = "ProfilePage.qml";
-            var page = definition.createObject();
-            page.individualId = d.id;
+        if (indexPath.length > 1)
+        {
+            var d = dataModel.data(indexPath);
+            var type = itemType(d, indexPath);
+            console.log("UserEvent: AttributeTapped", type);
             
-            navigationPane.push(page);
-        } else if (d.type == "bio" || d.type == "citing") {
-            editIndexPath = indexPath;
-            definition.source = "CreateSuitePage.qml";
-            var page = definition.createObject();
-            page.suitePageId = d.suite_page_id;
-            page.createSuitePage.connect(onEditSuitePage);
-            
-            navigationPane.push(page);
-        } else if (d.type == "quote") {
-            editIndexPath = indexPath;
-            definition.source = "CreateQuotePage.qml";
-            var page = definition.createObject();
-            page.createQuote.connect(onEdit);
-            page.quoteId = d.id;
-            
-            navigationPane.push(page);
+            if (type == "student" || type == "teacher" || type == "child" || type == "parent" || type == "sibling" || type == "friend") {
+                var page = Qt.launch("ProfilePage.qml");
+                page.individualId = d.id;
+            } else if (type == "citing" || type == "work") {
+                editIndexPath = indexPath;
+                var page = Qt.launch("TafsirContentsPage.qml");
+                page.searchData = {'suitePageId': d.suite_page_id};
+                page.suiteId = d.suite_id ? d.suite_id : d.id;
+            } else if (type == "quote") {
+                editIndexPath = indexPath;
+                var page = Qt.launch("CreateQuotePage.qml");
+                page.createQuote.connect(onEdit);
+                page.quoteId = d.id;
+            } else if (type == "address") {
+                persist.openUri(d.uri);
+            }
         }
     }
     
     function onEdit(id, author, translator, body, reference, suiteId, uri)
     {
         tafsirHelper.editQuote(bioPage, id, author, translator, body, reference, suiteId, uri);
-        
-        while (navigationPane.top != bioPage) {
-            navigationPane.pop();
-        }
+        Qt.popToRoot(bioPage);
     }
     
     layoutProperties: StackLayoutProperties {

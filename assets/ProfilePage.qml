@@ -22,6 +22,14 @@ Page
         }
     }
     
+    function launchPicker()
+    {
+        var p = Qt.launch("IndividualPickerPage.qml");
+        ilmHelper.fetchFrequentIndividuals(p.pickerList, "relationships", "individual");
+        
+        return p;
+    }
+    
     actions: [
         ActionItem
         {
@@ -32,19 +40,17 @@ Page
             
             function onPicked(student, name)
             {
-                ilmHelper.addStudent(bioPage, individualId, student);
-                checkForDuplicate( {'id': student, 'student': name, 'type': "student"} );
+                var result = ilmHelper.addRelation(student, individualId, 2);
+                result.name = name;
+                
+                checkForDuplicate(result);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddStudent");
-                definition.source = "IndividualPickerPage.qml";
-                
-                var p = definition.createObject();
+
+                var p = launchPicker();
                 p.picked.connect(onPicked);
-                ilmHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "individual");
-                
-                navigationPane.push(p);
             }
         },
         
@@ -57,19 +63,17 @@ Page
             
             function onPicked(teacher, name)
             {
-                ilmHelper.addTeacher(bioPage, individualId, teacher);
-                checkForDuplicate( {'id': teacher, 'teacher': name, 'type': "teacher"} );
+                var result = ilmHelper.addRelation(individualId, teacher, 2);
+                result.name = name;
+                
+                checkForDuplicate(result);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddTeacher");
-                definition.source = "IndividualPickerPage.qml";
-                
-                var p = definition.createObject();
+
+                var p = launchPicker();
                 p.picked.connect(onPicked);
-                ilmHelper.fetchFrequentIndividuals(p.pickerList, "teachers", "teacher");
-                
-                navigationPane.push(p);
             }
         },
         
@@ -90,20 +94,16 @@ Page
             {
                 ilmHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
                 
-                global.popToRoot(navigationPane, bioPage);
+                Qt.popToRoot(bioPage);
                 reload();
             }
             
             onTriggered: {
                 console.log("UserEvent: EditBio");
                 
-                definition.source = "CreateIndividualPage.qml";
-                
-                var p = definition.createObject();
+                var p = Qt.launch("CreateIndividualPage.qml")
                 p.individualId = individualId;
                 p.createIndividual.connect(onEdit);
-                
-                navigationPane.push(p);
             }
         },
         
@@ -116,18 +116,17 @@ Page
             
             function onPicked(parentId, name)
             {
-                ilmHelper.addParent(bioPage, individualId, parentId);
-                checkForDuplicate( {'id': parentId, 'parent': name, 'type': "parent"} );
+                var result = ilmHelper.addRelation(individualId, parentId, 1);
+                result.name = name;
+                
+                checkForDuplicate(result);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddParent");
-                definition.source = "IndividualPickerPage.qml";
-                
-                var p = definition.createObject();
+
+                var p = launchPicker();
                 p.picked.connect(onPicked);
-                
-                navigationPane.push(p);
             }
         },
         
@@ -140,18 +139,17 @@ Page
             
             function onPicked(siblingId, name)
             {
-                ilmHelper.addSibling(bioPage, individualId, siblingId);
-                checkForDuplicate( {'id': siblingId, 'sibling': name, 'type': "sibling"} );
+                var result = ilmHelper.addRelation(individualId, siblingId, 3);
+                result.name = name;
+                
+                checkForDuplicate(result);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddSibling");
-                definition.source = "IndividualPickerPage.qml";
-                
-                var p = definition.createObject();
+
+                var p = launchPicker();
                 p.picked.connect(onPicked);
-                
-                navigationPane.push(p);
             }
         },
         
@@ -164,18 +162,118 @@ Page
             
             function onPicked(child, name)
             {
-                ilmHelper.addChild(bioPage, individualId, child);
-                checkForDuplicate( {'id': child, 'child': name, 'type': "child"} );
+                var result = ilmHelper.addRelation(child, individualId, 1);
+                result.name = name;
+                
+                checkForDuplicate(result);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddChild");
-                definition.source = "IndividualPickerPage.qml";
-                
-                var p = definition.createObject();
+
+                var p = launchPicker();
                 p.picked.connect(onPicked);
+            }
+        },
+        
+        ActionItem
+        {
+            id: addSite
+            imageSource: "images/menu/ic_add_site.png"
+            title: qsTr("Add Website") + Retranslate.onLanguageChanged
+            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
+            enabled: individualId != undefined
+            
+            shortcuts: [
+                SystemShortcut {
+                    type: SystemShortcuts.CreateNew
+                }
+            ]
+            
+            function endsWith(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            }
+            
+            onTriggered: {
+                console.log("UserEvent: NewSite");
+                var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
                 
-                navigationPane.push(p);
+                if (uri.length > 0)
+                {
+                    if ( endsWith(uri, "/") ) {
+                        uri = uri.substring(0, uri.length-1);
+                    }
+                    
+                    if ( uri.indexOf("http://") == -1 && uri.indexOf("https://") == -1 ) {
+                        uri = "http://"+uri;
+                    }
+                    
+                    uri = uri.replace("//www.", "//");
+                    
+                    if ( deviceUtils.isUrl(uri) ) {
+                        var x = ilmHelper.addWebsite(individualId, uri);
+                        adm.append(x);
+                        persist.showToast( qsTr("Website added!"), imageSource.toString() );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                    } else {
+                        persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
+                        console.log("FailedRegex", uri);
+                    }
+                }
+            }
+        },
+        
+        ActionItem
+        {
+            id: addEmail
+            imageSource: "images/menu/ic_add_email.png"
+            title: qsTr("Add Email") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            enabled: individualId != undefined
+            
+            onTriggered: {
+                console.log("UserEvent: NewEmail");
+                var email = persist.showBlockingPrompt( qsTr("Enter email"), qsTr("Please enter the email address for this individual:"), "", qsTr("Enter email (ie: abc@hotmail.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Email ).trim().toLowerCase();
+                
+                if (email.length > 0)
+                {
+                    if ( deviceUtils.isValidEmail(email) ) {
+                        var x = ilmHelper.addWebsite(individualId, email);
+                        adm.append(x);
+                        persist.showToast( qsTr("Email added!"), imageSource.toString() );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                    } else {
+                        persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_email.png" );
+                        console.log("FailedRegex", email);
+                    }
+                }
+            }
+        },
+        
+        ActionItem
+        {
+            id: addPhone
+            imageSource: "images/menu/ic_add_phone.png"
+            title: qsTr("Add Phone") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            enabled: individualId != undefined
+            
+            onTriggered: {
+                console.log("UserEvent: NewPhone");
+                var phone = persist.showBlockingPrompt( qsTr("Enter phone number"), qsTr("Please enter the phone number for this individual:"), "", qsTr("Enter phone (ie: +44133441623)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Phone ).trim();
+                
+                if (phone.length > 0)
+                {
+                    if ( deviceUtils.isValidPhoneNumber(phone) ) {
+                        var x = ilmHelper.addWebsite(individualId, phone);
+                        adm.append(x);
+                        persist.showToast( qsTr("Phone Number added!"), imageSource.toString() );
+                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                    } else {
+                        persist.showToast( qsTr("Invalid phone number entered!"), "images/menu/ic_remove_phone.png" );
+                        console.log("FailedRegex", phone);
+                    }
+                }
             }
         }
     ]
@@ -183,27 +281,25 @@ Page
     onIndividualIdChanged: {
         if (individualId)
         {
-            ilmHelper.fetchBio(bioPage, individualId);
+            ilmHelper.fetchMentions(bioPage, individualId);
+            ilmHelper.fetchRelations(bioPage, individualId);
             ilmHelper.fetchIndividualData(bioPage, individualId);
-            ilmHelper.fetchTeachers(bioPage, individualId);
-            ilmHelper.fetchStudents(bioPage, individualId);
-            ilmHelper.fetchParents(bioPage, individualId);
-            ilmHelper.fetchSiblings(bioPage, individualId);
-            ilmHelper.fetchChildren(bioPage, individualId);
-            ilmHelper.fetchBooksForAuthor(bioPage, individualId);
-            tafsirHelper.fetchAllQuotes(bioPage, 0, individualId)
+            ilmHelper.fetchAllWebsites(bioPage, individualId);
+            tafsirHelper.fetchAllQuotes(bioPage, 0, individualId);
+            tafsirHelper.fetchAllTafsir(bioPage, 0, individualId);
         }
     }
 
     function checkForDuplicate(result)
     {
+        result.item_type = bios.itemType(result, []);
         var indexPath = bioModel.findExact(result);
         
         if (indexPath.length == 0) {
             bioModel.insert(result);
         }
         
-        global.popToRoot(navigationPane, bioPage);
+        Qt.popToRoot(bioPage);
     }
     
     function onDataLoaded(id, data)
@@ -238,84 +334,44 @@ Page
             result += "\n";
             
             body.text = "\n"+result;
-        } else if (id == QueryId.RemoveTeacher) {
-            persist.showToast( qsTr("Teacher removed!"), "images/menu/ic_remove_teacher.png" );
-        } else if (id == QueryId.RemoveStudent) {
-            persist.showToast( qsTr("Student removed!"), "images/menu/ic_remove_student.png" );
-        } else if (id == QueryId.RemoveChild) {
-            persist.showToast( qsTr("Child removed!"), "images/menu/ic_remove_companions.png" );
-        } else if (id == QueryId.AddTeacher) {
-            persist.showToast( qsTr("Teacher added!"), "images/menu/ic_set_companions.png" );
-        } else if (id == QueryId.AddStudent) {
-            persist.showToast( qsTr("Student added!"), "images/menu/ic_add_student.png" );
-        } else if (id == QueryId.RemoveParent) {
-            persist.showToast( qsTr("Parent removed!"), "images/menu/ic_remove_parent.png" );
-        } else if (id == QueryId.RemoveSibling) {
-            persist.showToast( qsTr("Sibling removed!"), "images/menu/ic_remove_sibling.png" );
-        } else if (id == QueryId.RemoveBook) {
-            persist.showToast( qsTr("Book removed!"), "images/menu/ic_remove_book.png" );
-        } else if (id == QueryId.AddParent) {
-            persist.showToast( qsTr("Parent added!"), "images/menu/ic_add_parent.png" );
-        } else if (id == QueryId.AddSibling) {
-            persist.showToast( qsTr("Sibling added!"), "images/menu/ic_add_sibling.png" );
-        } else if (id == QueryId.AddBook) {
-            persist.showToast( qsTr("Book added!"), "images/menu/ic_add_sibling.png" );
+        } else if (id == QueryId.RemoveRelation) {
+            persist.showToast( qsTr("Relationship removed!"), "images/menu/ic_remove_teacher.png" );
         } else if (id == QueryId.EditIndividual) {
             persist.showToast( qsTr("Profile updated!"), "images/menu/ic_edit_rijaal.png" );
         } else if (id == QueryId.EditQuote) {
             persist.showToast( qsTr("Quote updated!"), "images/menu/ic_edit_quote.png" );
         } else if (id == QueryId.ReplaceSuite) {
             persist.showToast( qsTr("Suite merged!"), "images/menu/ic_merge_into.png" );
-            global.popToRoot(navigationPane, bioPage);
+            Qt.popToRoot(bioPage);
             reload();
             return;
         } else if (id == QueryId.EditSuitePage) {
             persist.showToast( qsTr("Tafsir page updated!"), "images/menu/ic_edit_suite_page.png" );
-            global.popToRoot(navigationPane, bioPage);
+            Qt.popToRoot(bioPage);
         } else if (id == QueryId.EditSuite) {
             persist.showToast( qsTr("Suite updated!"), "images/menu/ic_edit_bio.png" );
-            global.popToRoot(navigationPane, bioPage);
+            Qt.popToRoot(bioPage);
         } else if (id == QueryId.RemoveSuite) {
             persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
-            global.popToRoot(navigationPane, bioPage);
-        } else if (id == QueryId.AddBioLink) {
-            persist.showToast( qsTr("Biography added!!"), "images/menu/ic_add_bio.png" );
-            global.popToRoot(navigationPane, bioPage);
-            reload();
-            return;
+            Qt.popToRoot(bioPage);
+        }  else if (id == QueryId.RemoveWebsite) {
+            persist.showToast( qsTr("Entry removed!"), "asset:///images/menu/ic_remove_site.png" );
+            ilmHelper.fetchAllWebsites(createRijaal, individualId);
+        } else {
+            for (var i = data.length-1; i >= 0; i--)
+            {
+                var current = data[i];
+                current.item_type = bios.itemType(current, []);
+                data[i] = current;
+            }
+            
+            bioModel.insertList(data);
         }
-        
-        data = offloader.fillType(data, id);
-        bioModel.insertList(data);
     }
     
     titleBar: TitleBar
     {
         scrollBehavior: TitleBarScrollBehavior.NonSticky
-        
-        acceptAction: ActionItem
-        {
-            id: addBio
-            imageSource: "images/menu/ic_add_bio.png"
-            title: qsTr("Add Bio") + Retranslate.onLanguageChanged
-            
-            function onSuitePicked(suites)
-            {
-                ilmHelper.addBioLink(navigationPane, suites[0]);
-                global.popToRoot(navigationPane, bioPage);
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: AddProfileBio");
-                definition.source = "TafsirPickerPage.qml";
-                var page = definition.createObject();
-                page.tafsirPicked.connect(onSuitePicked);
-                page.autoFocus = true;
-                page.reload();
-                
-                navigationPane.push(page);
-            }
-        }
         
         dismissAction: ActionItem
         {
@@ -330,8 +386,8 @@ Page
                 
                 if (name.length > 0)
                 {
-                    var x = ilmHelper.addBook(individualId, name);
-                    x.type = "book";
+                    var x = ilmHelper.addSuite(bioPage, individualId, 0, 0, name, "", name);
+                    x.item_type = "work";
                     checkForDuplicate(x);
                 }
             }
@@ -368,12 +424,6 @@ Page
             id: bios
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
     
     function reload()
     {

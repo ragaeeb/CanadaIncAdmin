@@ -66,50 +66,6 @@ QVariantList Offloader::decorateWebsites(QVariantList input)
 }
 
 
-QVariantList Offloader::fillType(QVariantList input, int queryId)
-{
-    QMap<int,QString> map;
-    map[QueryId::FetchBio] = ATTRIBUTE_TYPE_BIO;
-    map[QueryId::FetchTeachers] = "teacher";
-    map[QueryId::FetchStudents] = "student";
-    map[QueryId::FetchParents] = "parent";
-    map[QueryId::FetchSiblings] = "sibling";
-    map[QueryId::FetchChildren] = "child";
-    map[QueryId::FetchAllWebsites] = "website";
-    map[QueryId::FetchBooksForAuthor] = "book";
-    map[QueryId::FetchAllQuotes] = "quote";
-
-    if (queryId == QueryId::FetchAllWebsites) {
-        input = decorateWebsites(input);
-    }
-
-    if ( map.contains(queryId) )
-    {
-        QString type = map.value(queryId);
-
-        for (int i = input.size()-1; i >= 0; i--)
-        {
-            QVariantMap q = input[i].toMap();
-
-            if ( !q.contains(KEY_ATTRIBUTE_TYPE) )
-            {
-                if ( type == ATTRIBUTE_TYPE_BIO && q.value("points").toInt() == 2 ) {
-                    q[KEY_ATTRIBUTE_TYPE] = "citing";
-                } else {
-                    q[KEY_ATTRIBUTE_TYPE] = type;
-                }
-
-                input[i] = q;
-            }
-        }
-
-        return input;
-    }
-
-    return QVariantList();
-}
-
-
 QString Offloader::toTitleCase(QString const& s)
 {
     QString result = s.toLower();

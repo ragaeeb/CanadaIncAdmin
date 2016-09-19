@@ -12,20 +12,17 @@ ActionItem
     
     function onPicked(tagObj) {
         ilmTest.tagChoices(linkChoices, chosen, tagObj.tag);
-        navigationPane.pop();
+        Qt.navigationPane.pop();
     }
     
     function onDataLoaded(id, data)
     {
         if (id == QueryId.FetchTagsForChoices)
         {
-            definition.source = "TagPickerPage.qml";
-            var x = definition.createObject();
+            var x = Qt.launch("TagPickerPage.qml");
             x.prepopulated = data;
             x.table = "grouped_choices";
             x.picked.connect(onPicked);
-            
-            navigationPane.push(x);
         } else if (id == QueryId.TagChoices) {
             persist.showToast( qsTr("Tagged choices!"), imageSource.toString() );
         }

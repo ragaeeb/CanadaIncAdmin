@@ -120,15 +120,12 @@ Page
                 {
                     locationId = id;
                     text = name;
-                    navigationPane.pop();
+                    Qt.popToRoot(createPage);
                 }
                 
                 onClicked: {
-                    definition.source = "LocationPickerPage.qml";
-                    var p = definition.createObject();
+                    var p = Qt.launch("LocationPickerPage.qml");
                     p.picked.connect(onPicked);
-                    
-                    navigationPane.push(p);
                 }
             }
         }

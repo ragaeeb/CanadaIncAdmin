@@ -61,18 +61,15 @@ Container
         function onPicked(id, name)
         {
             pickedId = id;
-            navigationPane.pop();
+            Qt.navigationPane.pop();
         }
         
         onClicked: {
             console.log("UserEvent: ITFClicked");
-            definition.source = "IndividualPickerPage.qml";
-            
-            var p = definition.createObject();
+
+            var p = Qt.launch("IndividualPickerPage.qml");
             p.picked.connect(onPicked);
             ilmHelper.fetchFrequentIndividuals(p.pickerList, table, field, 12, where);
-            
-            navigationPane.push(p);
         }
         
         layoutProperties: StackLayoutProperties {

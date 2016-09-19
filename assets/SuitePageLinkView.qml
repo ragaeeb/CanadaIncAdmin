@@ -38,18 +38,18 @@ ListView
         } else if (id == QueryId.LinkAyatToSuitePage) {
             persist.showToast( qsTr("Ayat linked to tafsir!"), "images/menu/ic_link_ayat_to_tafsir.png" );
             suitePageIdChanged();
-            popToRoot();
+            Qt.popToRoot(narrationsPage);
             busy.delegateActive = false;
         } else if (id == QueryId.UpdateTafsirLink) {
             persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_edit_link.png" );
             busy.delegateActive = false;
-        } else if (id == QueryId.EditBioLink) {
+        } else if (id == QueryId.EditMention) {
             persist.showToast( qsTr("Biography link updated"), "images/menu/ic_bio_link_edit.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.EditQuestion) {
             persist.showToast( qsTr("Question updated"), "images/toast/ic_question_edited.png" );
             busy.delegateActive = false;
-        } else if (id == QueryId.RemoveBioLink) {
+        } else if (id == QueryId.RemoveMention) {
             persist.showToast( qsTr("Biography unlinked!"), "images/menu/ic_remove_bio.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.RemoveQuestion) {
@@ -58,7 +58,7 @@ ListView
         } else if (id == QueryId.RemoveTag) {
             persist.showToast( qsTr("Tag removed!"), "images/menu/ic_remove_tag.png" );
             busy.delegateActive = false;
-        } else if (id == QueryId.AddBioLink) {
+        } else if (id == QueryId.AddMention) {
             persist.showToast( qsTr("Biography linked!"), "images/dropdown/save_bio.png" );
             suitePageIdChanged();
             busy.delegateActive = false;
@@ -66,13 +66,10 @@ ListView
             persist.showToast( qsTr("Sort order updated!"), "images/dropdown/save_bio.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.SearchNarrations && data.length > 0) {
-            definition.source = "NarrationPickerPage.qml";
             persist.showToast( qsTr("Similar narrations found. Choose the ones you want to link."), "images/toast/similar_found.png" );
-            var p = definition.createObject();
+            var p = Qt.launch("NarrationPickerPage.qml");
             p.picked.connect(onNarrationsPicked);
             p.populateAndSelect(data);
-            
-            navigationPane.push(p);
         }
         
         listView.visible = !adm.isEmpty();
@@ -88,12 +85,12 @@ ListView
         }
         
         sunnah.linkNarrationsToSuitePage(listView, suitePageId, all);
-        popToRoot();
+        Qt.popToRoot(narrationsPage);
     }
     
     function onPeoplePicked(ids)
     {
-        popToRoot();
+        Qt.popToRoot(narrationsPage);
         
         bioTypeDialog.target = ids;
         bioTypeDialog.show();
@@ -108,7 +105,7 @@ ListView
             ilmTest.updateSortOrders(listView, choices);
         }
         
-        popToRoot();
+        Qt.popToRoot(narrationsPage);
     }
     
     onTriggered: {
@@ -116,7 +113,6 @@ ListView
         
         var d = dataModel.data(indexPath);
         var t = itemType(d, indexPath);
-        definition.source = "AyatPage.qml";
         
         if (t == "ayat")
         {
@@ -127,18 +123,14 @@ ListView
                 prompt.indexPath = indexPath;
             }
         } else if (t == "question") {
-            definition.source = "CreateQuestionPage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("CreateQuestionPage.qml");
             
             page.questionId = d.id;
             page.saveQuestion.connect(onQuestionSaved);
             prompt.indexPath = indexPath;
-            navigationPane.push(page);
         } else if (t == "narration") {
-            definition.source = "NarrationProfilePage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("NarrationProfilePage.qml");
             page.narrationId = d.narration_id;
-            navigationPane.push(page);
         } else if (t == "tag") {
             var tag = persist.showBlockingPrompt( qsTr("Enter tag"), qsTr("Please enter a tag for this suite page"), "", qsTr("Enter value"), 50, true, qsTr("Save"), qsTr("Cancel") ).trim().toLowerCase();
             
@@ -148,37 +140,30 @@ ListView
                 adm.replace(indexPath[0], edited);
             }
         } else {
-            definition.source = "ProfilePage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("ProfilePage.qml");
             page.individualsPicked.connect(onPeoplePicked);
             page.individualId = d.target_id;
-
-            navigationPane.push(page);
         }
     }
     
     function produceQuestion(ListItemData, standardBody, boolStandard, promptStandard)
     {
-        definition.source = "CreateQuestionPage.qml";
-        var page = definition.createObject();
+        var page = Qt.launch("CreateQuestionPage.qml");
         page.setBodies(standardBody.arg(ListItemData.target), boolStandard.arg(ListItemData.target).arg("%1"), promptStandard.arg(ListItemData.target).arg("%1"));
         page.saveQuestion.connect(addQuestion.onQuestionSaved);
-        navigationPane.push(page);
     }
     
     function duplicateQuestion(ListItem, ListItemData)
     {
-        definition.source = "CreateQuestionPage.qml";
-        var page = definition.createObject();
+        var page = Qt.launch("CreateQuestionPage.qml");
         page.sourceFrom(ListItemData.id, ListItemData.source_id);
         page.saveQuestion.connect(addQuestion.onQuestionSaved);
-        navigationPane.push(page);
     }
     
     function removeBioLink(ListItem)
     {
         busy.delegateActive = true;
-        ilmHelper.removeBioLink(listView, ListItem.data.id);
+        ilmHelper.removeMention(listView, ListItem.data.id);
         adm.removeAt(ListItem.indexPath[0]);
     }
     

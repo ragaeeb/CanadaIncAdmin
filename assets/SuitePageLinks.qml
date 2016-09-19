@@ -33,13 +33,6 @@ Page
         }
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != narrationsPage) {
-            navigationPane.pop();
-        }
-    }
-    
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(narrationsPage, listView);
 
@@ -47,6 +40,7 @@ Page
         bioTypeDialog.appendItem( qsTr("Biography") );
         bioTypeDialog.appendItem( qsTr("Tahdeel") );
         bioTypeDialog.appendItem( qsTr("Cited"), true, true );
+        bioTypeDialog.appendItem( qsTr("Translator") );
     }
     
     actions: [
@@ -92,7 +86,7 @@ Page
                     sunnah.fetchSimilarNarrations(listView, all);
                 }
 
-                popToRoot();
+                Qt.popToRoot(narrationsPage);
             }
             
             shortcuts: [
@@ -103,11 +97,8 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: AddNarration");
-                definition.source = "NarrationPickerPage.qml";
-                var c = definition.createObject();
+                var c = Qt.launch("NarrationPickerPage.qml")
                 c.picked.connect(onPicked);
-                
-                navigationPane.push(c);
             }
         },
         
@@ -126,7 +117,7 @@ Page
                 listView.visible = !adm.isEmpty();
                 noElements.delegateActive = !listView.visible;
                 
-                popToRoot();
+                Qt.popToRoot(narrationsPage);
                 
                 persist.showToast( qsTr("Question added!"), "images/menu/ic_add_question.png" );
                 
@@ -136,10 +127,8 @@ Page
             onTriggered: {
                 console.log("UserEvent: AddQuestion");
 
-                definition.source = "CreateQuestionPage.qml";
-                var page = definition.createObject();
+                var page = Qt.launch("CreateQuestionPage.qml");
                 page.saveQuestion.connect(onQuestionSaved);
-                navigationPane.push(page);
             }
             
             shortcuts: [
@@ -187,7 +176,7 @@ Page
                 adm.insert(0, result);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                 
-                popToRoot();
+                Qt.popToRoot(narrationsPage);
                 
                 listView.visible = !adm.isEmpty();
                 noElements.delegateActive = !listView.visible;
@@ -195,11 +184,8 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: AddTag");
-                definition.source = "TagPickerPage.qml";
-                var p = definition.createObject();
+                var p = Qt.launch("TagPickerPage.qml");
                 p.picked.connect(onPicked);
-                
-                navigationPane.push(p);
             }
             
             shortcuts: [
@@ -270,25 +256,23 @@ Page
         {
             id: addLink
             imageSource: "images/menu/ic_add_bio.png"
-            title: qsTr("Add Link") + Retranslate.onLanguageChanged
+            title: qsTr("Mention") + Retranslate.onLanguageChanged
             ActionBar.placement: ActionBarPlacement.OnBar
             
             function onPicked(individualId, name)
             {
                 bioTypeDialog.target = individualId;
-                bioTypeDialog.show();
+                bioTypeDialog.finished(SystemUiResult.ConfirmButtonSelection);
+                //bioTypeDialog.show();
                 
-                popToRoot();
+                Qt.popToRoot(narrationsPage);
             }
             
             onTriggered: {
                 console.log("UserEvent: AddLink");
-                definition.source = "IndividualPickerPage.qml";
-                var c = definition.createObject();
+                var c = Qt.launch("IndividualPickerPage.qml");
                 c.picked.connect(onPicked);
-                ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target");
-                
-                navigationPane.push(c);
+                ilmHelper.fetchFrequentIndividuals(c.pickerList, "mentions", "target", 12);
             }
         }
         
@@ -311,11 +295,8 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: LookupChapter");
-                definition.source = "QuranSurahPicker.qml";
-                var surahPicker = definition.createObject();
+                var surahPicker = Qt.launch("QuranSurahPicker.qml");
                 surahPicker.picked.connect(onPicked);
-                
-                navigationPane.push(surahPicker);
                 
                 prompt.resetIndexPath();
             }
@@ -430,16 +411,18 @@ Page
                         points = 1;
                     } else if (selectedIndex == 3) {
                         points = 2;
+                    } else if (selectedIndex == 4) {
+                        points = 3;
                     }
  
                     if (target) {
-                        ilmHelper.addBioLink(listView, suitePageId, target instanceof Array ? target : [target], points);
+                        ilmHelper.addMention(listView, suitePageId, target instanceof Array ? target : [target], points);
                     } else {
                         var current = adm.data(prompt.indexPath);
                         current.points = points;
                         adm.replace(prompt.indexPath[0], current);
                         
-                        ilmHelper.editBioLink(listView, current.id, points);
+                        ilmHelper.editMention(listView, current.id, points);
                     }
                 }
             }

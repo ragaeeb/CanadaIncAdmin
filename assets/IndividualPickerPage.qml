@@ -43,19 +43,14 @@ Page
                     persist.showToast( qsTr("Successfully added individual"), "images/menu/ic_select_individuals.png" );
                     listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
 
-                    while (navigationPane.top != individualPage) {
-                        navigationPane.pop();
-                    }
+                    Qt.popToRoot(individualPage);
                 }
             }
             
             onTriggered: {
                 console.log("UserEvent: NewIndividual");
-                definition.source = "CreateIndividualPage.qml";
-                var page = definition.createObject();
+                var page = Qt.launch("CreateIndividualPage.qml");
                 page.createIndividual.connect(onCreate);
-                
-                navigationPane.push(page);
             }
         },
         
@@ -201,11 +196,8 @@ Page
                 
                 function openProfile(ListItemData)
                 {
-                    definition.source = "ProfilePage.qml";
-                    var x = definition.createObject();
+                    var x = Qt.launch("ProfilePage.qml");
                     x.individualId = ListItemData.id;
-                    
-                    navigationPane.push(x);
                 }
                 
                 listItemComponents: [

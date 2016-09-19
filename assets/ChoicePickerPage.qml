@@ -75,18 +75,15 @@ Page
             {
                 app.doDiff(values, adm);
                 
-                navigationPane.pop();
+                Qt.popToRoot(choicePage);
                 updateState();
                 
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
             }
             
             onTriggered: {
-                definition.source = "ChoicePickerPage.qml";
-                var searchPage = definition.createObject();
+                var searchPage = Qt.launch("ChoicePickerPage.qml");;
                 searchPage.picked.connect(onPickedMulti);
-                
-                navigationPane.push(searchPage);
             }
         }
     ]

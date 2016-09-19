@@ -21,7 +21,7 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 {
 }
 
-void IlmHelper::removeBioLink(QObject* caller, qint64 id) {
+void IlmHelper::removeMention(QObject* caller, qint64 id) {
     REMOVE_ELEMENT("mentions", QueryId::RemoveBioLink);
 }
 
@@ -41,49 +41,22 @@ void IlmHelper::removeLocation(QObject* caller, qint64 id) {
 }
 
 
-void IlmHelper::removeTeacher(QObject* caller, qint64 individual, qint64 teacherId)
+QVariantMap IlmHelper::addRelation(qint64 individual, qint64 other, int type)
 {
-    LOGGER(individual << teacherId);
+    LOGGER(individual << other << type);
 
-    QString query = QString("DELETE FROM teachers WHERE individual=%1 AND teacher=%2").arg(individual).arg(teacherId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveTeacher);
+    QVariantMap keyValues;
+    keyValues["individual"] = individual;
+    keyValues["other_id"] = other;
+    keyValues["type"] = type;
+
+    qint64 id = m_sql->executeInsert("relationships", keyValues);
+    SET_AND_RETURN;
 }
 
 
-void IlmHelper::removeParent(QObject* caller, qint64 individual, qint64 parentId)
-{
-    LOGGER(individual << parentId);
-
-    QString query = QString("DELETE FROM parents WHERE individual=%1 AND parent_id=%2").arg(individual).arg(parentId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveParent);
-}
-
-
-void IlmHelper::removeSibling(QObject* caller, qint64 individual, qint64 sibling)
-{
-    LOGGER(individual << sibling);
-
-    QString query = QString("DELETE FROM siblings WHERE individual=%1 AND sibling_id=%2").arg(individual).arg(sibling);
-    m_sql->executeQuery(caller, query, QueryId::RemoveSibling);
-}
-
-
-void IlmHelper::removeChild(QObject* caller, qint64 individual, qint64 childId)
-{
-    LOGGER(individual << childId);
-
-    QString query = QString("DELETE FROM parents WHERE parent_id=%1 AND individual=%2").arg(individual).arg(childId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveChild);
-}
-
-
-
-void IlmHelper::removeStudent(QObject* caller, qint64 individual, qint64 studentId)
-{
-    LOGGER(individual << studentId);
-
-    QString query = QString("DELETE FROM teachers WHERE teacher=%1 AND individual=%2").arg(individual).arg(studentId);
-    m_sql->executeQuery(caller, query, QueryId::RemoveStudent);
+void IlmHelper::removeRelation(QObject* caller, qint64 id) {
+    REMOVE_ELEMENT("relationships", QueryId::RemoveRelation);
 }
 
 
@@ -175,7 +148,7 @@ void IlmHelper::searchIndividualsByDeath(QObject* caller, int death)
 }
 
 
-void IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points)
+void IlmHelper::addMention(QObject* caller, qint64 suitePageId, QVariantList const& targetIds, QVariant const& points)
 {
     LOGGER(suitePageId << targetIds << points);
 
@@ -187,7 +160,7 @@ void IlmHelper::addBioLink(QObject* caller, qint64 suitePageId, QVariantList con
         m_sql->executeQuery(caller, query, InternalQueryId::PendingTransaction, QVariantList() << targetId << suitePageId << points);
     }
 
-    m_sql->endTransaction(caller, QueryId::AddBioLink);
+    m_sql->endTransaction(caller, QueryId::AddMention);
 }
 
 
@@ -201,28 +174,6 @@ QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name,
     SET_KEY_VALUE_ID;
 
     return keyValues;
-}
-
-
-QVariantMap IlmHelper::addBook(qint64 author, QString const& title)
-{
-    LOGGER(author << title);
-
-    QVariantMap keyValues = TokenHelper::getTokensForBooks(author, title);
-    qint64 id = m_sql->executeInsert("books", keyValues);
-    SET_AND_RETURN;
-}
-
-
-void IlmHelper::fetchBooksForAuthor(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT id,name FROM books WHERE author=%1").arg(individualId), QueryId::FetchBooksForAuthor);
-}
-
-
-void IlmHelper::removeBook(QObject* caller, qint64 id) {
-    REMOVE_ELEMENT("books", QueryId::RemoveBook);
 }
 
 
@@ -246,59 +197,14 @@ QVariantMap IlmHelper::addLocation(QString const& city, qreal latitude, qreal lo
 }
 
 
-void IlmHelper::addChild(QObject* caller, qint64 parentId, qint64 childId)
-{
-    LOGGER(parentId << childId);
-
-    QString query = QString("INSERT OR IGNORE INTO parents(parent_id,individual) VALUES(%1,%2)").arg(parentId).arg(childId);
-    m_sql->executeQuery(caller, query, QueryId::AddChild);
-}
-
-
-void IlmHelper::addStudent(QObject* caller, qint64 teacherId, qint64 studentId)
-{
-    LOGGER(teacherId << studentId);
-
-    QString query = QString("INSERT OR IGNORE INTO teachers(teacher,individual) VALUES(%1,%2)").arg(teacherId).arg(studentId);
-    m_sql->executeQuery(caller, query, QueryId::AddStudent);
-}
-
-
-void IlmHelper::addTeacher(QObject* caller, qint64 studentId, qint64 teacherId)
-{
-    LOGGER(studentId << teacherId);
-
-    QString query = QString("INSERT OR IGNORE INTO teachers(individual,teacher) VALUES(%1,%2)").arg(studentId).arg(teacherId);
-    m_sql->executeQuery(caller, query, QueryId::AddTeacher);
-}
-
-
-void IlmHelper::addParent(QObject* caller, qint64 childId, qint64 parentId)
-{
-    LOGGER(childId << parentId);
-
-    QString query = QString("INSERT OR IGNORE INTO parents(individual,parent_id) VALUES(%1,%2)").arg(childId).arg(parentId);
-    m_sql->executeQuery(caller, query, QueryId::AddParent);
-}
-
-
-void IlmHelper::addSibling(QObject* caller, qint64 individualId, qint64 siblingId)
-{
-    LOGGER(individualId << siblingId);
-
-    QString query = QString("INSERT OR IGNORE INTO siblings(individual,sibling_id) VALUES(%1,%2)").arg(individualId).arg(siblingId);
-    m_sql->executeQuery(caller, query, QueryId::AddSibling);
-}
-
-
-QVariantMap IlmHelper::editBioLink(QObject* caller, qint64 id, QVariant const& points)
+QVariantMap IlmHelper::editMention(QObject* caller, qint64 id, QVariant const& points)
 {
     LOGGER(id << points);
 
     QVariantMap keyValues;
     keyValues["points"] = points;
 
-    m_sql->executeUpdate(caller, "mentions", keyValues, QueryId::EditBioLink, id);
+    m_sql->executeUpdate(caller, "mentions", keyValues, QueryId::EditMention, id);
     SET_AND_RETURN;
 }
 
@@ -381,38 +287,10 @@ void IlmHelper::fetchBioMetadata(QObject* caller, qint64 suitePageId)
 }
 
 
-void IlmHelper::fetchTeachers(QObject* caller, qint64 individualId)
+void IlmHelper::fetchRelations(QObject* caller, qint64 individual)
 {
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM teachers INNER JOIN individuals i ON teachers.teacher=i.id WHERE teachers.individual=%2").arg( NAME_FIELD("i","teacher") ).arg(individualId), QueryId::FetchTeachers);
-}
-
-
-void IlmHelper::fetchSiblings(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,%1,i.female FROM siblings INNER JOIN individuals i ON siblings.sibling_id=i.id WHERE siblings.individual=%2 UNION SELECT i.id AS id,%1,i.female FROM siblings INNER JOIN individuals i ON siblings.individual=i.id WHERE siblings.sibling_id=%2").arg( NAME_FIELD("i","sibling") ).arg(individualId), QueryId::FetchSiblings);
-}
-
-
-void IlmHelper::fetchParents(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM parents INNER JOIN individuals i ON parents.parent_id=i.id WHERE parents.individual=%2").arg( NAME_FIELD("i","parent") ).arg(individualId), QueryId::FetchParents);
-}
-
-
-void IlmHelper::fetchStudents(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM teachers INNER JOIN individuals i ON teachers.individual=i.id WHERE teachers.teacher=%2").arg( NAME_FIELD("i","student") ).arg(individualId), QueryId::FetchStudents);
-}
-
-
-void IlmHelper::fetchChildren(QObject* caller, qint64 individualId)
-{
-    LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT i.id,%1,i.female FROM parents INNER JOIN individuals i ON parents.individual=i.id WHERE parents.parent_id=%2").arg( NAME_FIELD("i","child") ).arg(individualId), QueryId::FetchChildren);
+    LOGGER(individual);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,individual,other_id,%1,i.female AS female,type FROM relationships INNER JOIN individuals i ON relationships.individual=i.id WHERE relationships.other_id=%2 UNION SELECT i.id,individual,other_id,%1,i.female,type FROM relationships INNER JOIN individuals i ON relationships.other_id=i.id WHERE relationships.individual=%2").arg( NAME_FIELD("i","name") ).arg(individual), QueryId::FetchRelations);
 }
 
 
@@ -448,10 +326,10 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 }
 
 
-void IlmHelper::fetchBio(QObject* caller, qint64 individualId)
+void IlmHelper::fetchMentions(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i","author") ).arg(individualId), QueryId::FetchBio);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,COALESCE(points,0) AS points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i","author") ).arg(individualId), QueryId::FetchMentions);
 }
 
 

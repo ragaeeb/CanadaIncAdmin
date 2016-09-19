@@ -13,16 +13,6 @@ QVariantMap TokenHelper::getTokensForAnswer(qint64 questionId, qint64 choiceId, 
 }
 
 
-QVariantMap TokenHelper::getTokensForBooks(qint64 author, QString const& title)
-{
-    QVariantMap keyValues;
-    keyValues["author"] = author;
-    keyValues["name"] = title;
-
-    return keyValues;
-}
-
-
 QVariantMap TokenHelper::getTokensForSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference)
 {
     QVariantMap keyValues;

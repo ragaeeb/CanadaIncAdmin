@@ -14,7 +14,7 @@ NavigationPane
         var result = ilmHelper.editIndividual(navigationPane, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
         individualPicker.model.replace(individualPicker.editIndexPath[0], result);
 
-        global.popToRoot(navigationPane, individualPicker);
+        Qt.popToRoot(individualPicker);
     }
     
     function onDataLoaded(id, data)
@@ -74,12 +74,9 @@ NavigationPane
         function edit(ListItem)
         {
             editIndexPath = ListItem.indexPath;
-            definition.source = "CreateIndividualPage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("CreateIndividualPage.qml");
             page.individualId = ListItem.data.id;
             page.createIndividual.connect(onEdit);
-            
-            navigationPane.push(page);
         }
         
         function removeItem(ListItem)
@@ -99,17 +96,14 @@ NavigationPane
                 persist.showToast( qsTr("The source and replacement individuals cannot be the same!"), "images/toast/same_people.png" );
             }
             
-            global.popToRoot(navigationPane, individualPicker);
+            Qt.popToRoot(individualPicker);
         }
         
         function replace(ListItemData)
         {
             toReplaceId = ListItemData.id;
-            definition.source = "IndividualPickerPage.qml";
-            var ipp = definition.createObject();
+            var ipp = Qt.launch("IndividualPickerPage.qml");
             ipp.picked.connect(onActualPicked);
-            
-            navigationPane.push(ipp);
         }
         
         pickerList.listItemComponents: [
@@ -185,17 +179,8 @@ NavigationPane
         ]
         
         onPicked: {
-            definition.source = "ProfilePage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("ProfilePage.qml");
             page.individualId = individualId;
-            
-            navigationPane.push(page);
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

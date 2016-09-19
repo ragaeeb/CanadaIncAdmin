@@ -39,11 +39,8 @@ Page
         } else if (id == QueryId.FetchGroupsForNarration || id == QueryId.FetchExplanationsFor) {
             adm.append(data);
         } else if (id == QueryId.SearchNarrations && data.length > 0) {
-            definition.source = "NarrationPickerPage.qml";
-            var c = definition.createObject();
+            var c = Qt.launch("NarrationPickerPage.qml");
             c.narrationList.onDataLoaded(QueryId.SearchNarrations, data);
-            
-            navigationPane.push(c);
         } else if (id == QueryId.UnlinkNarrationsFromSimilar) {
             persist.showToast( qsTr("Unlinked from group"), "images/menu/ic_unlink.png" );
         }
@@ -144,11 +141,10 @@ Page
             onTriggered: {
                 var element = dataModel.data(indexPath);
                 
-                if (element.title) {
-                    definition.source = "CreateSuitePage.qml";
-                    var c = definition.createObject();
+                if (element.title)
+                {
+                    var c = Qt.launch("CreateSuitePage.qml");
                     c.suitePageId = element.id;
-                    navigationPane.push(c);
                 } else if (!element.body) {
                     sunnah.fetchNarrationsInGroup(narrationPage, element.group_number);
                 }

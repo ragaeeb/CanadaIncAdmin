@@ -56,19 +56,14 @@ NavigationPane
                     
                     persist.showToast( qsTr("Center added!"), addAction.imageSource.toString() );
                     
-                    while (navigationPane.top != masjidPickerPage) {
-                        navigationPane.pop();
-                    }
+                    Qt.popToRoot(masjidPickerPage);
                     
                     refresh();
                 }
                 
                 onTriggered: {
-                    definition.source = "CreateCenterPage.qml";
-                    var page = definition.createObject();
+                    var page = Qt.launch("CreateCenterPage.qml");
                     page.createCenter.connect(onCreate);
-                    
-                    navigationPane.push(page);
                 }
             }
         ]
@@ -148,22 +143,18 @@ NavigationPane
                         
                         dataModel.replace(editIndexPath[0], current);
                         
-                        while (navigationPane.top != masjidPickerPage) {
-                            navigationPane.pop();
-                        }
+                        Qt.popToRoot(masjidPickerPage);
                     }
                     
                     onTriggered: {
                         console.log("UserEvent: OpenCenter");
                         var d = dataModel.data(indexPath);
                         
-                        definition.source = "CreateCenterPage.qml";
-                        var page = definition.createObject();
+                        var page = Qt.launch("CreateCenterPage.qml");
                         page.centerId = d.id;
                         editIndexPath = indexPath;
                         
                         page.createCenter.connect(onEdit);
-                        navigationPane.push(page);
                     }
                 }
             }
@@ -193,10 +184,4 @@ NavigationPane
         listView.visible = !adm.isEmpty();
         noElements.delegateActive = !listView.visible;
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

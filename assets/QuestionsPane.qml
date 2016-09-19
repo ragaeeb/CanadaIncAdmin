@@ -9,13 +9,6 @@ NavigationPane
         deviceUtils.cleanUpAndDestroy(page);
     }
     
-    function popToRoot()
-    {
-        while (navigationPane.top != questionsPage) {
-            navigationPane.pop();
-        }
-    }
-    
     onCreationCompleted: {
         questionsPage.loadAll();
     }
@@ -68,28 +61,18 @@ NavigationPane
                 ilmTest.updateSortOrders(questionsList, choices);
             }
             
-            popToRoot();
+            Qt.popToRoot(questionsPage);
         }
         
         onOpenSuitePage: {
-            definition.source = "CreateSuitePage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("CreateSuitePage.qml");
             page.suitePageId = suitePageId;
-            navigationPane.push(page);
         }
         
         onPicked: {
-            definition.source = "CreateQuestionPage.qml";
-            var page = definition.createObject();
+            var page = Qt.launch("CreateQuestionPage.qml")
             page.questionId = questionId;
             page.saveQuestion.connect(onQuestionSaved);
-            navigationPane.push(page);
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-        }
-    ]
 }

@@ -78,17 +78,28 @@ QVariantMap TafsirHelper::editQuote(QObject* caller, qint64 id, qint64 author, q
 }
 
 
-void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 id)
+void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 id, qint64 author, int limit)
 {
     LOGGER(id);
 
-    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,title FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
+    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
+    QStringList where;
 
     if (id) {
-        queryParams << QString("WHERE suites.id=%1").arg(id);
+        where << QString("suites.id=%1").arg(id);
     }
 
-    queryParams << "ORDER BY id DESC";
+    if (author) {
+        where << QString("suites.author=%1").arg(author);
+        where << QString("suites.explainer=%1").arg(author);
+        where << QString("suites.translator=%1").arg(author);
+    }
+
+    if ( !where.isEmpty() ) {
+        queryParams << QString("WHERE %1").arg( where.join(" OR ") );
+    }
+
+    queryParams << "ORDER BY id DESC" << QString("LIMIT %1").arg(limit);
 
     m_sql->executeQuery(caller, queryParams.join(" "), QueryId::FetchAllTafsir);
 }
@@ -261,22 +272,36 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
 {
     LOGGER(fieldName << searchTerm);
 
+    QStringList fields = QStringList() << "suites.id AS id" << NAME_FIELD("i", "author") << "title" << "is_book";
+    QStringList where;
+    QStringList joins;
     QString query;
-    QVariantList args = QVariantList() << searchTerm;
+    QVariantList args;
 
-    if (fieldName == "author" || fieldName == "explainer" || fieldName == "translator")
-    {
-        if (fieldName == "author") {
-            query = QString("SELECT suites.id,%1,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") );
-            args << searchTerm << searchTerm;
-        } else {
-            query = QString("SELECT suites.id,%2,title FROM suites LEFT JOIN individuals i ON i.id=suites.%4 INNER JOIN individuals t ON t.id=suites.%1 WHERE %3 ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg(fieldName);
-            args << searchTerm << searchTerm;
-        }
-    } else if (fieldName == "body") {
-        query = QString("SELECT suites.id,%1,title,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suites.id=suite_pages.suite_id WHERE body LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg( NAME_FIELD("i","author") );
+    if (fieldName == "title") {
+        query = QString("SELECT %1,NULL AS heading,NULL AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 UNION SELECT %1,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suite_pages.suite_id=suites.id WHERE %3").arg( fields.join(",") ).arg( LIKE_CLAUSE("title") ).arg( LIKE_CLAUSE("heading") );
+        args << searchTerm << searchTerm;
     } else {
-        query = QString("SELECT suites.id,%2,title FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %1 LIKE '%' || ? || '%' ORDER BY suites.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") );
+        if (fieldName == "description") {
+            where << LIKE_CLAUSE(fieldName);
+        } else {
+            if (fieldName == "body") {
+                where << LIKE_CLAUSE("body");
+            } else if (fieldName == "reference") {
+                where << LIKE_CLAUSE("suite_pages.reference") << LIKE_CLAUSE("suites.reference");
+            }
+
+            joins << "INNER JOIN suite_pages ON suites.id=suite_pages.suite_id";
+            fields << "heading" << "suite_pages.id AS suite_page_id";
+        }
+
+        foreach (QString const& w, where)
+        {
+            Q_UNUSED(w);
+            args << searchTerm;
+        }
+
+        query = QString("SELECT %1 FROM suites LEFT JOIN individuals i ON i.id=suites.author %2 WHERE %3 ORDER BY suites.id DESC").arg( fields.join(",") ).arg( joins.join(" ") ).arg( where.join(" OR ") );
     }
 
     m_sql->executeQuery(caller, query, QueryId::SearchTafsir, args);

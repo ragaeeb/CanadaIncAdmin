@@ -28,20 +28,15 @@ Page
                 
                 persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
                 
-                while (navigationPane.top != tafsirPickerPage) {
-                    navigationPane.pop();
-                }
+                Qt.popToRoot(tafsirPickerPage);
                 
                 tafsirPicked([x]);
             }
             
             onTriggered: {
                 console.log("UserEvent: NewSuite");
-                definition.source = "CreateTafsirPage.qml";
-                var page = definition.createObject();
+                var page = Qt.launch("CreateTafsirPage.qml");
                 page.createTafsir.connect(onCreate);
-                
-                navigationPane.push(page);
             }
             
             shortcuts: [
@@ -136,50 +131,31 @@ Page
             horizontalAlignment: HorizontalAlignment.Fill
             verticalAlignment: VerticalAlignment.Fill
             
-            DropDown
+            SegmentedControl
             {
                 id: searchColumn
                 horizontalAlignment: HorizontalAlignment.Fill
-                title: qsTr("Field") + Retranslate.onLanguageChanged
                 bottomMargin: 0
                 
                 Option {
-                    description: qsTr("Search author field") + Retranslate.onLanguageChanged
-                    imageSource: "images/dropdown/search_author.png"
-                    text: qsTr("Author") + Retranslate.onLanguageChanged
-                    value: "author"
-                }
-                
-                Option {
-                    description: qsTr("Search tafsir body") + Retranslate.onLanguageChanged
                     imageSource: "images/dropdown/search_body.png"
                     text: qsTr("Body") + Retranslate.onLanguageChanged
                     value: "body"
                 }
                 
                 Option {
-                    description: qsTr("Search tafsir description") + Retranslate.onLanguageChanged
                     imageSource: "images/dropdown/search_description.png"
                     text: qsTr("Description") + Retranslate.onLanguageChanged
                     value: "description"
                 }
                 
                 Option {
-                    description: qsTr("Search reference field") + Retranslate.onLanguageChanged
                     imageSource: "images/dropdown/search_reference.png"
                     text: qsTr("Reference") + Retranslate.onLanguageChanged
                     value: "reference"
                 }
                 
                 Option {
-                    description: qsTr("Search translator field") + Retranslate.onLanguageChanged
-                    imageSource: "images/dropdown/search_translator.png"
-                    text: qsTr("Translator") + Retranslate.onLanguageChanged
-                    value: "translator"
-                }
-                
-                Option {
-                    description: qsTr("Search title field") + Retranslate.onLanguageChanged
                     imageSource: "images/dropdown/search_title.png"
                     selected: true
                     text: qsTr("Title") + Retranslate.onLanguageChanged
@@ -254,26 +230,23 @@ Page
 
                     dataModel.replace(editIndexPath[0], current);
                     
-                    global.popToRoot(navigationPane, tafsirPickerPage);
+                    Qt.popToRoot(tafsirPickerPage);
                 }
                 
                 function onDelete(id)
                 {
                     removeItem({'id': id});
-                    global.popToRoot(navigationPane, tafsirPickerPage);
+                    Qt.popToRoot(tafsirPickerPage);
                 }
                 
                 function editItem(indexPath, ListItemData)
                 {
                     editIndexPath = indexPath;
                     
-                    definition.source = "CreateTafsirPage.qml";
-                    var page = definition.createObject();
+                    var page = Qt.launch("CreateTafsirPage.qml");
                     page.suiteId = ListItemData.id;
                     page.createTafsir.connect(onEdit);
                     page.deleteTafsir.connect(onDelete);
-                    
-                    navigationPane.push(page);
                 }
                 
                 function onActualPicked(suitesToMerge)
@@ -297,19 +270,16 @@ Page
                         persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/ic_duplicate_replace.png" );
                     }
 
-                    global.popToRoot(navigationPane, tafsirPickerPage);
+                    Qt.popToRoot(tafsirPickerPage);
                 }
                 
                 function merge(ListItemData)
                 {
                     destMergeId = ListItemData.id;
-                    definition.source = "TafsirPickerPage.qml";
-                    var ipp = definition.createObject();
+                    var ipp = Qt.launch("TafsirPickerPage.qml");
                     ipp.allowMultiple = true;
                     ipp.autoFocus = true;
                     ipp.tafsirPicked.connect(onActualPicked);
-                    
-                    navigationPane.push(ipp);
                 }
                 
                 function removeItem(ListItemData) {
@@ -324,7 +294,7 @@ Page
                         {
                             id: rootItem
                             description: ListItemData.author ? ListItemData.author : qsTr("Unknown") + Retranslate.onLanguageChanged
-                            imageSource: ListItemData.suite_page_id ? "images/list/ic_narration.png" : "images/list/ic_tafsir.png"
+                            imageSource: ListItemData.suite_page_id ? "images/list/ic_narration.png" : ListItemData.is_book ? "images/list/ic_book.png" : "images/list/ic_tafsir.png"
                             title: ListItemData.heading ? ListItemData.heading : ListItemData.title
                             status: ListItemData.c ? ListItemData.c : undefined
                             

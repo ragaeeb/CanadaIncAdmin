@@ -105,7 +105,7 @@ StandardListItem
                 
                 onTriggered: {
                     console.log("UserEvent: DeleteBioLink");
-                    bioRoot.ListItem.view.removeBioLink(bioRoot.ListItem);
+                    bioRoot.ListItem.view.removeMention(bioRoot.ListItem);
                 }
             }
         }

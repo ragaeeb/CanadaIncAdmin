@@ -188,11 +188,4 @@ Page
             }
         }
     }
-    
-    attachedObjects: [
-        ComponentDefinition {
-            id: definition
-            source: "IndividualPickerPage.qml"
-        }
-    ]
 }
