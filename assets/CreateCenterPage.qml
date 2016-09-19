@@ -103,8 +103,9 @@ Page
                 gestureHandlers: [
                     DoubleTapHandler {
                         onDoubleTapped: {
-                            console.log("UserEvent: WebsiteBodyDT"); 
-                            website.text = persist.getClipboardText().trim();
+                            console.log("UserEvent: WebsiteBodyDT");
+                            var uri = offloader.fixUri( persist.getClipboardText().trim() );
+                            website.text = uri;
                         }
                     }
                 ]

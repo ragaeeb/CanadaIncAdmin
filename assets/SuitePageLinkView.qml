@@ -116,12 +116,11 @@ ListView
         
         if (t == "ayat")
         {
-            if (d.from_verse_number) {
-                persist.invoke( "com.canadainc.Quran10.previewer", "", "", "quran://%1/%2".arg(d.surah_id).arg(d.from_verse_number) );
-            } else {
-                persist.invoke( "com.canadainc.Quran10.ayat.picker", "ayatPicked", "", "", d.surah_id );
-                prompt.indexPath = indexPath;
-            }
+            var page = Qt.launch("AyatProfilePage.qml");
+            page.chapter = d.surah_id;
+            page.fromVerse = d.from_verse_number;
+            page.toVerse = d.to_verse_number;
+            page.load();
         } else if (t == "question") {
             var page = Qt.launch("CreateQuestionPage.qml");
             
@@ -239,15 +238,7 @@ ListView
         }
     }
     
-    onSelectionChangeEnded: {        
-        linkAction.enabled = selectionList().length > 0;
-    }
-    
     multiSelectHandler.actions: [
-        LinkActionItem {
-            id: linkAction
-        },
-        
         DeleteActionItem
         {
             imageSource: "images/menu/ic_unlink_narration.png"

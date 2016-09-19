@@ -7,6 +7,7 @@ ActionItem
     imageSource: "images/menu/ic_link.png"
     title: qsTr("Link") + Retranslate.onLanguageChanged
     property variant selectedIds: []
+    property variant cached
     property int nextGroupNumber: 0
     
     function createNewGroup() {
@@ -38,6 +39,18 @@ ActionItem
             console.log("NextGroupNumberAvailable", nextGroupNumber);
         } else if (id == QueryId.GroupNarrations) {
             persist.showToast( qsTr("Narrations successfully linked!"), linkAction.imageSource.toString() );
+            
+            for (var i = cached.length-1; i >= 0; i--)
+            {
+                var current = listView.dataModel.data(cached[i]);
+                
+                if (!current.group_id)
+                {
+                    current.group_id = nextGroupNumber;
+                    listView.dataModel.replace(i, current);
+                }
+            }
+            
             popToRoot();
         }
     }
@@ -53,6 +66,7 @@ ActionItem
         }
         
         selectedIds = result;
+        cached = all;
         sunnah.fetchNextAvailableGroupNumber(linkAction);
         sunnah.fetchGroupedNarrations(linkAction, result);
     }

@@ -204,6 +204,13 @@ QString Offloader::extractHost(QString const& uri)
 }
 
 
+QString Offloader::fixUri(QString const& uri)
+{
+    QUrl result(uri);
+    return QUrl::fromUserInput(uri).toString();
+}
+
+
 Offloader::~Offloader()
 {
 }

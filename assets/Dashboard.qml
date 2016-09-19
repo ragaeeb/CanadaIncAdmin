@@ -264,6 +264,18 @@ NavigationPane
                     
                     ListItemComponent
                     {
+                        type: "twitter"
+                        
+                        StandardListItem
+                        {
+                            title: ListItemData.address
+                            description: "Twitter"
+                            imageSource: "images/list/site_twitter.png"
+                        }
+                    },
+                    
+                    ListItemComponent
+                    {
                         type: "phone"
                         
                         StandardListItem
@@ -327,6 +339,10 @@ NavigationPane
                         app.lookupUser(data.user_id, true);
                     } else if (data.address_type == "facebook") {
                         persist.openUri("http://facebook.com/"+data.address);
+                    } else if (data.address_type == "twitter") {
+                        persist.openUri("http://twitter.com/"+data.address);
+                    } else if (data.address_type == "instagram") {
+                        persist.openUri("http://instagram.com/"+data.address);
                     } else if (data.address_type == "whatsapp" || data.address_type == "bbm") {
                         var name = "";
                         var whatsapp = [];
@@ -399,6 +415,41 @@ NavigationPane
                     //app.fetchAllIds(reorder, "answers");
                     app.fetchAllIds(reorder, "choices");
                     //app.fetchAllIds(reorder, "questions");
+                }
+            },
+            
+            ActionItem
+            {
+                id: hadith
+                imageSource: "images/dropdown/ic_any_narrations.png"
+                title: qsTr("Hadith Lookup") + Retranslate.onLanguageChanged
+                
+                shortcuts: [
+                    Shortcut {
+                        key: "H"
+                    }
+                ]
+                
+                onTriggered: {
+                    Qt.launch("NarrationPickerPage.qml");
+                }
+            },
+            
+            ActionItem
+            {
+                id: tafsir
+                imageSource: "images/list/ic_tafsir_ayat.png"
+                title: qsTr("Quran Lookup") + Retranslate.onLanguageChanged
+                
+                shortcuts: [
+                    Shortcut {
+                        key: "Q"
+                    }
+                ]
+                
+                onTriggered: {
+                    var x = Qt.launch("AyatProfilePage.qml");
+                    x.focus();
                 }
             },
             

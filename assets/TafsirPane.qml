@@ -16,7 +16,6 @@ NavigationPane
         onTafsirPicked: {            
             var page = Qt.launch("TafsirContentsPage.qml");
             page.title = data[0].title;
-            page.suiteId = data[0].id;
 
             if (data[0].suite_page_id != null && searchField.text.trim().length > 0)
             {
@@ -28,6 +27,8 @@ NavigationPane
 
                 page.searchData = searchData;
             }
+            
+            page.suiteId = data[0].id;
         }
         
         actions: [

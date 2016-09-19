@@ -1,4 +1,5 @@
 import bb.cascades 1.0
+import bb.system 1.0
 import com.canadainc.data 1.0
 
 Page
@@ -190,31 +191,18 @@ Page
                 }
             ]
             
-            function endsWith(str, suffix) {
-                return str.indexOf(suffix, str.length - suffix.length) !== -1;
-            }
-            
             onTriggered: {
                 console.log("UserEvent: NewSite");
                 var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
                 
                 if (uri.length > 0)
                 {
-                    if ( endsWith(uri, "/") ) {
-                        uri = uri.substring(0, uri.length-1);
-                    }
-                    
-                    if ( uri.indexOf("http://") == -1 && uri.indexOf("https://") == -1 ) {
-                        uri = "http://"+uri;
-                    }
-                    
-                    uri = uri.replace("//www.", "//");
+                    uri = offloader.fixUri(uri);
                     
                     if ( deviceUtils.isUrl(uri) ) {
                         var x = ilmHelper.addWebsite(individualId, uri);
-                        adm.append(x);
+                        checkForDuplicate(x);
                         persist.showToast( qsTr("Website added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else {
                         persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
                         console.log("FailedRegex", uri);

@@ -39,6 +39,7 @@ public:
 
     Q_INVOKABLE void captureAyats(QString const& body);
     Q_INVOKABLE void fetchAyatsForTafsir(QObject* caller, qint64 suitePageId);
+    Q_INVOKABLE void fetchExplanationsFor(QObject* caller, int chapter, int fromVerse, int toVerse);
     Q_INVOKABLE void linkAyatToTafsir(QObject* caller, qint64 suitePageId, int chapter, int fromVerse, int toVerse, QueryId::Type linkId=QueryId::LinkAyatToSuitePage);
     Q_INVOKABLE void linkAyatsToTafsir(QObject* caller, qint64 suitePageId, QVariantList const& chapterVerseData);
     Q_INVOKABLE void unlinkAyatsForTafsir(QObject* caller, QVariantList const& ids, qint64 suitePageId);

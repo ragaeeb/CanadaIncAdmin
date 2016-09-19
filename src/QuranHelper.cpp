@@ -4,6 +4,7 @@
 #include "CommonConstants.h"
 #include "DatabaseHelper.h"
 #include "Logger.h"
+#include "SharedConstants.h"
 #include "TextUtils.h"
 
 #define CHAPTER_KEY "chapter"
@@ -130,6 +131,14 @@ void QuranHelper::fetchAyatsForTafsir(QObject* caller, qint64 suitePageId)
 
     QString query = QString("SELECT id,surah_id,from_verse_number,to_verse_number FROM explanations WHERE suite_page_id=%1 ORDER BY surah_id,from_verse_number,to_verse_number").arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::FetchAyatsForTafsir);
+}
+
+
+void QuranHelper::fetchExplanationsFor(QObject* caller, int chapter, int fromVerse, int toVerse)
+{
+    LOGGER(chapter << fromVerse << toVerse);
+
+    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,suite_id,%4,title,heading FROM explanations INNER JOIN suite_pages ON suite_pages.id=explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE surah_id=%1 AND from_verse_number=%2 AND to_verse_number=%3 ORDER BY author,title,heading").arg(chapter).arg(fromVerse).arg(toVerse).arg( NAME_FIELD("i", "author") ), QueryId::FetchExplanationsFor);
 }
 
 

@@ -4,7 +4,7 @@ StandardListItem
 {
     id: bioRoot
     title: ListItemData.target
-    imageSource: ListItemData.points > 1 ? "images/list/ic_unique_narration.png" : ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/tabs/ic_bio.png"
+    imageSource: ListItemData.points > 1 ? "images/list/ic_sibling.png" : ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/tabs/ic_bio.png"
     
     contextActions: [
         ActionSet
