@@ -128,6 +128,12 @@ ListView
         bioModel.removeAt(ListItem.indexPath);
     }
     
+    function removeQuote(ListItem, ListItemData)
+    {
+        ilmHelper.removeQuote(bioPage, ListItemData.id);
+        bioModel.removeAt(ListItem.indexPath);
+    }
+    
     onSelectionChanged: {
         var n = selectionList().length;
         multiSelectHandler.status = qsTr("%n entries selected", "", n);
@@ -373,7 +379,7 @@ ListView
                             
                             onTriggered: {
                                 console.log("UserEvent: RemoveQuote");
-                                quoteSli.ListItem.view.removeQuote(quoteSli.ListItem);
+                                quoteSli.ListItem.view.removeQuote(quoteSli.ListItem, ListItemData);
                             }
                         }
                     }
