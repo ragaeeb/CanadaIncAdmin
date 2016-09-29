@@ -23,58 +23,28 @@ Page
         }
     }
     
-    function launchPicker()
-    {
-        var p = Qt.launch("IndividualPickerPage.qml");
-        ilmHelper.fetchFrequentIndividuals(p.pickerList, "relationships", "individual");
-        
-        return p;
-    }
-    
     actions: [
         ActionItem
         {
-            id: addStudent
+            id: addRelation
             ActionBar.placement: ActionBarPlacement.OnBar
             imageSource: "images/menu/ic_add_student.png"
-            title: qsTr("Add Student") + Retranslate.onLanguageChanged
+            title: qsTr("Add Relationship") + Retranslate.onLanguageChanged
             
-            function onPicked(student, name)
+            function onPicked(otherId, name)
             {
-                var result = ilmHelper.addRelation(student, individualId, 2);
-                result.name = name;
-                
-                checkForDuplicate(result);
+                relationDialog.target = otherId;
+                relationDialog.name = name;
+                relationDialog.show();
             }
             
             onTriggered: {
-                console.log("UserEvent: AddStudent");
+                console.log("UserEvent: AddRelationship");
 
-                var p = launchPicker();
+                var p = Qt.launch("IndividualPickerPage.qml");
                 p.picked.connect(onPicked);
-            }
-        },
-        
-        ActionItem
-        {
-            id: addTeacher
-            ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_teacher.png"
-            title: qsTr("Add Teacher") + Retranslate.onLanguageChanged
-            
-            function onPicked(teacher, name)
-            {
-                var result = ilmHelper.addRelation(individualId, teacher, 2);
-                result.name = name;
                 
-                checkForDuplicate(result);
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: AddTeacher");
-
-                var p = launchPicker();
-                p.picked.connect(onPicked);
+                ilmHelper.fetchFrequentIndividuals(p.pickerList, "relationships", "individual");
             }
         },
         
@@ -110,80 +80,10 @@ Page
         
         ActionItem
         {
-            id: addParent
-            ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_parent.png"
-            title: qsTr("Add Parent") + Retranslate.onLanguageChanged
-            
-            function onPicked(parentId, name)
-            {
-                var result = ilmHelper.addRelation(individualId, parentId, 1);
-                result.name = name;
-                
-                checkForDuplicate(result);
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: AddParent");
-
-                var p = launchPicker();
-                p.picked.connect(onPicked);
-            }
-        },
-        
-        ActionItem
-        {
-            id: addSibling
-            ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_sibling.png"
-            title: qsTr("Add Sibling") + Retranslate.onLanguageChanged
-            
-            function onPicked(siblingId, name)
-            {
-                var result = ilmHelper.addRelation(individualId, siblingId, 3);
-                result.name = name;
-                
-                checkForDuplicate(result);
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: AddSibling");
-
-                var p = launchPicker();
-                p.picked.connect(onPicked);
-            }
-        },
-        
-        ActionItem
-        {
-            id: addChild
-            ActionBar.placement: ActionBarPlacement.OnBar
-            imageSource: "images/menu/ic_add_child.png"
-            title: qsTr("Add Child") + Retranslate.onLanguageChanged
-            
-            function onPicked(child, name)
-            {
-                var result = ilmHelper.addRelation(child, individualId, 1);
-                result.name = name;
-                
-                checkForDuplicate(result);
-            }
-            
-            onTriggered: {
-                console.log("UserEvent: AddChild");
-
-                var p = launchPicker();
-                p.picked.connect(onPicked);
-            }
-        },
-        
-        ActionItem
-        {
             id: addSite
             imageSource: "images/menu/ic_add_site.png"
-            title: qsTr("Add Website") + Retranslate.onLanguageChanged
-            ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
-            enabled: individualId != undefined
+            title: qsTr("Add Contact") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
             
             shortcuts: [
                 SystemShortcut {
@@ -193,74 +93,20 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: NewSite");
-                var uri = persist.showBlockingPrompt( qsTr("Enter url"), qsTr("Please enter the website address for this individual:"), "", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
+                var uri = persist.showBlockingPrompt( qsTr("Enter email/phone/url"), qsTr("Please enter the website address or phone number or email address for this individual:"), "", qsTr("Enter url (ie: http://mtws.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Url ).trim().toLowerCase();
                 
                 if (uri.length > 0)
                 {
-                    uri = offloader.fixUri(uri);
+                    var corrected = offloader.fixUri(uri);
                     
-                    if ( deviceUtils.isUrl(uri) ) {
-                        var x = ilmHelper.addWebsite(individualId, uri);
-                        checkForDuplicate(x);
-                        persist.showToast( qsTr("Website added!"), imageSource.toString() );
-                    } else {
-                        persist.showToast( qsTr("Invalid URL entered!"), "images/menu/ic_remove_site.png" );
-                        console.log("FailedRegex", uri);
-                    }
-                }
-            }
-        },
-        
-        ActionItem
-        {
-            id: addEmail
-            imageSource: "images/menu/ic_add_email.png"
-            title: qsTr("Add Email") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            enabled: individualId != undefined
-            
-            onTriggered: {
-                console.log("UserEvent: NewEmail");
-                var email = persist.showBlockingPrompt( qsTr("Enter email"), qsTr("Please enter the email address for this individual:"), "", qsTr("Enter email (ie: abc@hotmail.com)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Email ).trim().toLowerCase();
-                
-                if (email.length > 0)
-                {
-                    if ( deviceUtils.isValidEmail(email) ) {
-                        var x = ilmHelper.addWebsite(individualId, email);
-                        adm.append(x);
-                        persist.showToast( qsTr("Email added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    } else {
-                        persist.showToast( qsTr("Invalid email entered!"), "images/menu/ic_remove_email.png" );
-                        console.log("FailedRegex", email);
-                    }
-                }
-            }
-        },
-        
-        ActionItem
-        {
-            id: addPhone
-            imageSource: "images/menu/ic_add_phone.png"
-            title: qsTr("Add Phone") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
-            enabled: individualId != undefined
-            
-            onTriggered: {
-                console.log("UserEvent: NewPhone");
-                var phone = persist.showBlockingPrompt( qsTr("Enter phone number"), qsTr("Please enter the phone number for this individual:"), "", qsTr("Enter phone (ie: +44133441623)"), 100, false, qsTr("Save"), qsTr("Cancel"), SystemUiInputMode.Phone ).trim();
-                
-                if (phone.length > 0)
-                {
-                    if ( deviceUtils.isValidPhoneNumber(phone) ) {
-                        var x = ilmHelper.addWebsite(individualId, phone);
-                        adm.append(x);
-                        persist.showToast( qsTr("Phone Number added!"), imageSource.toString() );
-                        listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
-                    } else {
-                        persist.showToast( qsTr("Invalid phone number entered!"), "images/menu/ic_remove_phone.png" );
-                        console.log("FailedRegex", phone);
-                    }
+                    if (corrected.length > 0) { // a url
+                        uri = corrected;
+                    } // otherwise take it for what it is
+                    
+                    var x = ilmHelper.addWebsite(individualId, uri);
+                    checkForDuplicate(x);
+                    bios.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
+                    persist.showToast( qsTr("Contact info added!"), imageSource.toString() );
                 }
             }
         }
@@ -420,4 +266,68 @@ Page
     }
     
     function cleanUp() {}
+    
+    attachedObjects: [
+        SystemListDialog
+        {
+            id: relationDialog
+            property variant target
+            property string name
+            title: qsTr("Relationship Type") + Retranslate.onLanguageChanged
+            body: qsTr("Please select the type of relationship this is:") + Retranslate.onLanguageChanged
+            cancelButton.label: qsTr("Cancel")
+            confirmButton.label: qsTr("OK") + Retranslate.onLanguageChanged
+            
+            onFinished: {
+                if (value == SystemUiResult.ConfirmButtonSelection)
+                {
+                    var selectedIndex = selectedIndices[0];
+                    var individual = individualId;
+                    var other = target;
+                    var relationType = selectedIndex+1;
+                    
+                    if (selectedIndex == 0) {
+                        individual = individualId;
+                        other = target;
+                        relationType = 2;
+                    } else if  (selectedIndex == 1) {
+                        other = individualId;
+                        individual = target;
+                        relationType = 2;
+                    } else if  (selectedIndex == 2) {
+                        individual = individualId;
+                        other = target;
+                        relationType = 1;
+                    } else if  (selectedIndex == 3) {
+                        other = individualId;
+                        individual = target;
+                        relationType = 1;
+                    } else {
+                        individual = individualId;
+                        other = target;
+                        relationType = selectedIndex == 4 ? 3 : selectedIndex == 5 ? 4 : 0;
+                    }
+                    
+                    if (individual && target && relationType)
+                    {
+                        var result = ilmHelper.addRelation(individual, other, relationType);
+                        result.name = name;
+                        
+                        checkForDuplicate(result);
+                    }
+                }
+            }
+        }
+    ]
+    
+    onCreationCompleted: {
+        deviceUtils.attachTopBottomKeys(bioPage, bios);
+        
+        relationDialog.appendItem( qsTr("Teacher"), true, true );
+        relationDialog.appendItem( qsTr("Student") );
+        relationDialog.appendItem( qsTr("Parent") );
+        relationDialog.appendItem( qsTr("Child") );
+        relationDialog.appendItem( qsTr("Sibling") );
+        relationDialog.appendItem( qsTr("Friend") );
+    }
 }

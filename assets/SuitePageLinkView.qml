@@ -159,7 +159,7 @@ ListView
         page.saveQuestion.connect(addQuestion.onQuestionSaved);
     }
     
-    function removeBioLink(ListItem)
+    function removeMention(ListItem)
     {
         busy.delegateActive = true;
         ilmHelper.removeMention(listView, ListItem.data.id);

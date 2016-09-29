@@ -38,15 +38,14 @@ public:
     Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7, QString const& where=QString());
     Q_INVOKABLE void fetchIndividualData(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchRelations(QObject* caller, qint64 individual);
-    Q_INVOKABLE void portIndividuals(QObject* caller, QString destinationLanguage="arabic");
     Q_INVOKABLE void removeMention(QObject* caller, qint64 id);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);
     Q_INVOKABLE void removeLocation(QObject* caller, qint64 id);
     Q_INVOKABLE void removeRelation(QObject* caller, qint64 id);
     Q_INVOKABLE void removeWebsite(QObject* caller, qint64 id);
     Q_INVOKABLE void replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 actualId);
-    Q_INVOKABLE void searchIndividuals(QObject* caller, QVariantList const& terms);
-    Q_INVOKABLE void searchIndividualsByDeath(QObject* caller, int death);
+    Q_INVOKABLE void searchIndividuals(QObject* caller, QVariantList const& terms, QVariantList const& exclusions=QVariantList());
+    Q_INVOKABLE void searchIndividualsByDeath(QObject* caller, int death, QVariantList const& exclusions=QVariantList());
 
     void lazyInit();
     void setDatabaseName(QString const& name);

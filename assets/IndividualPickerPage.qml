@@ -10,6 +10,7 @@ Page
     property alias busyControl: busy
     property alias model: adm
     property alias searchField: tftk.textField
+    property variant exclusions: []
     signal picked(variant individualId, string name)
     signal contentLoaded(int size)
     
@@ -132,9 +133,9 @@ Page
             noElements.delegateActive = false;
             
             if ( isDeathQuery(trimmed) ) {
-                ilmHelper.searchIndividualsByDeath( listView, parseInt(trimmed) );
+                ilmHelper.searchIndividualsByDeath( listView, parseInt(trimmed), exclusions );
             } else {
-                ilmHelper.searchIndividuals( listView, global.extractTokens(trimmed) );
+                ilmHelper.searchIndividuals( listView, global.extractTokens(trimmed), exclusions );
             }
         } else {
             ilmHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
@@ -194,12 +195,6 @@ Page
                     id: adm
                 }
                 
-                function openProfile(ListItemData)
-                {
-                    var x = Qt.launch("ProfilePage.qml");
-                    x.individualId = ListItemData.id;
-                }
-                
                 listItemComponents: [
                     ListItemComponent
                     {
@@ -211,6 +206,35 @@ Page
                                 ActionSet
                                 {
                                     title: sli.title
+                                    subtitle: sli.description
+                                    
+                                    ActionItem
+                                    {
+                                        imageSource: "images/common/ic_copy.png"
+                                        title: qsTr("Copy") + Retranslate.onLanguageChanged
+                                        
+                                        onTriggered: {
+                                            console.log("UserEvent: CopyIndividual");
+                                            persist.copyToClipboard( global.plainText(sli.title) );
+                                        }
+                                    }
+                                    
+                                    ActionItem
+                                    {
+                                        imageSource: "images/menu/ic_replace_individual.png"
+                                        title: qsTr("Replace") + Retranslate.onLanguageChanged
+                                        
+                                        function onActualPicked(actualId) {
+                                            sli.ListItem.view.replace(ListItemData.id, actualId);
+                                        }
+                                        
+                                        onTriggered: {
+                                            console.log("UserEvent: ReplaceIndividual");
+                                            var ipp = Qt.launch("IndividualPickerPage.qml");
+                                            ipp.exclusions = [ListItemData.id];
+                                            ipp.picked.connect(onActualPicked);
+                                        }
+                                    }
                                     
                                     ActionItem
                                     {
@@ -219,7 +243,19 @@ Page
                                         
                                         onTriggered: {
                                             console.log("UserEvent: OpenProfile");
-                                            sli.ListItem.view.openProfile(ListItemData);
+
+                                            var x = Qt.launch("ProfilePage.qml");
+                                            x.individualId = ListItemData.id;
+                                        }
+                                    }
+                                    
+                                    DeleteActionItem
+                                    {
+                                        imageSource: "images/menu/ic_delete_individual.png"
+                                        
+                                        onTriggered: {
+                                            console.log("UserEvent: DeleteIndividual");
+                                            sli.ListItem.view.removeItem(sli.ListItem, ListItemData);
                                         }
                                     }
                                 }
@@ -227,6 +263,21 @@ Page
                         }
                     }
                 ]
+                
+                function removeItem(ListItem, ListItemData)
+                {
+                    busy.delegateActive = true;
+                    ilmHelper.removeIndividual(listView, ListItemData.id);
+                    adm.removeAt(ListItem.indexPath[0]);
+                }
+                
+                function replace(toReplaceId, actualId)
+                {
+                    busy.delegateActive = true;
+                    ilmHelper.replaceIndividual(listView, toReplaceId, actualId);
+                    
+                    Qt.popToRoot(individualPage);
+                }
                 
                 function onDataLoaded(id, data)
                 {
@@ -242,6 +293,12 @@ Page
                         if ( listView.visible && trimmed.length > 0 && !isDeathQuery(trimmed) ) {
                             decorator.decorateSearchResults(data, adm, global.extractTokens(trimmed), "display_name" );
                         }
+                    } else if (id == QueryId.RemoveIndividual) {
+                        persist.showToast( qsTr("Successfully deleted individual!"), "images/menu/ic_delete_individual.png" );
+                        refresh();
+                    } else if (id == QueryId.ReplaceIndividual) {
+                        persist.showToast( qsTr("Successfully replaced individual!"), "images/menu/ic_replace_individual.png" );
+                        performSearch();
                     }
                 }
                 

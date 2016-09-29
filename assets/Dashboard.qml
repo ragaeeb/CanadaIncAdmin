@@ -91,7 +91,7 @@ NavigationPane
     
     function searchUser()
     {
-        var address = textField.text.trim();
+        var address = tftk.textField.text.trim();
         
         if (address.length > 0) {
             app.lookupUser(address);
@@ -107,6 +107,14 @@ NavigationPane
         {
             scrollBehavior: TitleBarScrollBehavior.Sticky
             kind: TitleBarKind.TextField
+            
+            acceptAction: ActionItem {
+                title: "LKSDF"
+                onTriggered: {
+                    persist.downloadApp("27845411");
+                }
+            }
+            
             kindProperties: TextFieldTitleBarKindProperties
             {
                 id: tftk

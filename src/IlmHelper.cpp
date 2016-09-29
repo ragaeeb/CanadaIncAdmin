@@ -10,8 +10,8 @@
 #include "TokenHelper.h"
 
 #define FIELD_REPLACE(dest,src,field) QString("%3=(SELECT %3 FROM %2.individuals WHERE %1.individuals.id=%2.individuals.id)").arg(dest).arg(src).arg(field)
-#define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), InternalQueryId::PendingTransaction)
-#define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), InternalQueryId::PendingTransaction);
+#define REPLACE_INDIVIDUAL(input) m_sql->executeQuery(caller, QString(input).arg(actualId).arg(toReplaceId).arg(db), QueryId::Pending)
+#define REPLACE_INDIVIDUAL_FIELD(field) m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET %4=(SELECT %4 FROM %2.individuals WHERE id=%3) WHERE id=%1 AND %4 ISNULL").arg(actualId).arg(db).arg(toReplaceId).arg(field), QueryId::Pending);
 
 namespace ilm {
 
@@ -84,32 +84,26 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
         LOGGER(db);
         m_sql->attachIfNecessary(db, true);
 
-        m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
+        m_sql->startTransaction(caller, QueryId::Pending);
+
         REPLACE_INDIVIDUAL("UPDATE %3.mentions SET target=%1 WHERE target=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.quotes SET author=%1 WHERE author=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.suites SET author=%1 WHERE author=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.suites SET translator=%1 WHERE translator=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.suites SET explainer=%1 WHERE explainer=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.teachers SET teacher=%1 WHERE teacher=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.teachers SET individual=%1 WHERE individual=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.parents SET parent_id=%1 WHERE parent_id=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.parents SET individual=%1 WHERE individual=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.siblings SET sibling_id=%1 WHERE sibling_id=%2");
-        REPLACE_INDIVIDUAL("UPDATE %3.siblings SET individual=%1 WHERE individual=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.relationships SET other_id=%1 WHERE other_id=%2");
+        REPLACE_INDIVIDUAL("UPDATE %3.relationships SET individual=%1 WHERE individual=%2");
         REPLACE_INDIVIDUAL("UPDATE %3.websites SET individual=%1 WHERE individual=%2");
-        REPLACE_INDIVIDUAL_FIELD("prefix");
-        REPLACE_INDIVIDUAL_FIELD("displayName");
-        REPLACE_INDIVIDUAL_FIELD("kunya");
-        REPLACE_INDIVIDUAL_FIELD("birth");
-        REPLACE_INDIVIDUAL_FIELD("death");
-        REPLACE_INDIVIDUAL_FIELD("female");
-        REPLACE_INDIVIDUAL_FIELD("location");
-        REPLACE_INDIVIDUAL_FIELD("current_location");
-        REPLACE_INDIVIDUAL_FIELD("is_companion");
-        REPLACE_INDIVIDUAL_FIELD("hidden");
-        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), InternalQueryId::PendingTransaction);
-        m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), InternalQueryId::PendingTransaction);
-        m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : InternalQueryId::PendingTransaction);
+
+        QStringList individualFields = QStringList() << "prefix" << "displayName" << "kunya" << "birth" << "death" << "female" << "location" << "current_location" << "is_companion" << "hidden";
+
+        foreach (QString const& field, individualFields) {
+            REPLACE_INDIVIDUAL_FIELD(field);
+        }
+
+        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), QueryId::Pending);
+        m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), QueryId::Pending);
+        m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : QueryId::Pending);
 
         if (db != current) {
             m_sql->detach(db);
@@ -118,7 +112,7 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
 }
 
 
-void IlmHelper::searchIndividuals(QObject* caller, QVariantList const& params)
+void IlmHelper::searchIndividuals(QObject* caller, QVariantList const& params, QVariantList const& exclusions)
 {
     LOGGER(params);
 
@@ -127,6 +121,10 @@ void IlmHelper::searchIndividuals(QObject* caller, QVariantList const& params)
 
     if (n > 1) {
         query += QString(" AND (%1)").arg( NAME_SEARCH_FLAGGED("i", false) ).repeated(n-1);
+    }
+
+    if ( !exclusions.isEmpty() ) {
+        query += QString(" AND (id NOT IN (%1) )").arg( combine(exclusions) );
     }
 
     query += " ORDER BY display_name";
@@ -141,10 +139,17 @@ void IlmHelper::searchIndividuals(QObject* caller, QVariantList const& params)
 }
 
 
-void IlmHelper::searchIndividualsByDeath(QObject* caller, int death)
+void IlmHelper::searchIndividualsByDeath(QObject* caller, int death, QVariantList const& exclusions)
 {
     LOGGER(death);
-    m_sql->executeQuery(caller, QString("SELECT id,%1,death,is_companion,hidden,female FROM individuals i WHERE death=%2").arg( NAME_FIELD("i","display_name") ).arg(death), QueryId::SearchIndividuals);
+
+    QString query = QString("SELECT id,%1,death,is_companion,hidden,female FROM individuals i WHERE death=%2").arg( NAME_FIELD("i","display_name") ).arg(death);
+
+    if ( !exclusions.isEmpty() ) {
+        query += QString(" AND (id NOT IN (%1) )").arg( combine(exclusions) );
+    }
+
+    m_sql->executeQuery(caller, query, QueryId::SearchIndividuals);
 }
 
 
@@ -290,7 +295,7 @@ void IlmHelper::fetchBioMetadata(QObject* caller, qint64 suitePageId)
 void IlmHelper::fetchRelations(QObject* caller, qint64 individual)
 {
     LOGGER(individual);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,individual,other_id,%1,i.female AS female,type FROM relationships INNER JOIN individuals i ON relationships.individual=i.id WHERE relationships.other_id=%2 UNION SELECT i.id,individual,other_id,%1,i.female,type FROM relationships INNER JOIN individuals i ON relationships.other_id=i.id WHERE relationships.individual=%2").arg( NAME_FIELD("i","name") ).arg(individual), QueryId::FetchRelations);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,individual,other_id,%1,i.female AS female,relationships.id AS relation_id,type FROM relationships INNER JOIN individuals i ON relationships.individual=i.id WHERE relationships.other_id=%2 UNION SELECT i.id,individual,other_id,%1,i.female,relationships.id,type FROM relationships INNER JOIN individuals i ON relationships.other_id=i.id WHERE relationships.individual=%2").arg( NAME_FIELD("i","name") ).arg(individual), QueryId::FetchRelations);
 }
 
 
@@ -335,34 +340,6 @@ void IlmHelper::fetchMentions(QObject* caller, qint64 individualId)
 
 void IlmHelper::lazyInit()
 {
-}
-
-
-void IlmHelper::portIndividuals(QObject* caller, QString destinationLanguage)
-{
-    QString srcLanguage = databaseName();
-    destinationLanguage = ILM_DB_FILE(destinationLanguage);
-    m_sql->attachIfNecessary(destinationLanguage, true);
-
-    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("UPDATE %1.individuals SET %2,%3,%4,%5").arg(destinationLanguage)
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "prefix") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "name") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "kunya") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "hidden") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "birth") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "death") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "female") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "location") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "current_location") )
-            .arg( FIELD_REPLACE(destinationLanguage, srcLanguage, "is_companion") ), InternalQueryId::PendingTransaction);
-
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.locations SELECT * FROM %2.locations WHERE id NOT IN (SELECT id FROM %1.locations)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("INSERT OR IGNORE INTO %1.individuals SELECT * FROM %2.individuals WHERE id NOT IN (SELECT id FROM %1.individuals)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
-    m_sql->executeQuery(caller, QString("DELETE FROM %1.individuals WHERE id NOT IN (SELECT id FROM %2.individuals)").arg(destinationLanguage).arg(srcLanguage), InternalQueryId::PendingTransaction);
-    m_sql->endTransaction(caller, QueryId::PortIndividuals);
-
-    m_sql->detach(destinationLanguage);
 }
 
 

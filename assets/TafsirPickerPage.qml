@@ -7,6 +7,7 @@ Page
     id: tafsirPickerPage
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     signal tafsirPicked(variant data)
+    signal totalLoaded(int size)
     property alias searchField: tftk.textField
     property alias autoFocus: focuser.running
     property alias suiteList: listView
@@ -21,9 +22,9 @@ Page
             title: qsTr("Add") + Retranslate.onLanguageChanged
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             
-            function onCreate(id, author, translator, explainer, title, description, reference)
+            function onCreate(id, author, translator, explainer, title, description, reference, isBook)
             {
-                var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference);
+                var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference, isBook);
                 tafsirHelper.fetchAllTafsir(listView, x.id);
                 
                 persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
@@ -223,10 +224,10 @@ Page
                     id: adm
                 }
                 
-                function onEdit(id, author, translator, explainer, title, description, reference)
+                function onEdit(id, author, translator, explainer, title, description, reference, isBook)
                 {
                     busy.delegateActive = true;
-                    var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference);
+                    var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference, isBook);
 
                     dataModel.replace(editIndexPath[0], current);
                     
@@ -358,7 +359,7 @@ Page
                     if (id == QueryId.FetchAllTafsir && data.length > 0)
                     {
                         adm.insert(0, data);
-                        navigationPane.parent.unreadContentCount = adm.size();
+                        totalLoaded( adm.size() );
                         listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);
                     } else if (id == QueryId.RemoveSuite) {
                         persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );

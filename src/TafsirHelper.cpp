@@ -27,11 +27,11 @@ QVariantMap TafsirHelper::addQuote(qint64 authorId, qint64 translatorId, QString
 }
 
 
-QVariantMap TafsirHelper::addSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference)
+QVariantMap TafsirHelper::addSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference, bool isBook)
 {
-    LOGGER(author << translator << explainer << title << description << reference);
+    LOGGER(author << translator << explainer << title << description << reference << isBook);
 
-    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference);
+    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference, isBook);
     qint64 id = m_sql->executeInsert("suites", keyValues);
     SET_AND_RETURN;
 }
@@ -47,11 +47,11 @@ QVariantMap TafsirHelper::addSuitePage(qint64 suiteId, QString const& body, QStr
 }
 
 
-QVariantMap TafsirHelper::editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference)
+QVariantMap TafsirHelper::editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference, bool isBook)
 {
-    LOGGER(id << author << translator << explainer << title << description << reference);
+    LOGGER(id << author << translator << explainer << title << description << reference << isBook);
 
-    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference);
+    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference, isBook);
     m_sql->executeUpdate(caller, "suites", keyValues, QueryId::EditSuite, id);
     SET_AND_RETURN;
 }
@@ -128,7 +128,7 @@ void TafsirHelper::fetchTafsirMetadata(QObject* caller, qint64 suiteId)
 {
     LOGGER(suiteId);
 
-    QString query = QString("SELECT author,translator,explainer,title,description,reference FROM suites WHERE id=%1").arg(suiteId);
+    QString query = QString("SELECT author,translator,explainer,title,description,reference,is_book FROM suites WHERE id=%1").arg(suiteId);
     m_sql->executeQuery(caller, query, QueryId::FetchTafsirHeader);
 }
 

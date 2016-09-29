@@ -9,6 +9,7 @@ Page
     signal picked(variant questionId, variant sourceId, string value)
     signal openSuitePage(variant suitePageId)
     signal orderChanged()
+    signal totalLoaded(int size)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     function cleanUp() {}
     
@@ -76,8 +77,7 @@ Page
                     adm.clear();
                     adm.append(data);
                     busy.delegateActive = false;
-                    
-                    navigationPane.parent.unreadContentCount = data.length;
+                    totalLoaded(data.length);
                 } else if (id == QueryId.EditQuestion) {
                     persist.showToast( qsTr("Question updated"), "images/toast/question_updated.png" );
                     busy.delegateActive = false;

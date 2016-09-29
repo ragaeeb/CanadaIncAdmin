@@ -13,6 +13,10 @@ NavigationPane
     {
         id: tafsirPicker
         
+        onTotalLoaded: {
+            navigationPane.parent.unreadContentCount = size;
+        }
+        
         onTafsirPicked: {            
             var page = Qt.launch("TafsirContentsPage.qml");
             page.title = data[0].title;

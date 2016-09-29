@@ -31,6 +31,8 @@ ListView
             return qsTr("Siblings");
         } else if (ListItemData == "child") {
             return qsTr("Children");
+        } else if (ListItemData == "friend") {
+            return qsTr("Companions");
         } else if (ListItemData == "work") {
             return qsTr("Works");
         } else if (ListItemData == "quote") {
@@ -91,9 +93,9 @@ ListView
         tafsirHelper.editSuitePage(bioPage, id, body, header, reference);
     }
     
-    function onEditSuite(id, author, translator, explainer, title, description, reference)
+    function onEditSuite(id, author, translator, explainer, title, description, reference, isBook)
     {
-        var current = tafsirHelper.editSuite(bioPage, id, author, translator, explainer, title, description, reference);
+        var current = tafsirHelper.editSuite(bioPage, id, author, translator, explainer, title, description, reference, isBook);
         bioModel.updateItem(editIndexPath, current);
     }
     
@@ -122,7 +124,7 @@ ListView
     
     function removeRelation(ListItem, ListItemData)
     {
-        ilmHelper.removeRelation(bioPage, ListItemData.id);
+        ilmHelper.removeRelation(bioPage, ListItemData.relation_id);
         bioModel.removeAt(ListItem.indexPath);
     }
     
@@ -149,7 +151,7 @@ ListView
                 
                 var all = bios.selectionList();
                 var ids = [];
-                var validIndividuals = {'teacher': 1, 'student': 1, 'parent': 1, 'sibling': 1, 'child': 1}
+                var validIndividuals = {'teacher': 1, 'student': 1, 'parent': 1, 'sibling': 1, 'child': 1, 'friend': 1}
                 
                 for (var i = all.length-1; i >= 0; i--)
                 {
@@ -335,6 +337,17 @@ ListView
             {
                 imageSource: ListItemData.female ? "images/list/ic_sibling_female.png" : "images/list/ic_sibling.png"
                 delImage: "images/menu/ic_remove_sibling.png"
+            }
+        },
+        
+        ListItemComponent
+        {
+            type: "friend"
+            
+            RelationItem
+            {
+                imageSource: ListItemData.female ? "images/list/ic_sibling_female.png" : "images/list/ic_companion.png"
+                delImage: "images/menu/ic_remove_companions.png"
             }
         },
         

@@ -17,6 +17,10 @@ NavigationPane
     {
         id: questionsPage
         
+        onTotalLoaded: {
+            navigationPane.parent.unreadContentCount = size;
+        }
+        
         actions: [
             ActionItem
             {

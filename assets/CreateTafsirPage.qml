@@ -5,7 +5,7 @@ Page
 {
     id: createPage
     property variant suiteId
-    signal createTafsir(variant id, variant author, variant translator, variant explainer, string title, string description, string reference)
+    signal createTafsir(variant id, variant author, variant translator, variant explainer, string title, string description, string reference, bool isBook)
     signal deleteTafsir(variant id)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -34,7 +34,8 @@ Page
             if (data.explainer) {
                 explainerField.pickedId = data.explainer;
             }
-
+            
+            book.isBook = data.is_book == 1;
             titleField.text = data.title;
             descriptionField.text = data.description;
             referenceField.text = data.reference;
@@ -56,8 +57,21 @@ Page
                 titleField.validator.validate();
                 
                 if (titleField.validator.valid) {
-                    createTafsir( suiteId, authorField.pickedId, translatorField.pickedId, explainerField.pickedId, titleField.text.trim(), descriptionField.text.trim(), referenceField.text.trim() );
+                    createTafsir( suiteId, authorField.pickedId, translatorField.pickedId, explainerField.pickedId, titleField.text.trim(), descriptionField.text.trim(), referenceField.text.trim(), book.isBook );
                 }
+            }
+        }
+        
+        dismissAction: ActionItem
+        {
+            id: book
+            property bool isBook
+            title: isBook ? qsTr("Book") + Retranslate.onLanguageChanged : qsTr("Article") + Retranslate.onLanguageChanged
+            imageSource: isBook ? "images/list/ic_book.png" : "images/tabs/ic_tafsir.png"
+            
+            onTriggered: {
+                console.log("UserEvent: BookToggle");
+                isBook = !isBook;
             }
         }
     }
