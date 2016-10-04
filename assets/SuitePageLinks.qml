@@ -261,6 +261,8 @@ Page
             
             function onPicked(individualId, name)
             {
+                ilmHelper.addMention(listView, suitePageId, [individualId], 0);
+                
                 bioTypeDialog.target = individualId;
                 bioTypeDialog.finished(SystemUiResult.ConfirmButtonSelection);
                 //bioTypeDialog.show();
@@ -407,10 +409,12 @@ Page
                     
                     if (selectedIndex == 0) {
                         points = -1;
+                    } else if (selectedIndex == 1) {
+                        points = 2;
                     } else if (selectedIndex == 2) {
                         points = 1;
                     } else if (selectedIndex == 3) {
-                        points = 2;
+                        points = 0;
                     } else if (selectedIndex == 4) {
                         points = 3;
                     }

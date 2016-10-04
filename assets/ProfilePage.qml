@@ -220,7 +220,10 @@ Page
                 
                 if (name.length > 0)
                 {
-                    var x = ilmHelper.addSuite(bioPage, individualId, 0, 0, name, "", name);
+                    var x = tafsirHelper.addSuite(individualId, 0, 0, name, "", name, true);
+                    x.title = name;
+                    x.author = titleBar.title;
+                    x.is_book = true;
                     x.item_type = "work";
                     checkForDuplicate(x);
                 }

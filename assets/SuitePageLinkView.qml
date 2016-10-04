@@ -44,6 +44,7 @@ ListView
             persist.showToast( qsTr("Ayat link updated"), "images/menu/ic_edit_link.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.EditMention) {
+            console.log("*** SDFLKSDJF333", id);
             persist.showToast( qsTr("Biography link updated"), "images/menu/ic_bio_link_edit.png" );
             busy.delegateActive = false;
         } else if (id == QueryId.EditQuestion) {

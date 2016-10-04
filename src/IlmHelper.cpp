@@ -22,7 +22,7 @@ IlmHelper::IlmHelper(DatabaseHelper* sql) : m_sql(sql)
 }
 
 void IlmHelper::removeMention(QObject* caller, qint64 id) {
-    REMOVE_ELEMENT("mentions", QueryId::RemoveBioLink);
+    REMOVE_ELEMENT("mentions", QueryId::RemoveMention);
 }
 
 
