@@ -44,6 +44,7 @@ public:
     Q_INVOKABLE void fetchGroupedNarrations(QObject* caller, QVariantList const& ids=QVariantList());
     Q_INVOKABLE void groupNarrations(QObject* caller, QVariantList const& arabicIds, qint64 groupNumber);
     Q_INVOKABLE void linkNarrationsToSuitePage(QObject* caller, qint64 suitePageId, QVariantList const& arabicIds);
+    Q_INVOKABLE void reportTypo(QObject* caller, qint64 narrationId, int cursorStart, int cursorEnd);
     Q_INVOKABLE void searchNarrations(QObject* caller, QVariantList const& terms, QVariantList const& collections, bool restrictToShort);
     Q_INVOKABLE void unlinkNarrationsFromSuitePage(QObject* caller, QVariantList const& arabicIds, qint64 suitePageId);
     Q_INVOKABLE void unlinkNarrationFromSimilar(QObject* caller, QVariantList const& data);

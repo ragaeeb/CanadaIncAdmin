@@ -200,6 +200,13 @@ void SunnahHelper::linkNarrationsToSuitePage(QObject* caller, qint64 suitePageId
 }
 
 
+void SunnahHelper::reportTypo(QObject* caller, qint64 narrationId, int cursorStart, int cursorEnd)
+{
+    LOGGER(narrationId << cursorStart << cursorEnd);
+    m_sql->executeQuery( caller, QString("INSERT INTO narration_typos (narration_id,cursor_start,cursor_end,reported_time) VALUES (%1,%2,%3,%4)").arg(narrationId).arg(cursorStart).arg(cursorEnd).arg( QDateTime::currentMSecsSinceEpoch() ), QueryId::ReportTypo );
+}
+
+
 void SunnahHelper::unlinkNarrationsFromSuitePage(QObject* caller, QVariantList const& arabicIds, qint64 suitePageId)
 {
     LOGGER(arabicIds << suitePageId);

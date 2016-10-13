@@ -94,6 +94,7 @@ public:
         RemoveWebsite,
         ReplaceIndividual,
         ReplaceSuite,
+        ReportTypo,
         SearchIndividuals,
         SearchQuote,
         SearchNarrations,
