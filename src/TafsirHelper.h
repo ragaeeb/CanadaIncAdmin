@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE QVariantMap editQuote(QObject* caller, qint64 quoteId, qint64 author, qint64 translator, QString const& body, QString const& reference, qint64 suiteId, QString const& uri);
     Q_INVOKABLE QVariantMap editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference, bool isBook);
     Q_INVOKABLE QVariantMap editSuitePage(QObject* caller, qint64 suitePageId, QString const& body, QString const& heading, QString const& reference);
-    Q_INVOKABLE void fetchAllQuotes(QObject* caller, qint64 id=0, qint64 author=0, int limit=200);
+    Q_INVOKABLE void fetchAllQuotes(QObject* caller, qint64 id=0, qint64 author=0, qint64 suiteId=0, int limit=200);
     Q_INVOKABLE void fetchAllTafsir(QObject* caller, qint64 id=0, qint64 author=0, int limit=200);
     Q_INVOKABLE void fetchAllTafsirForSuite(QObject* caller, qint64 suiteId);
     Q_INVOKABLE void fetchQuote(QObject* caller, qint64 id);
@@ -42,6 +42,7 @@ public:
     Q_INVOKABLE void removeQuote(QObject* caller, qint64 id);
     Q_INVOKABLE void removeSuite(QObject* caller, qint64 suiteId);
     Q_INVOKABLE void removeSuitePage(QObject* caller, qint64 suitePageId);
+    Q_INVOKABLE void replaceSuite(QObject* caller, qint64 toReplaceId, qint64 actualId);
     Q_INVOKABLE void searchQuote(QObject* caller, QString fieldName, QString const& searchTerm);
     Q_INVOKABLE void searchTafsir(QObject* caller, QString const& fieldName, QString const& searchTerm);
     Q_INVOKABLE void translateQuote(QObject* caller, qint64 quoteId, QString destinationLanguage="arabic");

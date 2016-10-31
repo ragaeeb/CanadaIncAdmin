@@ -142,9 +142,9 @@ void TafsirHelper::fetchTafsirContent(QObject* caller, qint64 suitePageId)
 }
 
 
-void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, int limit)
+void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, qint64 suiteId, int limit)
 {
-    LOGGER(id);
+    LOGGER(id << author << suiteId);
 
     QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,%2,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
 
@@ -156,6 +156,10 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, int
 
     if (author) {
         whereClauses << QString("quotes.author=%1").arg(author);
+    }
+
+    if (suiteId) {
+        whereClauses << QString("quotes.suite_id=%1").arg(suiteId);
     }
 
     if ( !whereClauses.isEmpty() ) {
@@ -246,6 +250,16 @@ void TafsirHelper::removeSuitePage(QObject* caller, qint64 id) {
 }
 
 
+void TafsirHelper::replaceSuite(QObject* caller, qint64 toReplaceId, qint64 actualId)
+{
+    LOGGER(toReplaceId << actualId);
+
+    m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::Pending);
+    m_sql->executeQuery(caller, QString("UPDATE quotes SET suite_id=%1 WHERE suite_id=%2").arg(actualId).arg(toReplaceId), QueryId::Pending);
+    m_sql->executeQuery(caller, QString("DELETE FROM suites WHERE id=%1").arg(toReplaceId), QueryId::ReplaceSuite);
+}
+
+
 void TafsirHelper::searchQuote(QObject* caller, QString fieldName, QString const& searchTerm)
 {
     LOGGER(fieldName << searchTerm);
@@ -278,9 +292,12 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
     QString query;
     QVariantList args;
 
-    if (fieldName == "title") {
+    if (fieldName == "heading") {
         query = QString("SELECT %1,NULL AS heading,NULL AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 UNION SELECT %1,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suite_pages.suite_id=suites.id WHERE %3").arg( fields.join(",") ).arg( LIKE_CLAUSE("title") ).arg( LIKE_CLAUSE("heading") );
         args << searchTerm << searchTerm;
+    } else if (fieldName == "title") {
+        query = QString("SELECT suites.id,%1,title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i", "author") ).arg( LIKE_CLAUSE("title") );
+        args << searchTerm;
     } else {
         if (fieldName == "description") {
             where << LIKE_CLAUSE(fieldName);

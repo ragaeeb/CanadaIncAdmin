@@ -97,11 +97,14 @@ Page
                 
                 if (uri.length > 0)
                 {
-                    var corrected = offloader.fixUri(uri);
-                    
-                    if (corrected.length > 0) { // a url
-                        uri = corrected;
-                    } // otherwise take it for what it is
+                    if ( uri.indexOf("@") == -1 && uri.indexOf("+") == -1 )
+                    {
+                        var corrected = offloader.fixUri(uri);
+                        
+                        if (corrected.length > 0) { // a url
+                            uri = corrected;
+                        } // otherwise take it for what it is
+                    }
                     
                     var x = ilmHelper.addWebsite(individualId, uri);
                     checkForDuplicate(x);
@@ -189,8 +192,8 @@ Page
             persist.showToast( qsTr("Suite removed!"), "images/menu/ic_remove_suite.png" );
             Qt.popToRoot(bioPage);
         }  else if (id == QueryId.RemoveWebsite) {
-            persist.showToast( qsTr("Entry removed!"), "asset:///images/menu/ic_remove_site.png" );
-            ilmHelper.fetchAllWebsites(createRijaal, individualId);
+            persist.showToast( qsTr("Entry removed!"), "images/menu/ic_remove_site.png" );
+            ilmHelper.fetchAllWebsites(bioPage, individualId);
         } else {
             for (var i = data.length-1; i >= 0; i--)
             {

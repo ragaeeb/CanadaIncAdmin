@@ -14,6 +14,7 @@ Page
     property alias filter: searchColumn.selectedValue
     property alias busyControl: busy.delegateActive
     property bool allowMultiple: false
+    property variant exclusions: []
     
     actions: [
         ActionItem
@@ -99,12 +100,33 @@ Page
                     reload();
                 } else {
                     busy.delegateActive = true;
-                    tafsirHelper.searchTafsir(listView, searchColumn.selectedValue, query);
+                    
+                    var field = searchColumn.selectedValue;
+
+                    if (field == titleOption.value && !titlesOnly.checked) {
+                        field = "heading";
+                    }
+                    
+                    tafsirHelper.searchTafsir(listView, field, query);
                 }
             }
             
             onCreationCompleted: {
                 textField.input["keyLayout"] = 7;
+            }
+        }
+        
+        acceptAction: ActionItem
+        {
+            id: titlesOnly
+            imageSource: checked ? "images/dropdown/ic_short_narrations.png" : "images/dropdown/ic_any_narrations.png"
+            property bool checked: true
+            title: checked ? qsTr("Titles") + Retranslate.onLanguageChanged : qsTr("Headings") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: TitleHeadingTapped");
+                checked = !checked;
+                tftk.textField.requestFocus();
             }
         }
     }
@@ -157,6 +179,7 @@ Page
                 }
                 
                 Option {
+                    id: titleOption
                     imageSource: "images/dropdown/search_title.png"
                     selected: true
                     text: qsTr("Title") + Retranslate.onLanguageChanged
@@ -283,6 +306,14 @@ Page
                     ipp.tafsirPicked.connect(onActualPicked);
                 }
                 
+                function replace(toReplaceId, actualId)
+                {
+                    busy.delegateActive = true;
+                    tafsirHelper.replaceSuite(listView, toReplaceId, actualId);
+                    
+                    Qt.popToRoot(tafsirPickerPage);
+                }
+                
                 function removeItem(ListItemData) {
                     busy.delegateActive = true;
                     tafsirHelper.removeSuite(listView, ListItemData.id);
@@ -324,6 +355,25 @@ Page
                                         onTriggered: {
                                             console.log("UserEvent: MergeSuite");
                                             rootItem.ListItem.view.merge(ListItemData);
+                                        }
+                                    }
+                                    
+                                    ActionItem
+                                    {
+                                        imageSource: "images/menu/ic_replace_individual.png"
+                                        title: qsTr("Replace") + Retranslate.onLanguageChanged
+                                        enabled: ListItemData && !ListItemData.suite_page_id
+                                        
+                                        function onActualPicked(actualEntries) {
+                                            rootItem.ListItem.view.replace(ListItemData.id, actualEntries[0].id);
+                                        }
+                                        
+                                        onTriggered: {
+                                            console.log("UserEvent: ReplaceSuite");
+                                            var ipp = Qt.launch("TafsirPickerPage.qml");
+                                            ipp.autoFocus = true;
+                                            ipp.exclusions = [ListItemData.id];
+                                            ipp.tafsirPicked.connect(onActualPicked);
                                         }
                                     }
                                     

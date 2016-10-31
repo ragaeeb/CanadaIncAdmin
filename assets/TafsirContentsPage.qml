@@ -13,6 +13,7 @@ Page
         if (suiteId)
         {
             busy.delegateActive = true;
+            tafsirHelper.fetchAllQuotes(listView, 0, 0, suiteId);
             tafsirHelper.fetchAllTafsirForSuite(listView, suiteId);
             
             var marker = persist.getValueFor("suitePageMarker");
@@ -145,6 +146,8 @@ Page
                 } else if (id == QueryId.TranslateSuitePage) {
                     persist.showToast( qsTr("Suite page ported!"), "images/menu/ic_translate.png" );
                     persist.saveValueFor("translation", "arabic");
+                } else if (id == QueryId.FetchAllQuotes) {
+                    adm.append(data);
                 }
                 
                 refresh();
@@ -220,15 +223,34 @@ Page
                 page.suitePageId = ListItemData.id;
             }
             
+            function onEditQuote(id, author, translator, body, reference, suiteId, uri)
+            {
+                tafsirHelper.editQuote(listView, id, author, translator, body, reference, suiteId, uri);
+                Qt.popToRoot(tafsirContentsPage);
+            }
+            
             onTriggered: {
                 console.log("UserEvent: TafsirContentTriggered");
-                var page = Qt.launch("SuitePageLinks.qml");
-                page.suitePageId = dataModel.data(indexPath).id;
+                
+                var d = dataModel.data(indexPath);
+                var type = itemType(d, indexPath);
+                
+                if (type == "page") {
+                    var page = Qt.launch("SuitePageLinks.qml");
+                    page.suitePageId = d.id;
+                } else if (type == "quote") {
+                    editIndexPath = indexPath;
+                    var page = Qt.launch("CreateQuotePage.qml");
+                    page.createQuote.connect(onEditQuote);
+                    page.quoteId = d.id;
+                }
             }
             
             listItemComponents: [
                 ListItemComponent
                 {
+                    type: "page"
+                    
                     Container
                     {
                         id: rootItem
@@ -355,8 +377,53 @@ Page
                             }
                         ]
                     }
+                },
+                
+                ListItemComponent
+                {
+                    type: "quote"
+                    
+                    StandardListItem
+                    {
+                        id: quoteSli
+                        imageSource: "images/list/ic_quote.png"
+                        title: ListItemData.title ? "%1 %2".arg(ListItemData.title).arg(ListItemData.reference) : ListItemData.reference
+                        description: ListItemData.body
+                        
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: quoteSli.title
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_delete_quote.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveQuote");
+                                        quoteSli.ListItem.view.removeQuote(quoteSli.ListItem, ListItemData);
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 }
             ]
+            
+            function removeQuote(ListItem, ListItemData)
+            {
+                ilmHelper.removeQuote(listView, ListItemData.id);
+                adm.removeAt(ListItem.indexPath[0]);
+            }
+            
+            function itemType(data, indexPath)
+            {
+                if (data.author) {
+                    return "quote";
+                } else {
+                    return "page";
+                }
+            }
         }
         
         EmptyDelegate
