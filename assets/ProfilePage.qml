@@ -317,7 +317,7 @@ Page
                     if (individual && target && relationType)
                     {
                         var result = ilmHelper.addRelation(individual, other, relationType);
-                        result.id = individual;
+                        result.id = other;
                         result.name = name;
                         
                         checkForDuplicate(result);
