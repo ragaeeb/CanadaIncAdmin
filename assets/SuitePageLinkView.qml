@@ -117,7 +117,7 @@ ListView
         
         if (t == "ayat")
         {
-            var page = Qt.launch("AyatProfilePage.qml");
+            var page = Qt.launch("QuranSurahPicker.qml");
             page.chapter = d.surah_id;
             page.fromVerse = d.from_verse_number;
             page.toVerse = d.to_verse_number;

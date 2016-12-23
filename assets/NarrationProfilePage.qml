@@ -104,7 +104,7 @@ Page
                             settings.activeTextEnabled: true
                             horizontalAlignment: HorizontalAlignment.Fill
                             verticalAlignment: VerticalAlignment.Fill
-                            url: "http://sunnah.com/urn/%1".arg(narrationId)
+                            url: "http://sunnah.com/urn/%1".arg( narrationId.toString() )
                             
                             onLoadProgressChanged: {
                                 progressIndicator.value = loadProgress;

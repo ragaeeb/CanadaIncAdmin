@@ -44,6 +44,17 @@ TabbedPane
                 onCreationCompleted: {
                     persist.registerForSetting(toggler, "translation");
                 }
+            },
+            
+            ActionItem
+            {
+                id: reloadDb
+                imageSource: "images/menu/ic_reset_search.png"
+                title: qsTr("Reload") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    app.loadIlmDatabase(true);
+                }
             }
         ]
         

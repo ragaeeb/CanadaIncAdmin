@@ -47,7 +47,7 @@ ActionItem
                 if (!current.group_id)
                 {
                     current.group_id = nextGroupNumber;
-                    listView.dataModel.replace(i, current);
+                    listView.dataModel.replace(cached[i], current);
                 }
             }
             

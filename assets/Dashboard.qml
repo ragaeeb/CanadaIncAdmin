@@ -465,7 +465,7 @@ NavigationPane
                 ]
                 
                 onTriggered: {
-                    var x = Qt.launch("AyatProfilePage.qml");
+                    var x = Qt.launch("QuranSurahPicker.qml");
                     x.focus();
                 }
             },

@@ -101,6 +101,7 @@ void IlmHelper::replaceIndividual(QObject* caller, qint64 toReplaceId, qint64 ac
             REPLACE_INDIVIDUAL_FIELD(field);
         }
 
+        m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET notes=COALESCE(notes,'') || '\n\n' || COALESCE( (SELECT notes FROM %2.individuals WHERE id=%3), '' ) WHERE id=%1").arg(actualId).arg(db).arg(toReplaceId), QueryId::Pending);
         m_sql->executeQuery(caller, QString("UPDATE %2.individuals SET displayName=(SELECT name FROM %2.individuals WHERE id=%3) WHERE id=%1 AND displayName ISNULL").arg(actualId).arg(db).arg(toReplaceId), QueryId::Pending);
         m_sql->executeQuery(caller, QString("DELETE FROM %2.individuals WHERE id=%1").arg(toReplaceId).arg(db), QueryId::Pending);
         m_sql->endTransaction(caller, i == 0 ? QueryId::ReplaceIndividual : QueryId::Pending);

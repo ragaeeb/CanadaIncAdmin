@@ -80,7 +80,7 @@ public:
     Q_SLOT void createContacts(QString const& filePath);
     Q_SLOT void compressIlmDatabase(bool notifyClients=false);
     Q_INVOKABLE void doDiff(QVariantList const& input, bb::cascades::ArrayDataModel* adm, QString const& key="id");
-    Q_INVOKABLE void loadIlmDatabase();
+    Q_INVOKABLE void loadIlmDatabase(bool force=false);
     Q_INVOKABLE QString databasePath();
     Q_INVOKABLE void geoLookup(QString const& location);
     Q_INVOKABLE void geoLookup(qreal latitude, qreal longitude);

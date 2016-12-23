@@ -299,6 +299,7 @@ Page
                 console.log("UserEvent: LookupChapter");
                 var surahPicker = Qt.launch("QuranSurahPicker.qml");
                 surahPicker.picked.connect(onPicked);
+                surahPicker.focus();
                 
                 prompt.resetIndexPath();
             }
