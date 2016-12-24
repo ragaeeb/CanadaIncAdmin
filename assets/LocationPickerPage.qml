@@ -1,4 +1,5 @@
-import bb.cascades 1.2
+import QtQuick 1.0
+import bb.cascades 1.3
 import bb.system 1.0
 import com.canadainc.data 1.0
 
@@ -7,6 +8,8 @@ Page
     id: individualPage
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     signal picked(variant cityId, string name)
+    property string prefill
+    property alias pickerList: listView
     
     actions: [
         ActionItem {
@@ -43,7 +46,8 @@ Page
             ]
         },
         
-        ActionItem {
+        ActionItem
+        {
             id: remoteSearch
             imageSource: "images/menu/ic_search_location.png"
             title: qsTr("Remote Search") + Retranslate.onLanguageChanged
@@ -51,19 +55,55 @@ Page
             
             onTriggered: {
                 console.log("UserEvent: SearchLocationTriggered");
-                app.geoLookup( searchField.text.trim() );                
+                
+                var trimmed = tftk.textField.text.trim();
+                
+                if ( trimmed.match("\\d.+\\s[NS]{1},\\s+\\d.+\\s[EW]{1}") ) {
+                    var tokens = trimmed.split(",");
+                    app.geoLookup( parseCoordinate(tokens[0]), parseCoordinate(tokens[1]) );
+                } else if ( trimmed.match("-{0,1}\\d.+,\\s+-{0,1}\\d.+") ) {
+                    var tokens = trimmed.split(",");
+                    app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
+                } else {
+                    app.geoLookup(trimmed);
+                }                
             }
         }
     ]
     
-    titleBar: TitleBar {
-        title: qsTr("Select Location") + Retranslate.onLanguageChanged
-        scrollBehavior: TitleBarScrollBehavior.NonSticky
+    titleBar: TitleBar
+    {
+        kind: TitleBarKind.TextField
+        kindProperties: TextFieldTitleBarKindProperties
+        {
+            id: tftk
+            textField.hintText: qsTr("Enter text to search...") + Retranslate.onLanguageChanged
+            textField.text: prefill
+            textField.input.submitKey: SubmitKey.Search
+            textField.input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheck | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrection
+            textField.input.submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
+            textField.input.onSubmitted: {
+                performSearch();
+            }
+            
+            onCreationCompleted: {
+                textField.input["keyLayout"] = 7;
+            }
+            
+            textField.gestureHandlers: [
+                DoubleTapHandler {
+                    onDoubleTapped: {
+                        console.log("UserEvent: LPPField"); 
+                        tftk.textField.text = persist.getClipboardText().trim();
+                    }
+                }
+            ]
+        }
     }
     
     function performSearch()
     {
-        var trimmed = searchField.text.trim();
+        var trimmed = tftk.textField.text.trim();
         
         if (trimmed.length > 0)
         {
@@ -93,216 +133,158 @@ Page
             labelText: qsTr("No results found for your query. Try another query.") + Retranslate.onLanguageChanged
             
             onImageTapped: {
-                searchField.requestFocus();
+                tftk.textField.requestFocus();
             }
         }
         
-        Container
+        ListView
         {
-            horizontalAlignment: HorizontalAlignment.Fill
-            verticalAlignment: VerticalAlignment.Fill
+            id: listView
+            property alias pickerPage: individualPage
+            property bool showContextMenu: false
+            scrollRole: ScrollRole.Main
             
-            TextField
-            {
-                id: searchField
-                hintText: qsTr("Enter text to search...") + Retranslate.onLanguageChanged
-                horizontalAlignment: HorizontalAlignment.Fill
-                bottomMargin: 0
-                
-                input {
-                    submitKey: SubmitKey.Search
-                    flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.SpellCheck | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-                    submitKeyFocusBehavior: SubmitKeyFocusBehavior.Lose
-                    
-                    onSubmitted: {
-                        performSearch();
-                    }
-                }
-                
-                onCreationCompleted: {
-                    input["keyLayout"] = 7;
-                }
-                
-                animations: [
-                    TranslateTransition {
-                        fromY: -150
-                        toY: 0
-                        easingCurve: StockCurve.ExponentialOut
-                        duration: 200
-                        
-                        onCreationCompleted: {
-                            play();
-                        }
-                        
-                        onStarted: {
-                            searchField.requestFocus();
-                        }
-                        
-                        onEnded: {
-                            deviceUtils.attachTopBottomKeys(individualPage, listView);
-                        }
-                    }
-                ]
-                
-                gestureHandlers: [
-                    DoubleTapHandler {
-                        onDoubleTapped: {
-                            console.log("UserEvent: WebsiteBodyDT"); 
-                            searchField.text = persist.getClipboardText().trim();
-                        }
-                    }
-                ]
+            dataModel: ArrayDataModel {
+                id: adm
             }
             
-            ListView
+            function itemType(data, indexPath)
             {
-                id: listView
-                property alias pickerPage: individualPage
-                property bool showContextMenu: false
-                scrollRole: ScrollRole.Main
-                
-                dataModel: ArrayDataModel {
-                    id: adm
+                if (data.formatted_address) {
+                    return "address";
+                } else {
+                    return "city";
                 }
+            }
+            
+            function editLocation(ListItem)
+            {
+                var element = ListItem.data;
+                var currentCity = ListItem.data.city;
+                currentCity = persist.showBlockingPrompt( qsTr("Enter city name"), qsTr("Please enter the new name of the city:"), currentCity, qsTr("Enter city name (ie: Damascus)"), 40, true, qsTr("Save"), qsTr("Cancel") ).trim();
                 
-                function itemType(data, indexPath)
+                if (currentCity.length > 0)
                 {
-                    if (data.formatted_address) {
-                        return "address";
-                    } else {
-                        return "city";
-                    }
-                }
-                
-                function editLocation(ListItem)
-                {
-                    var element = ListItem.data;
-                    var currentCity = ListItem.data.city;
-                    currentCity = persist.showBlockingPrompt( qsTr("Enter city name"), qsTr("Please enter the new name of the city:"), currentCity, qsTr("Enter city name (ie: Damascus)"), 40, true, qsTr("Save"), qsTr("Cancel") ).trim();
+                    element["city"] = currentCity;
                     
-                    if (currentCity.length > 0)
-                    {
-                        element["city"] = currentCity;
-                        
-                        ilmHelper.editLocation(listView, element.id, currentCity);
-                        adm.replace(ListItem.indexPath[0], element);
-                    }
+                    ilmHelper.editLocation(listView, element.id, currentCity);
+                    adm.replace(ListItem.indexPath[0], element);
                 }
-                
-                function deleteCity(ListItem)
+            }
+            
+            function deleteCity(ListItem)
+            {
+                ilmHelper.removeLocation(listView, ListItem.data.id);
+                adm.removeAt(ListItem.indexPath[0]);
+            }
+            
+            listItemComponents: [
+                ListItemComponent
                 {
-                    ilmHelper.removeLocation(listView, ListItem.data.id);
-                    adm.removeAt(ListItem.indexPath[0]);
-                }
-                
-                listItemComponents: [
-                    ListItemComponent
+                    type: "city"
+                    
+                    StandardListItem
                     {
-                        type: "city"
+                        id: sli
+                        imageSource: "images/list/ic_location.png"
+                        status: "(%1,%2)".arg(ListItemData.latitude).arg(ListItemData.longitude)
+                        title: ListItemData.city
                         
-                        StandardListItem
-                        {
-                            id: sli
-                            imageSource: "images/list/ic_location.png"
-                            status: "(%1,%2)".arg(ListItemData.latitude).arg(ListItemData.longitude)
-                            title: ListItemData.city
-                            
-                            contextActions: [
-                                ActionSet
+                        contextActions: [
+                            ActionSet
+                            {
+                                title: sli.title
+                                subtitle: sli.description
+                                
+                                ActionItem
                                 {
-                                    title: sli.title
-                                    subtitle: sli.description
+                                    imageSource: "images/menu/ic_edit_location.png"
+                                    title: qsTr("Edit") + Retranslate.onLanguageChanged
                                     
-                                    ActionItem
-                                    {
-                                        imageSource: "images/menu/ic_edit_location.png"
-                                        title: qsTr("Edit") + Retranslate.onLanguageChanged
-                                        
-                                        onTriggered: {
-                                            console.log("UserEvent: EditLocation");
-                                            sli.ListItem.view.editLocation(sli.ListItem);
-                                        }
-                                    }
-                                    
-                                    DeleteActionItem
-                                    {
-                                        imageSource: "images/menu/ic_remove_location.png"
-                                        
-                                        onTriggered: {
-                                            console.log("UserEvent: RemoveCity");
-                                            sli.ListItem.view.deleteCity(sli.ListItem);
-                                        }
+                                    onTriggered: {
+                                        console.log("UserEvent: EditLocation");
+                                        sli.ListItem.view.editLocation(sli.ListItem);
                                     }
                                 }
-                            ]
-                        }
-                    },
-                    
-                    ListItemComponent
-                    {
-                        type: "address"
-                        
-                        StandardListItem
-                        {
-                            id: address
-                            imageSource: "images/list/ic_geo_result.png"
-                            status: "(%1,%2)".arg(ListItemData.geometry.location.lat).arg(ListItemData.geometry.location.lng)
-                            title: ListItemData.formatted_address
-                        }
+                                
+                                DeleteActionItem
+                                {
+                                    imageSource: "images/menu/ic_remove_location.png"
+                                    
+                                    onTriggered: {
+                                        console.log("UserEvent: RemoveCity");
+                                        sli.ListItem.view.deleteCity(sli.ListItem);
+                                    }
+                                }
+                            }
+                        ]
                     }
-                ]
+                },
                 
-                function onDataLoaded(id, data)
+                ListItemComponent
                 {
-                    if (id == QueryId.FetchAllLocations)
+                    type: "address"
+                    
+                    StandardListItem
                     {
-                        adm.clear();
-                        adm.append(data);
-                        
-                        refresh();
-                    } else if (id == QueryId.RemoveLocation) {
-                        persist.showToast( qsTr("Location removed!"), "images/menu/ic_remove_location.png" );
-                    } else if (id == QueryId.EditLocation) {
-                        persist.showToast( qsTr("Location updated!"), "images/menu/ic_edit_location.png" );
+                        id: address
+                        imageSource: "images/list/ic_geo_result.png"
+                        status: "(%1,%2)".arg(ListItemData.geometry.location.lat).arg(ListItemData.geometry.location.lng)
+                        title: ListItemData.formatted_address
                     }
                 }
+            ]
+            
+            function onDataLoaded(id, data)
+            {
+                if (id == QueryId.FetchAllLocations)
+                {
+                    adm.clear();
+                    adm.append(data);
+                    
+                    refresh();
+                } else if (id == QueryId.RemoveLocation) {
+                    persist.showToast( qsTr("Location removed!"), "images/menu/ic_remove_location.png" );
+                } else if (id == QueryId.EditLocation) {
+                    persist.showToast( qsTr("Location updated!"), "images/menu/ic_edit_location.png" );
+                }
+            }
+            
+            onTriggered: {
+                var d = dataModel.data(indexPath);
+                console.log("UserEvent: CityPicked");
                 
-                onTriggered: {
-                    var d = dataModel.data(indexPath);
-                    console.log("UserEvent: CityPicked");
+                var city = d.formatted_address;
+                var locality;
+                
+                if (city)
+                {
+                    var parts = d.address_components;
+                    var latitude = d.geometry.location.lat;
+                    var longitude = d.geometry.location.lng;
                     
-                    var city = d.formatted_address;
-                    var locality;
-                    
-                    if (city)
+                    for (var i = parts.length-1; i >= 0; i--)
                     {
-                        var parts = d.address_components;
-                        var latitude = d.geometry.location.lat;
-                        var longitude = d.geometry.location.lng;
+                        var types = parts[i].types;
                         
-                        for (var i = parts.length-1; i >= 0; i--)
-                        {
-                            var types = parts[i].types;
-                            
-                            if ( types.indexOf("locality") != -1 ) {
-                                locality = parts[i].long_name;
-                            }
+                        if ( types.indexOf("locality") != -1 ) {
+                            locality = parts[i].long_name;
                         }
-                        
-                        if (locality) {
-                            var useLocality = persist.showBlockingDialog("Loaclity", qsTr("Do you want to use '%1' instead?").arg(locality) );
-                            
-                            if (useLocality) {
-                                city = locality;
-                            }
-                        }
-                        
-                        var x = ilmHelper.addLocation(city, latitude, longitude);
-                        persist.showToast( qsTr("Location added!"), "images/toast/ic_location_added.png" );
-                        picked(x.id, city);
-                    } else {
-                        picked(d.id, d.city);
                     }
+                    
+                    if (locality) {
+                        var useLocality = persist.showBlockingDialog("Loaclity", qsTr("Do you want to use '%1' instead?").arg(locality) );
+                        
+                        if (useLocality) {
+                            city = locality;
+                        }
+                    }
+                    
+                    var x = ilmHelper.addLocation(city, latitude, longitude);
+                    persist.showToast( qsTr("Location added!"), "images/toast/ic_location_added.png" );
+                    picked(x.id, city);
+                } else {
+                    picked(d.id, d.city);
                 }
             }
         }
@@ -340,4 +322,17 @@ Page
     onCreationCompleted: {
         app.locationsFound.connect(onLocationsFound);
     }
+    
+    attachedObjects: [
+        Timer {
+            id: timer
+            running: true
+            interval: 150
+            repeat: false
+            
+            onTriggered: {
+                tftk.textField.requestFocus();
+            }
+        }
+    ]
 }

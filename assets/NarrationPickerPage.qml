@@ -159,6 +159,10 @@ Page
             }
         }
         
+        onCreationCompleted: {
+            tftk.textField.input["keyLayout"] = 7;
+        }
+        
         acceptAction: ActionItem
         {
             id: shortNarrations

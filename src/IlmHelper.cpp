@@ -316,6 +316,22 @@ void IlmHelper::fetchFrequentIndividuals(QObject* caller, QString const& table, 
 }
 
 
+void IlmHelper::fetchFrequentLocations(QObject* caller, QString const& table, QString const& field, int n, QString const& where)
+{
+    QStringList innerParts;
+
+    if ( !where.isEmpty() ) {
+        innerParts << QString("WHERE %1").arg(where);
+    }
+
+    innerParts << QString("GROUP BY %1").arg(field) << "ORDER BY n DESC" << QString("LIMIT %1").arg(n);
+
+    QString innerClause = QString("SELECT %1,COUNT(%1) AS n FROM %2 %3").arg(field).arg(table).arg( innerParts.join(" ") );
+
+    m_sql->executeQuery(caller, QString("SELECT locations.id,city,latitude,longitude FROM (%2) INNER JOIN locations ON locations.id=%1 GROUP BY locations.id ORDER BY city").arg(field).arg(innerClause), QueryId::FetchAllLocations);
+}
+
+
 void IlmHelper::fetchAllWebsites(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
@@ -327,8 +343,17 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,x.city,notes,current_location,y.city AS current_city FROM individuals LEFT JOIN locations x ON individuals.location=x.id LEFT JOIN locations y ON individuals.current_location=y.id WHERE individuals.id=%1").arg(individualId);
+    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,notes,current_location FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
     m_sql->executeQuery(caller, query, QueryId::FetchIndividualData);
+}
+
+
+void IlmHelper::fetchLocationInfo(QObject* caller, qint64 locationId)
+{
+    LOGGER(locationId);
+
+    QString query = QString("SELECT * FROM locations WHERE id=%1").arg(locationId);
+    m_sql->executeQuery(caller, query, QueryId::FetchLocationInfo);
 }
 
 

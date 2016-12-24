@@ -1,80 +1,88 @@
 import bb.cascades 1.3
+import com.canadainc.data 1.0
 
-TextField
+Container
 {
     id: location
+    property string label
+    property variant pickedId
     horizontalAlignment: HorizontalAlignment.Fill
-    content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
-    input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
-    input.submitKey: SubmitKey.Search
-    input.keyLayout: KeyLayout.Text
-    inputMode: TextFieldInputMode.Text
-    property string userEvent
-    
-    input.onSubmitted: {
-        console.log( "UserEvent: %1".arg(userEvent) );
-        location.validator.validate();
+
+    layout: StackLayout {
+        orientation: LayoutOrientation.LeftToRight
     }
     
-    validator: Validator
+    onPickedIdChanged: {
+        if (pickedId) {
+            ilmHelper.fetchLocationInfo(location, pickedId);
+        } else {
+            reset();
+        }
+    }
+    
+    function onDataLoaded(id, data)
     {
-        errorMessage: qsTr("No locations found...") + Retranslate.onLanguageChanged;
-        mode: ValidationMode.Custom
-        
-        function parseCoordinate(input)
+        if (id == QueryId.FetchLocationInfo)
         {
-            var tokens = input.trim().split(" ");
-            var value = parseFloat( tokens[0].trim() );
-            
-            if ( tokens[1].trim() == "S" || tokens[1].trim() == "W") {
-                value *= -1;
-            }
-            
-            return value;
-        }
-        
-        onValidate: {
-            var trimmed = location.text.trim();
-            
-            if (trimmed.length == 0) {
-                valid = true;
+            if (data.length > 0)
+            {
+                tf.imageSource = "images/menu/ic_validate_location.png"
+                tf.text = data[0].city;
             } else {
-                if ( trimmed.match("\\d.+\\s[NS]{1},\\s+\\d.+\\s[EW]{1}") )
-                {
-                    createLocationPicker(dth);
-                    var tokens = trimmed.split(",");
-                    app.geoLookup( parseCoordinate(tokens[0]), parseCoordinate(tokens[1]) );
-                } else if ( trimmed.match("-{0,1}\\d.+,\\s+-{0,1}\\d.+") ) {
-                    createLocationPicker(dth);
-                    var tokens = trimmed.split(",");
-                    app.geoLookup( parseFloat( tokens[0].trim() ), parseFloat( tokens[1].trim() ) );
-                } else if ( trimmed.match("\\d+$") ) {
-                    valid = true;
-                } else {
-                    createLocationPicker(dth);
-                    app.geoLookup(trimmed);
-                }
+                reset();
             }
         }
     }
     
-    gestureHandlers: [
-        DoubleTapHandler
-        {
-            id: dth
+    function onPicked(id, name)
+    {
+        pickedId = id;
+        Qt.navigationPane.pop();
+    }
+
+    function reset()
+    {
+        tf.text = label;
+        tf.resetImageSource();
+    }
+
+    Button
+    {
+        id: tf
+        text: label
+        horizontalAlignment: HorizontalAlignment.Fill
+        leftMargin: 0; rightMargin: 0
+        
+        onClicked: {
+            console.log("UserEvent: LFClicked");
             
-            function onPicked(id, name)
-            {
-                location.text = id.toString();
-                location.hintText = name;
-                Qt.navigationPane.pop();
-            }
+            var p = Qt.launch("LocationPickerPage.qml");
+            p.picked.connect(onPicked);
+            ilmHelper.fetchFrequentLocations(p.pickerList);
             
-            onDoubleTapped: {
-                console.log("UserEvent: LocationFieldDoubleTapped");
-                var p = createLocationPicker(dth);
-                p.performSearch();
+            if (text.length > 0) {
+                p.prefill = text;
             }
         }
-    ]
+        
+        layoutProperties: StackLayoutProperties {
+            spaceQuota: 0.95
+        }
+    }
+    
+    Button
+    {
+        imageSource: "images/dropdown/cancel.png"
+        leftMargin: 0; rightMargin: 0
+        horizontalAlignment: HorizontalAlignment.Right
+        
+        onClicked: {
+            console.log("UserEvent: CancelLF");
+            pickedId = undefined;
+        }
+        
+        layoutProperties: StackLayoutProperties {
+            spaceQuota: 0.05
+        }
+    }
 }

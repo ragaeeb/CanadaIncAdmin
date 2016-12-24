@@ -81,6 +81,10 @@ Page
                 adm.append(matches);
             }
             
+            onCreationCompleted: {
+                tftk.textField.input["keyLayout"] = 7;
+            }
+            
             textField.input.onSubmitted: {
                 var inputted = tftk.textField.text.trim();
                 var tokens = inputted.split(":");

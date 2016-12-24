@@ -47,6 +47,7 @@ public:
         FetchGroupedNarrations,
         FetchGroupsForNarration,
         FetchIndividualData,
+        FetchLocationInfo,
         FetchMentions,
         FetchNarration,
         FetchNarrationsInGroup,

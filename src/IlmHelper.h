@@ -36,7 +36,9 @@ public:
     Q_INVOKABLE void fetchMentions(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchBioMetadata(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void fetchFrequentIndividuals(QObject* caller, QString const& table="suites", QString const& field="author", int n=7, QString const& where=QString());
+    Q_INVOKABLE void fetchFrequentLocations(QObject* caller, QString const& table="individuals", QString const& field="location", int n=7, QString const& where=QString());
     Q_INVOKABLE void fetchIndividualData(QObject* caller, qint64 individualId);
+    Q_INVOKABLE void fetchLocationInfo(QObject* caller, qint64 locationId);
     Q_INVOKABLE void fetchRelations(QObject* caller, qint64 individual);
     Q_INVOKABLE void removeMention(QObject* caller, qint64 id);
     Q_INVOKABLE void removeIndividual(QObject* caller, qint64 id);

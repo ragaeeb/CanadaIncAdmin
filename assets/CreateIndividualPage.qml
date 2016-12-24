@@ -61,19 +61,11 @@ Page
             }
             
             if (data.location) {
-                location.text = data.location.toString();
-            }
-            
-            if (data.city) {
-                location.hintText = data.city;
+                location.pickedId = data.location;
             }
             
             if (data.current_location) {
-                currentLocation.text = data.current_location.toString();
-            }
-            
-            if (data.current_city) {
-                currentLocation.hintText = data.current_city;
+                currentLocation.pickedId = data.current_location;
             }
             
             if (data.notes) {
@@ -148,12 +140,9 @@ Page
                 console.log("UserEvent: SaveIndividual");
                 
                 name.validator.validate();
-                location.validator.validate();
                 
-                if (name.validator.valid && location.validator.valid) {
-                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.text.trim(), currentLocation.text.trim(), level.selectedValue, descriptionField.text.trim() );
-                } else if (!location.validator.valid) {
-                    persist.showToast( qsTr("Invalid location specified!"), "images/toast/incomplete_field.png" );
+                if (name.validator.valid) {
+                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.pickedId, currentLocation.pickedId, level.selectedValue, descriptionField.text.trim() );
                 } else {
                     persist.showToast( qsTr("Invalid name!"), "images/toast/invalid_name.png" );
                 }
@@ -396,8 +385,6 @@ Page
                     LocationField
                     {
                         id: location
-                        hintText: qsTr("City of birth...") + Retranslate.onLanguageChanged
-                        userEvent: "CityOfBirthSubmit"
                         
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 0.3
@@ -407,8 +394,6 @@ Page
                     LocationField
                     {
                         id: currentLocation
-                        hintText: qsTr("Current Location...") + Retranslate.onLanguageChanged
-                        userEvent: "CurrentLocation"
                         
                         layoutProperties: StackLayoutProperties {
                             spaceQuota: 0.3
@@ -444,14 +429,6 @@ Page
                 }
             }
         }
-    }
-    
-    function createLocationPicker(dth)
-    {
-        var p = Qt.launch("LocationPickerPage.qml");
-        p.picked.connect(dth.onPicked);
-        
-        return p;
     }
     
     attachedObjects: [
