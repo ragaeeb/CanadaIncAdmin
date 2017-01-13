@@ -229,6 +229,8 @@ Page
                     x.is_book = true;
                     x.item_type = "work";
                     checkForDuplicate(x);
+                    
+                    persist.showToast( qsTr("Added %1 to authorship.").arg(name), imageSource.toString() );
                 }
             }
         }

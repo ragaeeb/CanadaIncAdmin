@@ -9,7 +9,7 @@ Page
 
     onNarrationIdChanged: {
         if (narrationId) {
-            sunnah.fetchNarration(narrationPage, narrationId);
+            sunnah.fetchNarrations(narrationPage, [narrationId]);
             sunnah.fetchGroupsForNarration(narrationPage, narrationId);
             sunnah.fetchExplanationsFor(narrationPage, narrationId);
         }
@@ -31,7 +31,7 @@ Page
     
     function onDataLoaded(id, data)
     {
-        if (id == QueryId.FetchNarration && data.length > 0)
+        if (id == QueryId.FetchNarrations && data.length > 0)
         {
             var hadith = data[0];
             tb.title = "%1 %2".arg(hadith.name).arg(hadith.hadith_number);

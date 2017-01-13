@@ -13,6 +13,7 @@ class QueryId
 public:
     enum Type {
         AddMention,
+        AddTypos,
         EditAnswer,
         EditCenter,
         EditChoice,
@@ -43,13 +44,14 @@ public:
         FetchChapters,
         FetchChildren,
         FetchChoicesForQuestion,
+        FetchCorrections,
         FetchExplanationsFor,
         FetchGroupedNarrations,
         FetchGroupsForNarration,
         FetchIndividualData,
         FetchLocationInfo,
         FetchMentions,
-        FetchNarration,
+        FetchNarrations,
         FetchNarrationsInGroup,
         FetchNarrationsForSuitePage,
         FetchNextGroupNumber,

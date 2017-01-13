@@ -28,15 +28,17 @@ public:
 
 	void lazyInit();
 
+    Q_INVOKABLE void addTypos(QStringList const& queries, qint64 id, QString const& table="narrations");
 	Q_INVOKABLE void fetchAllCollections(QObject* caller, QString const& query=QString());
     Q_INVOKABLE void fetchExplanationsFor(QObject* caller, qint64 narrationId);
+    Q_INVOKABLE void fetchCorrections(QObject* caller, QString const& table, QString const& query);
     Q_INVOKABLE void fetchGroupsForNarration(QObject* caller, qint64 narrationId);
 
 	/**
 	 * @param terms Should be a QVariantList of QVariantMaps with {'collection_id': qint64 CollectionID, 'hadith_number': QString HadithNumber}
 	 */
 	Q_INVOKABLE void fetchNarration(QObject* caller, QVariantList const& terms);
-	Q_INVOKABLE void fetchNarration(QObject* caller, qint64 narrationId);
+	Q_INVOKABLE void fetchNarrations(QObject* caller, QVariantList narrationIds);
 	Q_INVOKABLE void fetchNarrationsInGroup(QObject* caller, int groupNumber);
     Q_INVOKABLE void fetchNarrationsForSuitePage(QObject* caller, qint64 suitePageId);
     Q_INVOKABLE void fetchNextAvailableGroupNumber(QObject* caller);

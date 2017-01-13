@@ -30,7 +30,7 @@ public:
     Q_INVOKABLE QVariantMap addWebsite(qint64 individualId, QString const& address);
     Q_INVOKABLE QVariantMap editMention(QObject* caller, qint64 id, QVariant const& points);
     Q_INVOKABLE QVariantMap editLocation(QObject* caller, qint64 id, QString const& city);
-    Q_INVOKABLE void fetchAllIndividuals(QObject* caller, bool companionsOnly=false, QVariant const& knownLocations=QVariant());
+    Q_INVOKABLE void fetchAllIndividuals(QObject* caller, bool companionsOnly=false, QVariantList const& ids=QVariantList());
     Q_INVOKABLE void fetchAllLocations(QObject* caller, QString const& city=QString());
     Q_INVOKABLE void fetchAllWebsites(QObject* caller, qint64 individualId);
     Q_INVOKABLE void fetchMentions(QObject* caller, qint64 individualId);

@@ -238,9 +238,9 @@ QVariantMap IlmHelper::editLocation(QObject* caller, qint64 id, QString const& c
 }
 
 
-void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, QVariant const& knownLocations)
+void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, QVariantList const& ids)
 {
-    LOGGER(companionsOnly << knownLocations);
+    LOGGER(companionsOnly);
 
     QString query = QString("SELECT i.id,%1,hidden,is_companion,female FROM individuals i").arg( NAME_FIELD("i","display_name") );
     QStringList restrictions;
@@ -249,15 +249,8 @@ void IlmHelper::fetchAllIndividuals(QObject* caller, bool companionsOnly, QVaria
         restrictions << "is_companion=1";
     }
 
-    if ( knownLocations.isValid() )
-    {
-        bool knownFlag = knownLocations.toBool();
-
-        if (knownFlag) {
-            restrictions << "location > 0";
-        } else {
-            restrictions << "location ISNULL";
-        }
+    if ( !ids.isEmpty() ) {
+        restrictions << QString("i.id IN (%1)").arg( combine(ids) );
     }
 
     if ( !restrictions.isEmpty() ) {

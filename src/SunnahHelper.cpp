@@ -28,6 +28,21 @@ void SunnahHelper::lazyInit()
 }
 
 
+void SunnahHelper::addTypos(QStringList const& queries, qint64 id, QString const& table)
+{
+    LOGGER(queries << id << table);
+    m_sql->startTransaction(NULL, QueryId::Pending);
+
+    QSet<QString> narrowed = QSet<QString>::fromList(queries);
+
+    foreach (QString const& query, narrowed) {
+        m_sql->executeQuery(NULL, QString("INSERT INTO typos(table_name,query,primary_key) VALUES (?,?,?)"), QueryId::Pending, QVariantList() << table << query << id);
+    }
+
+    m_sql->endTransaction(NULL, QueryId::AddTypos);
+}
+
+
 void SunnahHelper::fetchAllCollections(QObject* caller, QString const& query)
 {
     QStringList terms = QStringList() << "SELECT * FROM collections";
@@ -80,6 +95,13 @@ void SunnahHelper::fetchNarrationsInGroup(QObject* caller, int groupNumber)
 }
 
 
+void SunnahHelper::fetchCorrections(QObject* caller, QString const& table, QString const& query)
+{
+    LOGGER(query);
+    m_sql->executeQuery(caller, QString("SELECT primary_key AS id FROM typos WHERE table_name=? AND query=?"), QueryId::FetchCorrections, QVariantList() << table << query);
+}
+
+
 void SunnahHelper::fetchGroupsForNarration(QObject* caller, qint64 narrationId)
 {
     LOGGER(narrationId);
@@ -87,10 +109,10 @@ void SunnahHelper::fetchGroupsForNarration(QObject* caller, qint64 narrationId)
 }
 
 
-void SunnahHelper::fetchNarration(QObject* caller, qint64 narrationId)
+void SunnahHelper::fetchNarrations(QObject* caller, QVariantList narrationIds)
 {
-    LOGGER(narrationId);
-    m_sql->executeQuery(caller, QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE narrations.id=%2").arg(NARRATION_COLUMNS).arg(narrationId), QueryId::FetchNarration);
+    LOGGER(narrationIds);
+    m_sql->executeQuery(caller, QString("SELECT %1 FROM narrations INNER JOIN collections ON collection_id=collections.id WHERE narrations.id IN (%2)").arg(NARRATION_COLUMNS).arg( combine(narrationIds) ), QueryId::FetchNarrations);
 }
 
 

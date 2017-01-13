@@ -11,6 +11,19 @@ Page
     
     function cleanUp() {}
     
+    actions: [
+        ActionItem
+        {
+            id: reloadDb
+            imageSource: "images/menu/ic_reset_search.png"
+            title: qsTr("Reload") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                app.loadIlmDatabase(true);
+            }
+        }
+    ]
+    
     Container
     {
         horizontalAlignment: HorizontalAlignment.Fill

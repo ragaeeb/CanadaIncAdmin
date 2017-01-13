@@ -48,6 +48,8 @@ Page
             
             function onNarrationsSelected(all)
             {
+                typos.reset();
+                
                 app.doDiff(all, adm, "narration_id");
                 
                 popToRoot();
@@ -174,6 +176,8 @@ Page
                 console.log("UserEvent: ShortNarrationsTapped");
                 checked = !checked;
                 tftk.textField.requestFocus();
+                
+                typos.reset();
             }
         }
     }
@@ -280,6 +284,8 @@ Page
                                 result.push( adm.data(all[i]) );
                             }
 
+                            typos.commit( result[0].narration_id );
+
                             picked(result);
                         }
                     },
@@ -325,7 +331,7 @@ Page
                 
                 function onDataLoaded(id, data)
                 {
-                    if (id == QueryId.SearchNarrations)
+                    if (id == QueryId.SearchNarrations || id == QueryId.FetchNarrations)
                     {
                         adm.clear();
                         adm.append(data);
@@ -335,6 +341,10 @@ Page
                         
                         if ( listView.visible && trimmed.length > 0 && !isTurboQuery(trimmed) ) {
                             decorator.decorateSearchResults(data, adm, global.extractTokens(trimmed), "body" );
+                        }
+                        
+                        if (id == QueryId.SearchNarrations && data.length == 0) {
+                            typos.record(trimmed);
                         }
                     }
                 }
@@ -379,4 +389,16 @@ Page
         listView.visible = !adm.isEmpty();
         selectAll.enabled = listView.visible;
     }
+    
+    attachedObjects: [
+        TypoTrackerDialog
+        {
+            id: typos
+            tableName: "narrations"
+            
+            onCorrectionsFound: {
+                sunnah.fetchNarrations(listView, ids);
+            }
+        }
+    ]
 }

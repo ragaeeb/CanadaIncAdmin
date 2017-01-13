@@ -7,8 +7,20 @@ TabbedPane
     
     Menu.definition: MenuDefinition
     {
+        helpAction: HelpActionItem
+        {
+            imageSource: "images/menu/ic_add_book.png"
+            title: qsTr("Collections") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: Collections");
+                var ipp = Qt.launch("TafsirPickerPage.qml");
+                ipp.autoFocus = true;
+            }
+        }
+        
         actions: [
-            ActionItem
+            /*ActionItem
             {
                 id: toggler
                 imageSource: "images/menu/ic_validate_location.png"
@@ -44,16 +56,28 @@ TabbedPane
                 onCreationCompleted: {
                     persist.registerForSetting(toggler, "translation");
                 }
+            },*/
+            
+            ActionItem
+            {
+                id: quranLookup
+                imageSource: "images/list/ic_tafsir_ayat.png"
+                title: qsTr("Quran Lookup") + Retranslate.onLanguageChanged
+                
+                onTriggered: {
+                    var x = Qt.launch("QuranSurahPicker.qml");
+                    x.focus();
+                }
             },
             
             ActionItem
             {
-                id: reloadDb
-                imageSource: "images/menu/ic_reset_search.png"
-                title: qsTr("Reload") + Retranslate.onLanguageChanged
+                id: searchHadith
+                imageSource: "images/dropdown/ic_any_narrations.png"
+                title: qsTr("Ahadeeth") + Retranslate.onLanguageChanged
                 
                 onTriggered: {
-                    app.loadIlmDatabase(true);
+                    Qt.launch("NarrationPickerPage.qml");
                 }
             }
         ]

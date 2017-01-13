@@ -1,5 +1,6 @@
 import QtQuick 1.0
 import bb.cascades 1.3
+import bb.system 1.2
 import com.canadainc.data 1.0
 
 Page
@@ -38,6 +39,8 @@ Page
                 
                 if (result.id)
                 {
+                    typos.reset();
+                    
                     adm.insert(0, result);
                     refresh();
                     
@@ -111,19 +114,13 @@ Page
                     if (flag == 0) {
                         imageSource = "images/menu/ic_search_rijaal.png"; // standard contains
                     } else if (flag == 1) {
-						imageSource = "images/dropdown/starts_with.png"; // starts with
-                    } else if (flag == 2) {
-                        imageSource = "images/list/ic_location.png"; // includes location only
-                    } else if (flag == 3) {
-                        imageSource = "images/menu/ic_remove_location.png"; // no locations
-                    } else if (flag == 4) {
                         imageSource = "images/list/ic_companion.png"; // companions only
                     }
                 }
                 
                 onTriggered: {
                     console.log("UserEvent: StartsWith");
-                    if (flag == 4) {
+                    if (flag == 1) {
                         flag = 0;
                     } else {
                         ++flag;
@@ -151,7 +148,7 @@ Page
                 ilmHelper.searchIndividuals( listView, global.extractTokens(trimmed), exclusions );
             }
         } else {
-            ilmHelper.fetchAllIndividuals(listView, flagAction.flag == 4, flagAction.flag == 2 ? true : flagAction.flag == 3 ? false : undefined);
+            ilmHelper.fetchAllIndividuals(listView, flagAction.flag == 1);
         }
     }
     
@@ -313,12 +310,21 @@ Page
                         persist.showToast( qsTr("Successfully replaced individual!"), "images/menu/ic_replace_individual.png" );
                         performSearch();
                     }
+                    
+                    if (id == QueryId.SearchIndividuals && data.length == 0) {
+                        typos.record( tftk.textField.text.trim() );
+                    }
                 }
                 
                 onTriggered: {
                     var d = dataModel.data(indexPath);
                     console.log("UserEvent: IndividualPicked", d.display_name);
-                    picked(d.id, d.display_name);
+                    
+                    var resultId = d.id;
+                    
+                    typos.commit(resultId);
+                    
+                    picked(resultId, d.display_name);
                 }
                 
                 attachedObjects: [
@@ -345,6 +351,16 @@ Page
             
             onTriggered: {
                 tftk.textField.requestFocus();
+            }
+        },
+        
+        TypoTrackerDialog
+        {
+            id: typos
+            tableName: "individuals"
+            
+            onCorrectionsFound: {
+                ilmHelper.fetchAllIndividuals(listView, false, ids);
             }
         }
     ]

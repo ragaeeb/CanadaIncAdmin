@@ -108,13 +108,6 @@ NavigationPane
             scrollBehavior: TitleBarScrollBehavior.Sticky
             kind: TitleBarKind.TextField
             
-            acceptAction: ActionItem {
-                title: "LKSDF"
-                onTriggered: {
-                    persist.downloadApp("27845411");
-                }
-            }
-            
             kindProperties: TextFieldTitleBarKindProperties
             {
                 id: tftk
@@ -432,41 +425,6 @@ NavigationPane
                     //app.fetchAllIds(reorder, "answers");
                     app.fetchAllIds(reorder, "choices");
                     //app.fetchAllIds(reorder, "questions");
-                }
-            },
-            
-            ActionItem
-            {
-                id: hadith
-                imageSource: "images/dropdown/ic_any_narrations.png"
-                title: qsTr("Hadith Lookup") + Retranslate.onLanguageChanged
-                
-                shortcuts: [
-                    Shortcut {
-                        key: "H"
-                    }
-                ]
-                
-                onTriggered: {
-                    Qt.launch("NarrationPickerPage.qml");
-                }
-            },
-            
-            ActionItem
-            {
-                id: tafsir
-                imageSource: "images/list/ic_tafsir_ayat.png"
-                title: qsTr("Quran Lookup") + Retranslate.onLanguageChanged
-                
-                shortcuts: [
-                    Shortcut {
-                        key: "Q"
-                    }
-                ]
-                
-                onTriggered: {
-                    var x = Qt.launch("QuranSurahPicker.qml");
-                    x.focus();
                 }
             },
             
