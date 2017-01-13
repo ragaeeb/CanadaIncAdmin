@@ -82,6 +82,19 @@ Page
             textField.input.onSubmitted: {
                 performSearch();
             }
+            
+            textField.gestureHandlers: [
+                DoubleTapHandler {
+                    onDoubleTapped: {
+                        console.log("UserEvent: DoubleTappedIndividualSearch");
+                        tftk.textField.text = persist.getClipboardText();
+                    }
+                }
+            ]
+            
+            onCreationCompleted: {
+                tftk.textField.input["keyLayout"] = 7;
+            }
         }
         
         acceptAction: [

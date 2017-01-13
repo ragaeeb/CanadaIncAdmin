@@ -39,6 +39,13 @@ Page
                     key: "promptSimilar"
                 }
                 
+                PersistCheckBox
+                {
+                    id: optimizeQueries
+                    text: qsTr("Optimize Queries") + Retranslate.onLanguageChanged
+                    key: "optimizeQueries"
+                }
+                
                 PersistDropDown
                 {
                     title: qsTr("Ilm Language") + Retranslate.onLanguageChanged

@@ -47,7 +47,7 @@ void SunnahHelper::fetchAllCollections(QObject* caller, QString const& query)
 void SunnahHelper::fetchExplanationsFor(QObject* caller, qint64 narrationId)
 {
     LOGGER(narrationId);
-    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,%3,title,substr(body,-5) AS body,heading FROM narration_explanations INNER JOIN suite_pages ON suite_pages.id=narration_explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE narration_explanations.narration_id=%1 ORDER BY author,title,heading").arg(narrationId).arg( NAME_FIELD("i", "author") ), QueryId::FetchExplanationsFor);
+    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,%3,title,substr(body,-5) AS body,heading FROM narration_explanations INNER JOIN suite_pages ON suite_pages.id=narration_explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE narration_explanations.narration_id IN (SELECT narration_id FROM grouped_narrations WHERE group_number=(SELECT group_number FROM grouped_narrations WHERE narration_id=%1) AND narration_id <> %1) ORDER BY author,title,heading").arg(narrationId).arg( NAME_FIELD("i", "author") ), QueryId::FetchExplanationsFor);
 }
 
 

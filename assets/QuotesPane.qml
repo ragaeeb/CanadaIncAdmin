@@ -13,7 +13,7 @@ NavigationPane
     function reload()
     {
         busy.delegateActive = true;
-        tafsirHelper.fetchAllQuotes(listView);
+        tafsirHelper.fetchAllQuotes(listView, 0, 0, 0, persist.getValueFor("optimizeQueries") == 1 ? 200 : 999999);
     }
     
     function clearAndReload()
@@ -121,6 +121,15 @@ NavigationPane
                 onCreationCompleted: {
                     textField.input["keyLayout"] = 7;
                 }
+                
+                textField.gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: DoubleTappedQuoteSearch");
+                            tftk.textField.text = persist.getClipboardText();
+                        }
+                    }
+                ]
             }
         }
         

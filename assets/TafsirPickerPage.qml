@@ -79,7 +79,7 @@ Page
     function reload()
     {
         busy.delegateActive = true;
-        tafsirHelper.fetchAllTafsir(listView);
+        tafsirHelper.fetchAllTafsir(listView, 0, 0, persist.getValueFor("optimizeQueries") == 1 ? 200 : 999999);
     }
     
     titleBar: TitleBar
