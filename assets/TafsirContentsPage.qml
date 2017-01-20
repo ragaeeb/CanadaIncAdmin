@@ -1,4 +1,5 @@
 import bb.cascades 1.0
+import bb.system 1.0
 import com.canadainc.data 1.0
 
 Page
@@ -138,6 +139,10 @@ Page
                     
                 } else if (id == QueryId.MoveToSuite) {
                     persist.showToast( qsTr("Suite page moved!"), "images/menu/ic_merge.png" );
+                    
+                    if ( copyConfirm.rememberMeSelection() ) {
+                        tafsirHelper.removeSuite(listView, suiteId);
+                    }
                 } else if (id == QueryId.RemoveSuitePage) {
                     persist.showToast( qsTr("Tafsir page removed!"), "images/menu/ic_delete_suite_page.png" );
                 } else if (id == QueryId.EditSuitePage) {
@@ -148,6 +153,8 @@ Page
                     persist.saveValueFor("translation", "arabic");
                 } else if (id == QueryId.FetchAllQuotes) {
                     adm.append(data);
+                } else if (id == QueryId.RemoveSuite) {
+                    Qt.navigationPane.pop();
                 }
                 
                 refresh();
@@ -182,19 +189,10 @@ Page
             
             function onActualPicked(destination)
             {
-                var pickedId = destination[0].id;
-                
-                if (pickedId != suiteId)
-                {
-                    busy.delegateActive = true;
-                    tafsirHelper.moveToSuite(listView, adm.value(editIndexPath).id, pickedId);
-                    
-                    adm.removeAt(editIndexPath[0]);
-                } else {
-                    persist.showToast( qsTr("The source and replacement suites cannot be the same!"), "images/toast/same_suites.png" );
-                }
-                
+                copyConfirm.destinationId = destination[0].id;
                 Qt.popToRoot(tafsirContentsPage);
+                
+                copyConfirm.show();
             }
             
             function moveSuitePage(indexPath, ListItemData)
@@ -202,6 +200,7 @@ Page
                 editIndexPath = indexPath;
                 var ipp = Qt.launch("TafsirPickerPage.qml");
                 ipp.autoFocus = true;
+                ipp.exclusions = [suiteId];
                 ipp.tafsirPicked.connect(onActualPicked);
             }
             
@@ -466,6 +465,28 @@ Page
         
         SearchDecorator {
             id: decorator
+        },
+        
+        SystemDialog
+        {
+            id: copyConfirm
+            property variant destinationId
+            title: qsTr("Copy Metadata?") + Retranslate.onLanguageChanged
+            body: qsTr("Would you like to copy the title & reference metadata as well?") + Retranslate.onLanguageChanged
+            confirmButton.label: qsTr("Yes") + Retranslate.onLanguageChanged
+            cancelButton.label: qsTr("No") + Retranslate.onLanguageChanged
+            includeRememberMe: true
+            rememberMeChecked: false
+            rememberMeText: qsTr("Delete collection after the transaction?") + Retranslate.onLanguageChanged
+            
+            onFinished: {
+                var doCopy = value == SystemUiResult.ConfirmButtonSelection;
+                
+                busy.delegateActive = true;
+                tafsirHelper.moveToSuite(listView, adm.value(listView.editIndexPath).id, destinationId, suiteId, rememberMeSelection());
+                
+                adm.removeAt(listView.editIndexPath[0]);
+            } 
         }
     ]
 }

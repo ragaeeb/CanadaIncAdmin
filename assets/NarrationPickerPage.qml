@@ -284,7 +284,7 @@ Page
                                 result.push( adm.data(all[i]) );
                             }
 
-                            typos.commit( result[0].narration_id );
+                            //typos.commit( result[0].narration_id );
 
                             picked(result);
                         }

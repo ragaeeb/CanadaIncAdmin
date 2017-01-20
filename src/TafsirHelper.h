@@ -38,7 +38,7 @@ public:
     Q_INVOKABLE void findDuplicateQuotes(QObject* caller, QString const& field);
     Q_INVOKABLE void findDuplicateSuites(QObject* caller, QString const& field);
     Q_INVOKABLE void mergeSuites(QObject* caller, QVariantList const& toReplaceIds, qint64 actualId);
-    Q_INVOKABLE void moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId);
+    Q_INVOKABLE void moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId, qint64 srcSuiteId, bool copyMetadata=false);
     Q_INVOKABLE void removeQuote(QObject* caller, qint64 id);
     Q_INVOKABLE void removeSuite(QObject* caller, qint64 suiteId);
     Q_INVOKABLE void removeSuitePage(QObject* caller, qint64 suitePageId);

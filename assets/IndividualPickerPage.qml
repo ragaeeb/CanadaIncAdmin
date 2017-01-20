@@ -322,7 +322,7 @@ Page
                     
                     var resultId = d.id;
                     
-                    typos.commit(resultId);
+                    //typos.commit(resultId);
                     
                     picked(resultId, d.display_name);
                 }

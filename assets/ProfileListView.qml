@@ -33,10 +33,14 @@ ListView
             return qsTr("Children");
         } else if (ListItemData == "friend") {
             return qsTr("Companions");
-        } else if (ListItemData == "work") {
-            return qsTr("Works");
+        } else if (ListItemData == "translation") {
+            return qsTr("Translations");
+        } else if (ListItemData == "biography") {
+            return qsTr("Biographies");
         } else if (ListItemData == "quote") {
             return qsTr("Quotes");
+        } else if (ListItemData == "work") {
+            return qsTr("Works");
         } else if (ListItemData == "address") {
             return qsTr("Contact Info");
         }
@@ -44,6 +48,8 @@ ListView
     
     function itemType(data, indexPath)
     {
+        console.log("***", indexPath, JSON.stringify(data));
+        
         if (indexPath.length == 1) {
             return "header";
         } else if (data.individual && data.other_id) { // relationship
@@ -56,8 +62,8 @@ ListView
             } else {
                 return "friend";
             }
-        } else if (data.points) {
-            return data.points == 3 ? "work" : "citing";
+        } else if (data.points != undefined) {
+            return data.points == 3 ? "translation" : data.points == 2 ? "biography" : "citing";
         } else if (data.uri) {
             return "address";
         } else if (data.book_name) {
@@ -192,42 +198,26 @@ ListView
         {
             type: "citing"
             
-            StandardListItem
-            {
-                id: bioSli
-                description: ListItemData.heading ? ListItemData.heading : ListItemData.title ? ListItemData.title : ""
-                imageSource: ListItemData.points > 1 ? "images/list/ic_unique_narration.png" : ListItemData.points > 0 ? "images/list/ic_like.png" : ListItemData.points < 0 ? "images/list/ic_dislike.png" : "images/list/ic_bio.png"
-                title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: bioSli.title
-                        subtitle: bioSli.description
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_edit_bio.png"
-                            title: qsTr("Edit") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: EditBio");
-                                bioSli.ListItem.view.editBio(bioSli.ListItem, ListItemData);
-                            }
-                        }
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_merge_into.png"
-                            title: qsTr("Merge Into") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: MergeSuite");
-                                bioSli.ListItem.view.merge(bioSli.ListItem);
-                            }
-                        }
-                    }
-                ]
+            AuthorshipListItem {
+                imageSource: "images/list/ic_unique_narration.png"
+            }
+        },
+        
+        ListItemComponent
+        {
+            type: "translation"
+            
+            AuthorshipListItem {
+                imageSource: "images/menu/ic_translate_quote.png"
+            }
+        },
+        
+        ListItemComponent
+        {
+            type: "biography"
+            
+            AuthorshipListItem {
+                imageSource: "images/list/ic_bio.png"
             }
         },
         
@@ -235,31 +225,7 @@ ListView
         {
             type: "work"
             
-            StandardListItem
-            {
-                id: workSli
-                description: ListItemData.title
-                imageSource: "images/list/ic_book.png"
-                title: ListItemData.author ? ListItemData.author : ListItemData.reference ? ListItemData.reference : ""
-                
-                contextActions: [
-                    ActionSet
-                    {
-                        title: workSli.title
-                        
-                        ActionItem
-                        {
-                            imageSource: "images/menu/ic_edit_bio.png"
-                            title: qsTr("Edit") + Retranslate.onLanguageChanged
-                            
-                            onTriggered: {
-                                console.log("UserEvent: EditBio");
-                                workSli.ListItem.view.editBio(workSli.ListItem, ListItemData);
-                            }
-                        }
-                    }
-                ]
-            }
+            AuthorshipListItem {}
         },
         
         ListItemComponent
@@ -398,7 +364,7 @@ ListView
             if (type == "student" || type == "teacher" || type == "child" || type == "parent" || type == "sibling" || type == "friend") {
                 var page = Qt.launch("ProfilePage.qml");
                 page.individualId = d.id;
-            } else if (type == "citing" || type == "work") {
+            } else if (type == "citing" || type == "work" || type == "translation" || type == "biography") {
                 editIndexPath = indexPath;
                 var page = Qt.launch("TafsirContentsPage.qml");
                 page.searchData = {'suitePageId': d.suite_page_id};

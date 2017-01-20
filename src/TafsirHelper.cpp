@@ -155,7 +155,7 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, qin
     }
 
     if (author) {
-        whereClauses << QString("quotes.author=%1").arg(author);
+        whereClauses << QString("(quotes.author=%1 OR quotes.translator=%1)").arg(author);
     }
 
     if (suiteId) {
@@ -227,11 +227,15 @@ void TafsirHelper::mergeSuites(QObject* caller, QVariantList const& toReplaceIds
 }
 
 
-void TafsirHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId)
+void TafsirHelper::moveToSuite(QObject* caller, qint64 suitePageId, qint64 destSuiteId, qint64 srcSuiteId, bool copyMetadata)
 {
-    LOGGER(suitePageId << destSuiteId);
+    LOGGER(suitePageId << destSuiteId << copyMetadata);
 
-    m_sql->executeQuery(caller, "UPDATE suite_pages SET suite_id=? WHERE id=?", QueryId::MoveToSuite, QVariantList() << destSuiteId << suitePageId);
+    if (copyMetadata) {
+        m_sql->executeQuery(caller, QString("UPDATE suite_pages SET suite_id=?, heading=(SELECT title FROM suites WHERE id=?), reference=(SELECT reference FROM suites WHERE id=?) WHERE id=?"), QueryId::MoveToSuite, QVariantList() << destSuiteId << srcSuiteId << srcSuiteId << suitePageId);
+    } else {
+        m_sql->executeQuery(caller, "UPDATE suite_pages SET suite_id=? WHERE id=?", QueryId::MoveToSuite, QVariantList() << destSuiteId << suitePageId);
+    }
 }
 
 
