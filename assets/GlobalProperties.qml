@@ -36,6 +36,20 @@ QtObject
         return elements;
     }
 
+    function endsWith(str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+    
+    function stripSlashFromClipboard()
+    {
+        var input = persist.getClipboardText().trim();
+        
+        if ( endsWith(input, "/") ) {
+            return input.substring(0, input.length-1);
+        }
+        
+        return input;
+    }
     
     function optimizeAndClean(input)
     {

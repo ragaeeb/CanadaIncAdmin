@@ -185,7 +185,7 @@ Page
                     {
                         onDoubleTapped: {
                             console.log("UserEvent: TafsirRefDoubleTapped");
-                            var value = persist.getClipboardText();
+                            var value = global.stripSlashFromClipboard();
                             referenceField.text = value;
 
                             var host = offloader.extractHost(value);

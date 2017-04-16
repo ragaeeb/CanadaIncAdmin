@@ -40,9 +40,8 @@ Page
             onTriggered: {
                 console.log("UserEvent: CreateCenter");
                 nameField.validator.validate();
-                website.validator.validate();
                 
-                if ( nameField.validator.valid && website.validator.valid && location.locationId ) {
+                if (nameField.validator.valid && location.locationId) {
                     createCenter( centerId, nameField.text.trim(), website.text.trim(), location.locationId );
                 }
             }
@@ -90,21 +89,11 @@ Page
                 id: website
                 hintText: qsTr("Website") + Retranslate.onLanguageChanged
                 
-                validator: Validator
-                {
-                    errorMessage: qsTr("Invalid website...") + Retranslate.onLanguageChanged
-                    mode: ValidationMode.FocusLost
-                    
-                    onValidate: {
-                        valid = deviceUtils.isUrl( website.text.trim() );
-                    }
-                }
-                
                 gestureHandlers: [
                     DoubleTapHandler {
                         onDoubleTapped: {
                             console.log("UserEvent: WebsiteBodyDT");
-                            var uri = offloader.fixUri( persist.getClipboardText().trim() );
+                            var uri = offloader.fixUri( global.stripSlashFromClipboard() );
                             website.text = uri;
                         }
                     }

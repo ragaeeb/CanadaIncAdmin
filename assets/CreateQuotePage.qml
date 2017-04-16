@@ -303,7 +303,7 @@ Page
                     {
                         onDoubleTapped: {
                             console.log("UserEvent: QuoteUriDoubleTapped");
-                            var value = persist.getClipboardText();
+                            var value = global.stripSlashFromClipboard();
                             uriField.text = value;
                             
                             if (!translatorField.pickedId)
