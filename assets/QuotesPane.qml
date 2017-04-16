@@ -293,8 +293,8 @@ NavigationPane
                                                 if (ListItemData.title) {
                                                     reference = ListItemData.title + " "+reference;
                                                 }
-                                                
-                                                var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg(reference);
+
+                                                var body = "“%1” - %2 [%3]".arg(ListItemData.body).arg(ListItemData.author).arg( reference.trim() );
                                                 
                                                 if (ListItemData.translator) {
                                                     body += "\n\nTranslated by: %1".arg(ListItemData.translator);
