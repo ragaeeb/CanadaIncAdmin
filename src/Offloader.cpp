@@ -195,10 +195,13 @@ int Offloader::diffSecs(QString const& input)
 QString Offloader::extractHost(QString const& uri)
 {
     QUrl result(uri);
+    LOGGER("****" << uri << result.host());
 
     if ( result.host() == "twitter.com" ) {
-        return QString("%1/%2").arg( result.host() ).arg( result.path().split("/").first() );
+        LOGGER("KLJSDLFKJSDLK" << QString("%1/%2").arg( result.host() ).arg( result.path().mid(1).split("/").first() ));
+        return QString("%1/%2").arg( result.host() ).arg( result.path().mid(1).split("/").first() );
     } else {
+        LOGGER("KLJSDLF23232KJSDLK");
         return result.host();
     }
 }

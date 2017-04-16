@@ -4,6 +4,10 @@ SELECT SUM(count) FROM events WHERE event='OpenChannelTriggered'
 Total # of people who tapped on the "Video Tutorial"
 SELECT SUM(count) FROM events WHERE event='VideoTutorialTriggered'
 
+
+SELECT user_id,count(*) AS frequency FROM events WHERE app='quran10' AND event='TafsirOpened' GROUP BY user_id  ORDER BY count(*) DESC
+ArticleTapped
+
 Total # of people who wanted to open github in browser:
 SELECT SUM(count) FROM events WHERE event='OpenInBrowser'
 
