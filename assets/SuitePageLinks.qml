@@ -25,24 +25,25 @@ Page
         var tokens = message.split("/");
         var surahId = parseInt( tokens[0] );
         var verseId = parseInt( tokens[1] );
-        
+
         if (cookie == "searchPicked") {
             searchAction.onPicked(surahId, verseId);
         } else if (cookie == "ayatPicked" || cookie == "surahPicked") {
             lookupAction.onPicked(surahId, verseId);
         }
     }
-    
+
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(narrationsPage, listView);
 
-        bioTypeDialog.appendItem( qsTr("Jarh") );
-        bioTypeDialog.appendItem( qsTr("Biography") );
-        bioTypeDialog.appendItem( qsTr("Tahdeel") );
-        bioTypeDialog.appendItem( qsTr("Cited"), true, true );
-        bioTypeDialog.appendItem( qsTr("Translator") );
+        bioTypeDialog.add( qsTr("Jarh"), -1 );
+        bioTypeDialog.add( qsTr("Biography"), 2 );
+        bioTypeDialog.add( qsTr("Tahdeel"), 1 );
+        bioTypeDialog.add( qsTr("Cited"), 0, true );
+        bioTypeDialog.add( qsTr("Translator"), 3 );
+        bioTypeDialog.add( qsTr("Narrator"), 4 );
     }
-    
+
     actions: [
         ActionItem
         {
@@ -254,8 +255,9 @@ Page
                 for (var i = adm.size()-1; i >= 0; i--)
                 {
                     var current = adm.value(i);
+                    var indexPath = [i];
                     
-                    if ( listView.itemType(current, [i]) == "bio" && (!current.points || current.points == 2) )
+                    if ( listView.itemType(current, indexPath) == "bio" && (!current.points || current.points == 2) )
                     {
                         if (!current.points) {
                             current.points = 2;
@@ -263,6 +265,7 @@ Page
                             delete current.points;
                         }
                         
+                        adm.replace(indexPath, current);
                         ilmHelper.editMention(listView, current.id, current.points);
                     }
                 }
@@ -425,28 +428,25 @@ Page
         {
             id: bioTypeDialog
             property variant target
+            property variant indexToPoints: []
             title: qsTr("Biography Type") + Retranslate.onLanguageChanged
             body: qsTr("Please select the type of biography this is:") + Retranslate.onLanguageChanged
             cancelButton.label: qsTr("Cancel")
             confirmButton.label: qsTr("OK") + Retranslate.onLanguageChanged
             
+            function add(text, points, selected)
+            {
+                var i2p = indexToPoints;
+                i2p.push(points);
+                indexToPoints = i2p;
+                appendItem(text, true, selected);
+            }
+            
             onFinished: {
                 if (value == SystemUiResult.ConfirmButtonSelection)
                 {
                     var selectedIndex = selectedIndices[0];
-                    var points;
-                    
-                    if (selectedIndex == 0) {
-                        points = -1;
-                    } else if (selectedIndex == 1) {
-                        points = 2;
-                    } else if (selectedIndex == 2) {
-                        points = 1;
-                    } else if (selectedIndex == 3) {
-                        points = 0;
-                    } else if (selectedIndex == 4) {
-                        points = 3;
-                    }
+                    var points = indexToPoints[selectedIndex];
  
                     if (target) {
                         ilmHelper.addMention(listView, suitePageId, target instanceof Array ? target : [target], points);

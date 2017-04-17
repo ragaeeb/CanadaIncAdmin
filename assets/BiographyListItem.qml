@@ -4,7 +4,7 @@ StandardListItem
 {
     id: bioRoot
     title: ListItemData.target
-    imageSource: ListItemData.points == 1 ? "images/list/ic_like.png" : ListItemData.points == -1 ? "images/list/ic_dislike.png" : ListItemData.points == 2 ? "images/tabs/ic_bio.png" : ListItemData.points == 3 ? "images/dropdown/ic_student_knowledge.png" : "images/list/ic_sibling.png"
+    imageSource: ListItemData.points == 1 ? "images/list/ic_like.png" : ListItemData.points == -1 ? "images/list/ic_dislike.png" : ListItemData.points == 2 ? "images/tabs/ic_bio.png" : ListItemData.points == 3 ? "images/dropdown/ic_student_knowledge.png" : ListItemData.points == 4 ? "images/list/ic_parent.png" : "images/list/ic_sibling.png"
     
     contextActions: [
         ActionSet
