@@ -107,7 +107,7 @@ Page
             id: addQuestion
             imageSource: "images/menu/ic_add_question.png"
             title: qsTr("Add Question") + Retranslate.onLanguageChanged
-            ActionBar.placement: ActionBarPlacement.OnBar
+            ActionBar.placement: ActionBarPlacement.InOverflow
             
             function onQuestionSaved(id, standardBody, standardNegation, boolStandard, promptStandard, orderedBody, countBody, boolCount, promptCount, afterBody, beforeBody, difficulty, choices, sourceId)
             {
@@ -165,6 +165,7 @@ Page
             id: tagSuitePage
             imageSource: "images/menu/ic_add_tag.png"
             title: qsTr("Tag") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
             
             function onPicked(tagObj)
             {
@@ -238,6 +239,33 @@ Page
             
             onCreationCompleted: {
                 quran.ayatsCaptured.connect(onCaptured);
+            }
+        },
+        
+        ActionItem {
+            imageSource: "images/tabs/ic_utils.png"
+            title: qsTr("Fix Citings") + Retranslate.onLanguageChanged
+            
+            onTriggered: {
+                console.log("UserEvent: FixCitings");
+                
+                var adm = listView.dataModel;
+                
+                for (var i = adm.size()-1; i >= 0; i--)
+                {
+                    var current = adm.value(i);
+                    
+                    if ( listView.itemType(current, [i]) == "bio" && (!current.points || current.points == 2) )
+                    {
+                        if (!current.points) {
+                            current.points = 2;
+                        } else if (current.points == 2) {
+                            delete current.points;
+                        }
+                        
+                        ilmHelper.editMention(listView, current.id, current.points);
+                    }
+                }
             }
         }
     ]
