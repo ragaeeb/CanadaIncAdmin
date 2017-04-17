@@ -33,9 +33,9 @@ Page
                 }
             ]
             
-            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
+            function onCreate(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description, madhab)
             {
-                var result = ilmHelper.addIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                var result = ilmHelper.addIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description, madhab);
                 
                 if (result.id)
                 {

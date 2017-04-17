@@ -8,7 +8,7 @@ Page
     id: createRijaal
     property alias name: tftk.textField
     property variant individualId
-    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, variant currentLocation, int level, string description)
+    signal createIndividual(variant id, string prefix, string name, string kunya, string displayName, bool hidden, int birth, int death, bool female, variant location, variant currentLocation, int level, string description, int madhab)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     actionBarFollowKeyboardPolicy: ActionBarFollowKeyboardPolicy.Never
     
@@ -16,6 +16,10 @@ Page
         if (individualId) {
             ilmHelper.fetchIndividualData(createRijaal, individualId);
         }
+    }
+    
+    onCreationCompleted: {
+        ilmHelper.fetchAllMadhabs(createRijaal);
     }
     
     function cleanUp() {}
@@ -28,25 +32,15 @@ Page
             
             hidden.checked = data.hidden == 1;
             female.checked = data.female == 1;
-            var levelValue = data.is_companion;
             
-            for (var i = level.count()-1; i >= 0; i--)
-            {
-                if ( level.at(i).value == levelValue ) {
-                    level.selectedIndex = i;
-                    break;
-                }
-            }
+            global.applySelectionToDropdown(level, data.is_companion);
+            global.applySelectionToDropdown(madhab, data.madhab);
 
             name.text = data.name;
-            
-            if (data.prefix) {
-                prefix.text = data.prefix;
-            }
-            
-            if (data.kunya) {
-                kunya.text = data.kunya;
-            }
+            displayName.text = data.displayName;
+            prefix.text = data.prefix;
+            kunya.text = data.kunya;
+            descriptionField.text = data.notes;
             
             if (data.birth) {
                 birth.text = data.birth.toString();
@@ -56,10 +50,6 @@ Page
                 death.text = data.death.toString();
             }
             
-            if (data.displayName) {
-                displayName.text = data.displayName;
-            }
-            
             if (data.location) {
                 location.pickedId = data.location;
             }
@@ -67,9 +57,14 @@ Page
             if (data.current_location) {
                 currentLocation.pickedId = data.current_location;
             }
-            
-            if (data.notes) {
-                descriptionField.text = data.notes;
+        } else if (id == QueryId.FetchAllMadhabs) {
+            for (var i = 0; i < results.length; i++) {
+                var madhabOption = madhabDef.createObject();
+                var current = results[i];
+                madhabOption.text = current.suffix;
+                madhabOption.description = current.name;
+                madhabOption.value = current.id;
+                madhab.add(madhabOption);
             }
         }
     }
@@ -112,7 +107,7 @@ Page
                                 var nameValue = x.name;
                                 name.text = nameValue.charAt(0).toUpperCase() + nameValue.slice(1);
                             }
-                            
+
                             if (x.kunya) {
                                 kunya.text = x.kunya;
                             }
@@ -142,7 +137,7 @@ Page
                 name.validator.validate();
                 
                 if (name.validator.valid) {
-                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.pickedId, currentLocation.pickedId, level.selectedValue, descriptionField.text.trim() );
+                    createIndividual(individualId, prefix.text.trim(), name.text.trim(), kunya.text.trim(), displayName.text.trim(), hidden.checked, parseInt( birth.text.trim() ), parseInt( death.text.trim() ), female.checked, location.pickedId, currentLocation.pickedId, level.selectedValue, descriptionField.text.trim(), madhab.selectedValue );
                 } else {
                     persist.showToast( qsTr("Invalid name!"), "images/toast/invalid_name.png" );
                 }
@@ -219,6 +214,22 @@ Page
                         description: qsTr("Student of Knowledge") + Retranslate.onLanguageChanged
                         text: qsTr("Taalib'ul Ilm") + Retranslate.onLanguageChanged
                         value: scholarOption.value+1
+                    }
+                }
+                
+                DropDown
+                {
+                    id: madhab
+                    horizontalAlignment: HorizontalAlignment.Fill
+                    topMargin: 0; bottomMargin: 0
+                    
+                    Option {
+                        id: noMadhab
+                        imageSource: "images/menu/ic_adjacent_choices.png"
+                        description: qsTr("Unclassified") + Retranslate.onLanguageChanged
+                        text: qsTr("None") + Retranslate.onLanguageChanged
+                        value: undefined
+                        selected: true
                     }
                 }
                 
@@ -441,6 +452,15 @@ Page
                 if (!individualId) {
                     name.requestFocus();
                 }
+            }
+        },
+        
+        ComponentDefinition
+        {
+            id: madhabDef
+            
+            Option {
+                imageSource: "images/menu/ic_tribe.png"
             }
         }
     ]

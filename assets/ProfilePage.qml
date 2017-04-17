@@ -61,9 +61,9 @@ Page
                 }
             ]
             
-            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description)
+            function onEdit(id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description, madhab)
             {
-                ilmHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description);
+                ilmHelper.editIndividual(bioPage, id, prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, companion, description, madhab);
                 
                 Qt.popToRoot(bioPage);
                 reload();
@@ -151,6 +151,10 @@ Page
             }
             
             result += metadata.name;
+            
+            if (metadata.suffix) {
+                result += " "+metadata.suffix;
+            }
             
             titleBar.title = metadata.displayName ? metadata.displayName : metadata.name;
             

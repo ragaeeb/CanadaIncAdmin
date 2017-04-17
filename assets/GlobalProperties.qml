@@ -62,6 +62,17 @@ QtObject
         return n;
     }
     
+    function applySelectionToDropdown(dropdown, value)
+    {
+        for (var i = dropdown.count()-1; i >= 0; i--)
+        {
+            if ( dropdown.at(i).value == value ) {
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+    }
+    
     function plainText(input) {
         return input.replace(/<[^>]*>/gi, "");
     }

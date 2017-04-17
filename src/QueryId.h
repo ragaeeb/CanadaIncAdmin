@@ -32,6 +32,7 @@ public:
         FetchAllIds,
         FetchAllIndividuals,
         FetchAllLocations,
+        FetchAllMadhabs,
         FetchAllQuestions,
         FetchAllQuotes,
         FetchAllRecitations,

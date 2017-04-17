@@ -170,11 +170,11 @@ void IlmHelper::addMention(QObject* caller, qint64 suitePageId, QVariantList con
 }
 
 
-QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
+QVariantMap IlmHelper::addIndividual(QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description, int madhab)
 {
-    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description );
+    LOGGER( prefix << name << kunya << displayName << birth << death << female << location << level << description << madhab );
 
-    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
+    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description, madhab);
     qint64 id = m_sql->executeInsert("individuals", keyValues);
     keyValues["display_name"] = !displayName.isEmpty() ? displayName : name;
     SET_KEY_VALUE_ID;
@@ -215,11 +215,11 @@ QVariantMap IlmHelper::editMention(QObject* caller, qint64 id, QVariant const& p
 }
 
 
-QVariantMap IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description)
+QVariantMap IlmHelper::editIndividual(QObject* caller, qint64 id, QString const& prefix, QString const& name, QString const& kunya, QString const& displayName, bool hidden, int birth, int death, bool female, QString const& location, QString const& currentLocation, int level, QString const& description, int madhab)
 {
-    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << currentLocation << level << description.length() );
+    LOGGER( id << prefix << name << kunya << displayName << hidden << birth << death << female << location << currentLocation << level << description.length() << madhab );
 
-    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description);
+    QVariantMap keyValues = TokenHelper::getTokensForIndividual(prefix, name, kunya, displayName, hidden, birth, death, female, location, currentLocation, level, description, madhab);
     m_sql->executeUpdate(caller, "individuals", keyValues, QueryId::EditIndividual, id);
     keyValues["display_name"] = displayName;
     SET_AND_RETURN;
@@ -276,6 +276,11 @@ void IlmHelper::fetchAllLocations(QObject* caller, QString const& city)
     q += " ORDER BY city";
 
     m_sql->executeQuery(caller, q, QueryId::FetchAllLocations, args);
+}
+
+
+void IlmHelper::fetchAllMadhabs(QObject* caller) {
+    m_sql->executeQuery(caller, QString("SELECT madhabs.id,suffix,IFNULL(i.displayName,i.name) AS name FROM madhabs INNER JOIN individuals i ON madhabs.founder=i.id"), QueryId::FetchAllMadhabs);
 }
 
 
@@ -336,7 +341,7 @@ void IlmHelper::fetchIndividualData(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
 
-    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,notes,current_location FROM individuals LEFT JOIN locations ON individuals.location=locations.id WHERE individuals.id=%1").arg(individualId);
+    QString query = QString("SELECT individuals.id,prefix,name,kunya,hidden,birth,death,female,displayName,location,is_companion,notes,current_location,madhab,suffix FROM individuals LEFT JOIN locations ON individuals.location=locations.id LEFT JOIN madhabs ON individuals.madhab=madhabs.id WHERE individuals.id=%1").arg(individualId);
     m_sql->executeQuery(caller, query, QueryId::FetchIndividualData);
 }
 
