@@ -242,7 +242,7 @@ Page
                         {
                             if (data.length > 0) {
                                 imageSource = "images/list/ic_book.png"
-                                text = data[0].title;
+                                text = data[0].displayName ? data[0].displayName : data[0].title;
                                 
                                 if (!authorField.pickedId) {
                                     authorField.pickedId = data[0].author;

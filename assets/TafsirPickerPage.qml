@@ -23,9 +23,9 @@ Page
             title: qsTr("Add") + Retranslate.onLanguageChanged
             ActionBar.placement: 'Signature' in ActionBarPlacement ? ActionBarPlacement["Signature"] : ActionBarPlacement.OnBar
             
-            function onCreate(id, author, translator, explainer, title, description, reference, isBook)
+            function onCreate(id, author, translator, explainer, title, displayName, description, reference, isBook)
             {
-                var x = tafsirHelper.addSuite(author, translator, explainer, title, description, reference, isBook);
+                var x = tafsirHelper.addSuite(author, translator, explainer, title, displayName, description, reference, isBook);
                 tafsirHelper.fetchAllTafsir(listView, x.id);
                 
                 persist.showToast( qsTr("Suite added!"), "images/menu/ic_add_suite.png" );
@@ -247,10 +247,10 @@ Page
                     id: adm
                 }
                 
-                function onEdit(id, author, translator, explainer, title, description, reference, isBook)
+                function onEdit(id, author, translator, explainer, title, displayName, description, reference, isBook)
                 {
                     busy.delegateActive = true;
-                    var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, description, reference, isBook);
+                    var current = tafsirHelper.editSuite(listView, id, author, translator, explainer, title, displayName, description, reference, isBook);
 
                     dataModel.replace(editIndexPath[0], current);
                     

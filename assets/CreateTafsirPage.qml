@@ -5,7 +5,7 @@ Page
 {
     id: createPage
     property variant suiteId
-    signal createTafsir(variant id, variant author, variant translator, variant explainer, string title, string description, string reference, bool isBook)
+    signal createTafsir(variant id, variant author, variant translator, variant explainer, string title, string displayName, string description, string reference, bool isBook)
     signal deleteTafsir(variant id)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
@@ -39,6 +39,7 @@ Page
             titleField.text = data.title;
             descriptionField.text = data.description;
             referenceField.text = data.reference;
+            displayName.text = data.displayName;
         }
     }
     
@@ -57,7 +58,7 @@ Page
                 titleField.validator.validate();
                 
                 if (titleField.validator.valid) {
-                    createTafsir( suiteId, authorField.pickedId, translatorField.pickedId, explainerField.pickedId, titleField.text.trim(), descriptionField.text.trim(), referenceField.text.trim(), book.isBook );
+                    createTafsir( suiteId, authorField.pickedId, translatorField.pickedId, explainerField.pickedId, titleField.text.trim(), displayName.text.trim(), descriptionField.text.trim(), referenceField.text.trim(), book.isBook );
                 }
             }
         }
@@ -148,6 +149,24 @@ Page
                         onDoubleTapped: {
                             console.log("UserEvent: TafsirTitleDoubleTapped");
                             titleField.text = global.optimizeAndClean( global.getCapitalizedClipboard() );
+                        }
+                    }
+                ]
+            }
+            
+            TextField
+            {
+                id: displayName
+                hintText: qsTr("Display Name") + Retranslate.onLanguageChanged
+                horizontalAlignment: HorizontalAlignment.Fill
+                content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
+                input.flags: TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff | TextInputFlag.AutoCorrectionOff
+                
+                gestureHandlers: [
+                    DoubleTapHandler {
+                        onDoubleTapped: {
+                            console.log("UserEvent: TafsirDisplayNameDoubleTapped");
+                            displayName.text = persist.getClipboardText();
                         }
                     }
                 ]

@@ -27,11 +27,11 @@ QVariantMap TafsirHelper::addQuote(qint64 authorId, qint64 translatorId, QString
 }
 
 
-QVariantMap TafsirHelper::addSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference, bool isBook)
+QVariantMap TafsirHelper::addSuite(qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& displayName, QString const& description, QString const& reference, bool isBook)
 {
-    LOGGER(author << translator << explainer << title << description << reference << isBook);
+    LOGGER(author << translator << explainer << title << displayName << description << reference << isBook);
 
-    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference, isBook);
+    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, displayName, description, reference, isBook);
     qint64 id = m_sql->executeInsert("suites", keyValues);
     SET_AND_RETURN;
 }
@@ -47,11 +47,11 @@ QVariantMap TafsirHelper::addSuitePage(qint64 suiteId, QString const& body, QStr
 }
 
 
-QVariantMap TafsirHelper::editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& description, QString const& reference, bool isBook)
+QVariantMap TafsirHelper::editSuite(QObject* caller, qint64 id, qint64 author, qint64 translator, qint64 explainer, QString const& title, QString const& displayName, QString const& description, QString const& reference, bool isBook)
 {
-    LOGGER(id << author << translator << explainer << title << description << reference << isBook);
+    LOGGER(id << author << translator << explainer << title << displayName << description << reference << isBook);
 
-    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, description, reference, isBook);
+    QVariantMap keyValues = TokenHelper::getTokensForSuite(author, translator, explainer, title, displayName, description, reference, isBook);
     m_sql->executeUpdate(caller, "suites", keyValues, QueryId::EditSuite, id);
     SET_AND_RETURN;
 }
@@ -82,7 +82,7 @@ void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 id, qint64 author, int
 {
     LOGGER(id);
 
-    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
+    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
     QStringList where;
 
     if (id) {
@@ -128,7 +128,7 @@ void TafsirHelper::fetchTafsirMetadata(QObject* caller, qint64 suiteId)
 {
     LOGGER(suiteId);
 
-    QString query = QString("SELECT author,translator,explainer,title,description,reference,is_book FROM suites WHERE id=%1").arg(suiteId);
+    QString query = QString("SELECT author,translator,explainer,title,displayName,description,reference,is_book FROM suites WHERE id=%1").arg(suiteId);
     m_sql->executeQuery(caller, query, QueryId::FetchTafsirHeader);
 }
 
@@ -146,7 +146,7 @@ void TafsirHelper::fetchAllQuotes(QObject* caller, qint64 id, qint64 author, qin
 {
     LOGGER(id << author << suiteId);
 
-    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,%2,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
+    QStringList queryParams = QStringList() << QString("SELECT quotes.id AS id,%1,%2,body,quotes.reference,IFNULL(suites.displayName,suites.title) AS title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON quotes.suite_id=suites.id").arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
 
     QStringList whereClauses;
 
@@ -273,13 +273,13 @@ void TafsirHelper::searchQuote(QObject* caller, QString fieldName, QString const
 
     if (fieldName == "author")
     {
-        query = QString("SELECT quotes.id,%1,%3,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %2 OR %4 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg( NAME_FIELD("j","translator") ).arg( NAME_SEARCH("j") );
+        query = QString("SELECT quotes.id,%1,%3,body,quotes.reference,IFNULL(suites.displayName,suites.title) AS title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %2 OR %4 ORDER BY quotes.id DESC").arg( NAME_FIELD("i","author") ).arg( NAME_SEARCH("i") ).arg( NAME_FIELD("j","translator") ).arg( NAME_SEARCH("j") );
 
         for (int i = 0; i < 5; i++) {
             args << searchTerm;
         }
     } else {
-        query = QString("SELECT quotes.id,%2,%3,body,quotes.reference,title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
+        query = QString("SELECT quotes.id,%2,%3,body,quotes.reference,IFNULL(suites.displayName,suites.title) AS title FROM quotes INNER JOIN individuals i ON i.id=quotes.author LEFT JOIN individuals j ON j.id=quotes.translator LEFT JOIN suites ON suites.id=quotes.suite_id WHERE %1 LIKE '%' || ? || '%' ORDER BY quotes.id DESC").arg(fieldName).arg( NAME_FIELD("i","author") ).arg( NAME_FIELD("j","translator") );
     }
 
     m_sql->executeQuery(caller, query, QueryId::SearchQuote, args);
@@ -290,7 +290,7 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
 {
     LOGGER(fieldName << searchTerm);
 
-    QStringList fields = QStringList() << "suites.id AS id" << NAME_FIELD("i", "author") << "title" << "is_book";
+    QStringList fields = QStringList() << "suites.id AS id" << NAME_FIELD("i", "author") << "IFNULL(suites.displayName,suites.title) AS title" << "is_book";
     QStringList where;
     QStringList joins;
     QString query;
@@ -300,7 +300,7 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
         query = QString("SELECT %1,NULL AS heading,NULL AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 UNION SELECT %1,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suite_pages.suite_id=suites.id WHERE %3").arg( fields.join(",") ).arg( LIKE_CLAUSE("title") ).arg( LIKE_CLAUSE("heading") );
         args << searchTerm << searchTerm;
     } else if (fieldName == "title") {
-        query = QString("SELECT suites.id,%1,title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i", "author") ).arg( LIKE_CLAUSE("title") );
+        query = QString("SELECT suites.id,%1,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i", "author") ).arg( LIKE_CLAUSE("title") );
         args << searchTerm;
     } else {
         if (fieldName == "description") {

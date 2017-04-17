@@ -101,9 +101,9 @@ ListView
         tafsirHelper.editSuitePage(bioPage, id, body, header, reference);
     }
     
-    function onEditSuite(id, author, translator, explainer, title, description, reference, isBook)
+    function onEditSuite(id, author, translator, explainer, title, displayName, description, reference, isBook)
     {
-        var current = tafsirHelper.editSuite(bioPage, id, author, translator, explainer, title, description, reference, isBook);
+        var current = tafsirHelper.editSuite(bioPage, id, author, translator, explainer, title, displayName, description, reference, isBook);
         bioModel.updateItem(editIndexPath, current);
     }
     
