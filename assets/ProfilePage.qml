@@ -281,10 +281,19 @@ Page
             id: relationDialog
             property variant target
             property string name
+            property variant indexToType: []
             title: qsTr("Relationship Type") + Retranslate.onLanguageChanged
             body: qsTr("Please select the type of relationship this is:") + Retranslate.onLanguageChanged
             cancelButton.label: qsTr("Cancel")
             confirmButton.label: qsTr("OK") + Retranslate.onLanguageChanged
+            
+            function add(text, type, selected)
+            {
+                var i2t = indexToType;
+                i2t.push(type);
+                indexToType = i2t;
+                appendItem(text, true, selected);
+            }
             
             onFinished: {
                 if (value == SystemUiResult.ConfirmButtonSelection)
@@ -292,28 +301,11 @@ Page
                     var selectedIndex = selectedIndices[0];
                     var individual = individualId;
                     var other = target;
-                    var relationType = selectedIndex+1;
+                    var relationType = indexToType[selectedIndex];
                     
-                    if (selectedIndex == 0) {
-                        individual = individualId;
-                        other = target;
-                        relationType = 2;
-                    } else if  (selectedIndex == 1) {
-                        other = individualId;
+                    if  (selectedIndex == 1 || selectedIndex == 3) {
                         individual = target;
-                        relationType = 2;
-                    } else if  (selectedIndex == 2) {
-                        individual = individualId;
-                        other = target;
-                        relationType = 1;
-                    } else if  (selectedIndex == 3) {
                         other = individualId;
-                        individual = target;
-                        relationType = 1;
-                    } else {
-                        individual = individualId;
-                        other = target;
-                        relationType = selectedIndex == 4 ? 3 : selectedIndex == 5 ? 4 : 0;
                     }
                     
                     if (individual && target && relationType)
@@ -321,7 +313,7 @@ Page
                         var result = ilmHelper.addRelation(individual, other, relationType);
                         result.id = other;
                         result.name = name;
-                        
+
                         checkForDuplicate(result);
                     }
                 }
@@ -332,11 +324,12 @@ Page
     onCreationCompleted: {
         deviceUtils.attachTopBottomKeys(bioPage, bios);
         
-        relationDialog.appendItem( qsTr("Teacher"), true, true );
-        relationDialog.appendItem( qsTr("Student") );
-        relationDialog.appendItem( qsTr("Parent") );
-        relationDialog.appendItem( qsTr("Child") );
-        relationDialog.appendItem( qsTr("Sibling") );
-        relationDialog.appendItem( qsTr("Friend") );
+        relationDialog.add( qsTr("Teacher"), 2, true );
+        relationDialog.add( qsTr("Student"), 2 );
+        relationDialog.add( qsTr("Parent"), 1 );
+        relationDialog.add( qsTr("Child"), 1 );
+        relationDialog.add( qsTr("Sibling"), 3 );
+        relationDialog.add( qsTr("Friend"), 4 );
+        relationDialog.add( qsTr("Spouse"), 5 );
     }
 }

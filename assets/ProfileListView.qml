@@ -33,6 +33,8 @@ ListView
             return qsTr("Children");
         } else if (ListItemData == "friend") {
             return qsTr("Companions");
+        } else if (ListItemData == "spouse") {
+            return qsTr("Spouses");
         } else if (ListItemData == "translation") {
             return qsTr("Translations");
         } else if (ListItemData == "biography") {
@@ -48,8 +50,6 @@ ListView
     
     function itemType(data, indexPath)
     {
-        console.log("***", indexPath, JSON.stringify(data));
-        
         if (indexPath.length == 1) {
             return "header";
         } else if (data.individual && data.other_id) { // relationship
@@ -59,8 +59,10 @@ ListView
                 return data.other_id == individualId ? "student" : "teacher";
             } else if (data.type == 3) {
                 return "sibling";
-            } else {
+            } else if (data.type == 4) {
                 return "friend";
+            } else {
+                return "spouse";
             }
         } else if (data.points != undefined) {
             return data.points == 3 ? "translation" : data.points == 2 ? "biography" : "citing";
@@ -270,6 +272,17 @@ ListView
         
         ListItemComponent
         {
+            type: "spouse"
+            
+            RelationItem
+            {
+                imageSource: ListItemData.female ? "images/list/ic_female.png" : "images/dropdown/ic_scholar.png"
+                delImage: "images/menu/ic_remove_child.png"
+            }
+        },
+        
+        ListItemComponent
+        {
             type: "student"
             
             RelationItem
@@ -361,7 +374,7 @@ ListView
             var type = itemType(d, indexPath);
             console.log("UserEvent: AttributeTapped", type);
             
-            if (type == "student" || type == "teacher" || type == "child" || type == "parent" || type == "sibling" || type == "friend") {
+            if (d.individual && d.other_id) {
                 var page = Qt.launch("ProfilePage.qml");
                 page.individualId = d.id;
             } else if (type == "citing" || type == "work" || type == "translation" || type == "biography") {
