@@ -82,7 +82,7 @@ void TafsirHelper::fetchAllTafsir(QObject* caller, qint64 id, qint64 author, int
 {
     LOGGER(id);
 
-    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,%1,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author").arg( NAME_FIELD("i","author") );
+    QStringList queryParams = QStringList() << QString("SELECT suites.id AS id,IFNULL(i.displayName,i.name) AS author,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author");
     QStringList where;
 
     if (id) {
@@ -119,7 +119,7 @@ void TafsirHelper::findDuplicateSuites(QObject* caller, QString const& field)
 {
     LOGGER(field);
 
-    QString query = QString("SELECT suites.id AS id,%1,title,COUNT(*) c FROM suites LEFT JOIN individuals i ON i.id=suites.author GROUP BY %2 HAVING c > 1").arg( NAME_FIELD("i","author") ).arg(field);
+    QString query = QString("SELECT suites.id AS id,IFNULL(i.displayName,i.name) AS author,title,COUNT(*) c FROM suites LEFT JOIN individuals i ON i.id=suites.author GROUP BY %2 HAVING c > 1").arg(field);
     m_sql->executeQuery(caller, query, QueryId::FindDuplicates);
 }
 
@@ -185,7 +185,7 @@ void TafsirHelper::findDuplicateQuotes(QObject* caller, QString const& field)
 {
     LOGGER(field);
 
-    QString query = QString("SELECT quotes.id AS id,%1,body,reference,COUNT(*) c FROM quotes INNER JOIN individuals i ON i.id=quotes.author GROUP BY %2 HAVING c > 1").arg( NAME_FIELD("i","author") ).arg(field);
+    QString query = QString("SELECT quotes.id AS id,IFNULL(i.displayName,i.name) AS author,body,reference,COUNT(*) c FROM quotes INNER JOIN individuals i ON i.id=quotes.author GROUP BY %2 HAVING c > 1").arg(field);
     m_sql->executeQuery(caller, query, QueryId::FindDuplicates);
 }
 
@@ -290,7 +290,7 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
 {
     LOGGER(fieldName << searchTerm);
 
-    QStringList fields = QStringList() << "suites.id AS id" << NAME_FIELD("i", "author") << "IFNULL(suites.displayName,suites.title) AS title" << "is_book";
+    QStringList fields = QStringList() << "suites.id AS id" << "IFNULL(i.displayName,i.name) AS author" << "IFNULL(suites.displayName,suites.title) AS title" << "is_book";
     QStringList where;
     QStringList joins;
     QString query;
@@ -300,7 +300,7 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
         query = QString("SELECT %1,NULL AS heading,NULL AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 UNION SELECT %1,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suite_pages.suite_id=suites.id WHERE %3").arg( fields.join(",") ).arg( LIKE_CLAUSE("title") ).arg( LIKE_CLAUSE("heading") );
         args << searchTerm << searchTerm;
     } else if (fieldName == "title") {
-        query = QString("SELECT suites.id,%1,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( NAME_FIELD("i", "author") ).arg( LIKE_CLAUSE("title") );
+        query = QString("SELECT suites.id,IFNULL(i.displayName,i.name) AS author,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( LIKE_CLAUSE("title") );
         args << searchTerm;
     } else {
         if (fieldName == "description") {

@@ -287,14 +287,14 @@ void IlmHelper::fetchAllMadhabs(QObject* caller) {
 void IlmHelper::fetchBioMetadata(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,points,mentions.target AS target_id FROM mentions LEFT JOIN individuals i ON mentions.target=i.id WHERE suite_page_id=%2").arg( NAME_FIELD("i","target") ).arg(suitePageId), QueryId::FetchBioMetadata);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,IFNULL(i.displayName,i.name) AS target,points,mentions.target AS target_id FROM mentions LEFT JOIN individuals i ON mentions.target=i.id WHERE suite_page_id=%1").arg(suitePageId), QueryId::FetchBioMetadata);
 }
 
 
 void IlmHelper::fetchRelations(QObject* caller, qint64 individual)
 {
     LOGGER(individual);
-    m_sql->executeQuery(caller, QString("SELECT i.id AS id,individual,other_id,%1,i.female AS female,relationships.id AS relation_id,type FROM relationships INNER JOIN individuals i ON relationships.individual=i.id WHERE relationships.other_id=%2 UNION SELECT i.id,individual,other_id,%1,i.female,relationships.id,type FROM relationships INNER JOIN individuals i ON relationships.other_id=i.id WHERE relationships.individual=%2").arg( NAME_FIELD("i","name") ).arg(individual), QueryId::FetchRelations);
+    m_sql->executeQuery(caller, QString("SELECT i.id AS id,individual,other_id,IFNULL(i.displayName,i.name) AS name,i.female AS female,relationships.id AS relation_id,type FROM relationships INNER JOIN individuals i ON relationships.individual=i.id WHERE relationships.other_id=%1 UNION SELECT i.id,individual,other_id,IFNULL(i.displayName,i.name) AS name,i.female,relationships.id,type FROM relationships INNER JOIN individuals i ON relationships.other_id=i.id WHERE relationships.individual=%1").arg(individual), QueryId::FetchRelations);
 }
 
 
@@ -358,7 +358,7 @@ void IlmHelper::fetchLocationInfo(QObject* caller, qint64 locationId)
 void IlmHelper::fetchMentions(QObject* caller, qint64 individualId)
 {
     LOGGER(individualId);
-    m_sql->executeQuery(caller, QString("SELECT mentions.id,%1,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,COALESCE(points,0) AS points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%2").arg( NAME_FIELD("i","author") ).arg(individualId), QueryId::FetchMentions);
+    m_sql->executeQuery(caller, QString("SELECT mentions.id,IFNULL(i.displayName,i.name) AS name,heading,title,suite_page_id,suites.reference,suite_pages.reference AS suite_page_reference,COALESCE(points,0) AS points,suite_pages.suite_id FROM mentions INNER JOIN suite_pages ON mentions.suite_page_id=suite_pages.id INNER JOIN suites ON suites.id=suite_pages.suite_id LEFT JOIN individuals i ON suites.author=i.id WHERE target=%1").arg(individualId), QueryId::FetchMentions);
 }
 
 

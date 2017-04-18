@@ -138,7 +138,7 @@ void QuranHelper::fetchExplanationsFor(QObject* caller, int chapter, int fromVer
 {
     LOGGER(chapter << fromVerse << toVerse);
 
-    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,suite_id,%4,title,heading FROM explanations INNER JOIN suite_pages ON suite_pages.id=explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE surah_id=%1 AND from_verse_number=%2 AND to_verse_number=%3 ORDER BY author,title,heading").arg(chapter).arg(fromVerse).arg(toVerse).arg( NAME_FIELD("i", "author") ), QueryId::FetchExplanationsFor);
+    m_sql->executeQuery(caller, QString("SELECT suite_page_id AS id,suite_id,IFNULL(i.displayName,i.name) AS author,title,heading FROM explanations INNER JOIN suite_pages ON suite_pages.id=explanations.suite_page_id INNER JOIN suites ON suites.id=suite_pages.suite_id INNER JOIN individuals i ON i.id=suites.author WHERE surah_id=%1 AND from_verse_number=%2 AND to_verse_number=%3 ORDER BY author,title,heading").arg(chapter).arg(fromVerse).arg(toVerse), QueryId::FetchExplanationsFor);
 }
 
 
