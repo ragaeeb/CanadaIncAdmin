@@ -11,7 +11,7 @@ Page
     function performSearch()
     {
         var query = tftk.textField.text.trim();
-        
+
         ilmTest.fetchAllChoices(listView, query);
         salat.searchTags(listView, query, "grouped_choices");
     }
@@ -277,7 +277,7 @@ Page
                     {
                         id: tagRoot
                         imageSource: "images/list/ic_tag.png"
-                        title: ListItemData.tag
+                        title: ListItemData.name
                     }
                 }
             ]
@@ -307,7 +307,7 @@ Page
                 console.log("UserEvent: ChoicePicked");
                 
                 if ( itemType(d, indexPath) == "tag" ) {
-                    ilmTest.fetchChoicesForTag(listView, d.tag);
+                    ilmTest.fetchChoicesForTag(listView, d.id);
                 } else {
                     multiSelectHandler.active = true;
                     toggleSelection(indexPath);

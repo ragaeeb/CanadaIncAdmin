@@ -22,15 +22,6 @@ QVariantMap getTokensForCenter(QString const& name, QString const& website, qint
     return keyValues;
 }
 
-QVariantMap getTokensForTags(qint64 suitePageId, QString const& tag)
-{
-    QVariantMap keyValues;
-    keyValues["suite_page_id"] = suitePageId;
-    keyValues["tag"] = tag;
-
-    return keyValues;
-}
-
 }
 
 namespace admin {
@@ -58,18 +49,6 @@ QVariantMap SalatHelper::editCenter(QObject* caller, qint64 id, QString const& n
 
     QVariantMap keyValues = getTokensForCenter(name, website, location);
     m_sql->executeUpdate(caller, "masjids", keyValues, QueryId::EditCenter, id);
-    SET_AND_RETURN;
-}
-
-
-QVariantMap SalatHelper::editTag(QObject* caller, qint64 id, QString const& tag, QString const& table)
-{
-    LOGGER(id << tag);
-
-    QVariantMap keyValues;
-    keyValues["tag"] = tag;
-
-    m_sql->executeUpdate(caller, table, keyValues, QueryId::EditTag, id);
     SET_AND_RETURN;
 }
 
@@ -104,7 +83,7 @@ void SalatHelper::fetchTagsForSuitePage(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);
 
-    QString query = QString("SELECT id,tag FROM grouped_suite_pages WHERE suite_page_id=%1 ORDER BY tag").arg(suitePageId);
+    QString query = QString("SELECT grouped_suite_pages.tag AS id,name FROM grouped_suite_pages INNER JOIN tags ON grouped_suite_pages.tag=tags.id WHERE suite_page_id=%1 ORDER BY name").arg(suitePageId);
     m_sql->executeQuery(caller, query, QueryId::FetchTagsForSuitePage);
 }
 
@@ -112,50 +91,42 @@ void SalatHelper::fetchTagsForSuitePage(QObject* caller, qint64 suitePageId)
 void SalatHelper::removeTag(QObject* caller, qint64 id, QString const& table)
 {
     LOGGER(id);
-    REMOVE_ELEMENT(table, QueryId::RemoveTag);
+    m_sql->executeQuery( caller, QString("DELETE FROM %1 WHERE %2=%3").arg(table).arg("tag").arg(id), QueryId::RemoveTag );
 }
 
 
-void SalatHelper::searchTags(QObject* caller, QString const& term, QString const& table)
+QVariantMap SalatHelper::createTag(QString const& name)
+{
+    QVariantMap keyValues;
+    keyValues["name"] = name;
+
+    qint64 id = m_sql->executeInsert("tags", keyValues);
+    SET_AND_RETURN;
+}
+
+
+void SalatHelper::searchTags(QObject* caller, QString const& term)
 {
     LOGGER(term);
 
     QVariantList params;
-    QString query = "SELECT DISTINCT(tag) FROM "+table;
-
-    if ( !term.isEmpty() )
-    {
-        query += QString(" WHERE %1").arg( LIKE_CLAUSE("tag") );
-        params << term;
-    }
-
-    query += " ORDER BY tag";
+    QString query = QString("SELECT id,name FROM tags WHERE %1 ORDER BY name").arg( LIKE_CLAUSE("name") );
+    params << term;
 
     m_sql->executeQuery(caller, query, QueryId::SearchTags, params);
 }
 
 
-QVariantMap SalatHelper::tagSuitePage(qint64 const& suitePageId, QString const& tag)
+QVariantMap SalatHelper::tagSuitePage(qint64 const& suitePageId, int tag)
 {
     LOGGER(suitePageId << tag);
 
-    QVariantMap keyValues = getTokensForTags(suitePageId, tag);
+    QVariantMap keyValues;
+    keyValues["suite_page_id"] = suitePageId;
+    keyValues["tag"] = tag;
+
     qint64 id = m_sql->executeInsert("grouped_suite_pages", keyValues);
     SET_AND_RETURN;
-}
-
-
-void SalatHelper::tagSuites(QObject* caller, QVariantList const& suiteIds, QString const& tag)
-{
-    LOGGER(suiteIds << tag);
-
-    m_sql->startTransaction(caller, InternalQueryId::PendingTransaction);
-
-    foreach (QVariant const& suiteId, suiteIds) {
-        m_sql->executeQuery(caller, QString("INSERT INTO grouped_suite_pages (suite_page_id,tag) SELECT id,'%1' FROM suite_pages WHERE suite_id=?").arg(tag), InternalQueryId::PendingTransaction, QVariantList() << suiteId);
-    }
-
-    m_sql->endTransaction(caller, QueryId::TagSuites);
 }
 
 

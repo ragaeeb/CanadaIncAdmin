@@ -28,9 +28,6 @@ ListView
         } else if (id == QueryId.UnlinkNarrationsFromSuitePage) {
             persist.showToast( qsTr("Narration unlinked from suite page"), "images/menu/ic_unlink_narration.png" );
             busy.delegateActive = false;
-        } else if (id == QueryId.EditTag) {
-            persist.showToast( qsTr("Tag updated!"), "images/toast/edited_tags.png" );
-            busy.delegateActive = false;
         } else if (id == QueryId.LinkNarrationsToSuitePage) {
             persist.showToast( qsTr("Narration linked to suite page"), "images/menu/ic_add_narration.png" );
             busy.delegateActive = false;
@@ -130,15 +127,7 @@ ListView
         } else if (t == "narration") {
             var page = Qt.launch("NarrationProfilePage.qml");
             page.narrationId = d.narration_id;
-        } else if (t == "tag") {
-            var tag = persist.showBlockingPrompt( qsTr("Enter tag"), qsTr("Please enter a tag for this suite page"), "", qsTr("Enter value"), 50, true, qsTr("Save"), qsTr("Cancel") ).trim().toLowerCase();
-            
-            if (tag.length > 0)
-            {
-                var edited = salat.editTag(listView, d.id, tag);
-                adm.replace(indexPath[0], edited);
-            }
-        } else {
+        } else if (d.target_id) {
             var page = Qt.launch("ProfilePage.qml");
             page.individualsPicked.connect(onPeoplePicked);
             page.individualId = d.target_id;
@@ -231,10 +220,10 @@ ListView
             return "question"
         } else if (data.narration_id) {
             return "narration"
-        } else if (data.tag) {
-            return "tag"
-        } else {
-            return "bio";
+        } else if (data.target) {
+            return "bio"
+        } else if (data.name) {
+            return "tag";
         }
     }
     
@@ -350,7 +339,7 @@ ListView
             {
                 id: tagRoot
                 imageSource: "images/list/ic_tag.png"
-                title: ListItemData.tag
+                title: ListItemData.name
                 
                 contextActions: [
                     ActionSet

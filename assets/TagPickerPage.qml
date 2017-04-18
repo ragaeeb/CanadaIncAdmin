@@ -41,7 +41,11 @@ Page
                 var trimmed = tftk.textField.text.trim().toLowerCase();
 
                 if (trimmed.length > 0) {
-                    picked({'tag': trimmed});
+                    var result = salat.createTag(trimmed);
+                    
+                    if (result.id) {
+                        picked(result);
+                    }
                 }
             }
         }
@@ -64,10 +68,6 @@ Page
                 
                 onEnded: {
                     tftk.textField.requestFocus();
-                    
-                    if (!prepopulated || prepopulated.length == 0) {
-                        salat.searchTags(listView, "", table);
-                    }
                 }
             }
         ]
@@ -93,7 +93,7 @@ Page
                         {
                             id: sli
                             imageSource: "images/list/ic_tag.png"
-                            title: ListItemData.tag
+                            title: ListItemData.name
                         }
                     }
                 ]

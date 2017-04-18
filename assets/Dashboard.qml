@@ -410,21 +410,16 @@ NavigationPane
                 
                 function onDataLoaded(id, data)
                 {
-                    if (id == -4) {
+                    /*if (id == -4) {
                         sql.setIndexAsId(reorder, data);
                     } else if (id == -6) {
                         persist.showToast( qsTr("Successfully reordered!"), "images/menu/ic_top.png" );
-                    }
+                    } */
                 }
                 
                 onTriggered: {
                     console.log("UserEvent: Reorder");
-                    app.fetchAllIds(reorder, "locations");
-                    app.fetchAllIds(reorder, "individuals");
-                    app.fetchAllIds(reorder, "mentions");
-                    //app.fetchAllIds(reorder, "answers");
-                    app.fetchAllIds(reorder, "choices");
-                    //app.fetchAllIds(reorder, "questions");
+                    app.fetchAllIds(reorder, "suite_pages");
                 }
             },
             
@@ -448,32 +443,6 @@ NavigationPane
 
                 onTriggered: {
                     app.uploadChats();
-                }
-            },
-            
-            ActionItem
-            {
-                id: reorderSuites
-                imageSource: "images/menu/ic_reorder_suites.png"
-                title: qsTr("Reorder Suites") + Retranslate.onLanguageChanged
-                property variant intersection
-                
-                function onDataLoaded(id, data)
-                {
-                    if (id == QueryId.FetchSuitePageIntersection)
-                    {
-                        intersection = data;
-                        sql.fetchAllIds(reorderSuites, "suites");
-                    } else if (id == QueryId.FetchAllIds) {
-                        sql.setIndexAsId(reorderSuites, data, intersection);
-                    } else if (id == QueryId.UpdateIdWithIndex) {
-                        persist.showToast( qsTr("Successfully reordered suite pages!"), "images/menu/ic_top.png" );
-                    }
-                }
-                
-                onTriggered: {
-                    console.log("UserEvent: ReorderSuites")
-                    tafsirHelper.fetchSuitePageIntersection(reorderSuites, "arabic");
                 }
             },
             

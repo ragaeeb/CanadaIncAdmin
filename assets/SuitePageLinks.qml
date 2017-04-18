@@ -170,10 +170,9 @@ Page
             
             function onPicked(tagObj)
             {
-                var tagValue = tagObj.tag;
-                
-                var result = salat.tagSuitePage(suitePageId, tagValue);
-                persist.showToast( qsTr("Tagged page as '%1'").arg(tagValue), imageSource.toString() );
+                var result = salat.tagSuitePage(suitePageId, tagObj.id);
+                result.name = tagObj.name;
+                persist.showToast( qsTr("Tagged page as '%1'").arg(tagObj.name), imageSource.toString() );
 
                 adm.insert(0, result);
                 listView.scrollToPosition(ScrollPosition.Beginning, ScrollAnimation.Smooth);

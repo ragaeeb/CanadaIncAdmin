@@ -168,7 +168,7 @@ void IlmTestHelper::fetchTagsForChoices(QObject* caller, QVariantList const& cho
 {
     LOGGER(choiceIds);
 
-    QString query = QString("SELECT DISTINCT(tag) FROM grouped_choices WHERE choice_id IN (%1) ORDER BY tag").arg( combine(choiceIds) );
+    QString query = QString("SELECT grouped_choices.tag AS id,name FROM grouped_choices INNER JOIN tags ON grouped_choices.tag=tags.id WHERE choice_id IN (%1) ORDER BY name").arg( combine(choiceIds) );
     m_sql->executeQuery(caller, query, QueryId::FetchTagsForChoices);
 }
 
@@ -204,7 +204,7 @@ void IlmTestHelper::fetchChoicesForQuestion(QObject* caller, qint64 questionId)
 }
 
 
-void IlmTestHelper::fetchChoicesForTag(QObject* caller, QString const& tag)
+void IlmTestHelper::fetchChoicesForTag(QObject* caller, int tag)
 {
     LOGGER(tag);
 
@@ -247,7 +247,7 @@ QVariantMap IlmTestHelper::sourceChoice(qint64 originalChoiceId, QString const& 
 }
 
 
-void IlmTestHelper::tagChoices(QObject* caller, QVariantList const& choiceIds, QString const& tag)
+void IlmTestHelper::tagChoices(QObject* caller, QVariantList const& choiceIds, int tag)
 {
     LOGGER(choiceIds << tag);
 
