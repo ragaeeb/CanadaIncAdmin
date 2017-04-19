@@ -442,6 +442,22 @@ Page
         }
     }
     
+    actions: [
+        ActionItem
+        {
+            imageSource: "images/tabs/ic_utils.png"
+            title: qsTr("Swap Names") + Retranslate.onLanguageChanged
+            ActionBar.placement: ActionBarPlacement.OnBar
+            
+            onTriggered: {
+                console.log("UserEvent: SwapNames");
+                var temp = name.text;
+                name.text = displayName.text;
+                displayName.text = temp;
+            }
+        }
+    ]
+    
     attachedObjects: [
         Timer {
             interval: 250
