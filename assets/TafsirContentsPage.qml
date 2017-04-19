@@ -6,9 +6,18 @@ Page
 {
     id: tafsirContentsPage
     property variant suiteId
+    property int tagId
     property variant searchData
     property alias title: tb.title
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
+    
+    onTagIdChanged: {
+        if (tagId)
+        {
+            busy.delegateActive = true;
+            salat.fetchPagesForTag(listView, tagId);
+        }
+    }
     
     onSuiteIdChanged: {
         if (suiteId)
@@ -136,7 +145,6 @@ Page
                             }
                         }
                     }    
-                    
                 } else if (id == QueryId.MoveToSuite) {
                     persist.showToast( qsTr("Suite page moved!"), "images/menu/ic_merge.png" );
                     
@@ -155,6 +163,8 @@ Page
                     adm.append(data);
                 } else if (id == QueryId.RemoveSuite) {
                     Qt.navigationPane.pop();
+                } else if (id == QueryId.FetchPagesForTag) {
+                    adm.append(data);
                 }
                 
                 refresh();

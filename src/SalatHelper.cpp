@@ -79,6 +79,14 @@ void SalatHelper::fetchCenter(QObject* caller, qint64 id)
 }
 
 
+void SalatHelper::fetchPagesForTag(QObject* caller, int tagId)
+{
+    LOGGER(tagId);
+    QString query = QString("SELECT suite_pages.id,body,heading,reference FROM suite_pages INNER JOIN grouped_suite_pages ON grouped_suite_pages.suite_page_id=suite_pages.id WHERE tag=%1").arg(tagId);
+    m_sql->executeQuery(caller, query, QueryId::FetchPagesForTag);
+}
+
+
 void SalatHelper::fetchTagsForSuitePage(QObject* caller, qint64 suitePageId)
 {
     LOGGER(suitePageId);

@@ -8,6 +8,7 @@ Page
     property variant prepopulated
     property string table: "grouped_suite_pages"
     signal picked(variant picked)
+    signal totalLoaded(int size)
     function cleanUp() {}
     
     onCreationCompleted: {
@@ -104,6 +105,7 @@ Page
                     {
                         adm.clear();
                         adm.append(data);
+                        totalLoaded( adm.size() );
                         updateState();
                     }
                 }

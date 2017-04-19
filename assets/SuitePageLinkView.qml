@@ -131,6 +131,10 @@ ListView
             var page = Qt.launch("ProfilePage.qml");
             page.individualsPicked.connect(onPeoplePicked);
             page.individualId = d.target_id;
+        } else if (t == "tag") {
+            var page = Qt.launch("TafsirContentsPage.qml");
+            page.title = d.name;
+            page.tagId = d.id;
         }
     }
     

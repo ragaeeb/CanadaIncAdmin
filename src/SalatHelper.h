@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE void fetchAllCenters(QObject* caller, QString const& name=QString());
     Q_INVOKABLE void fetchCenter(QObject* caller, qint64 id);
     Q_INVOKABLE void fetchTagsForSuitePage(QObject* caller, qint64 suitePageId);
+    Q_INVOKABLE void fetchPagesForTag(QObject* caller, int tagId);
     Q_INVOKABLE void removeTag(QObject* caller, qint64 id, QString const& table="grouped_suite_pages");
     Q_INVOKABLE void searchTags(QObject* caller, QString const& term=QString());
     Q_INVOKABLE QVariantMap tagSuitePage(qint64 const& suitePageId, int tag);

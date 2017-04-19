@@ -55,7 +55,7 @@ public:
         FetchNarrationsInGroup,
         FetchNarrationsForSuitePage,
         FetchNextGroupNumber,
-        FetchPageNumbers,
+        FetchPagesForTag,
         FetchParents,
         FetchQuestion,
         FetchQuestionsForSuitePage,
@@ -103,8 +103,6 @@ public:
         SearchNarrations,
         SearchTafsir,
         SearchTags,
-        SettingUpTafsir,
-        SetupTafsir,
         TagChoices,
         TranslateQuote,
         TranslateSuitePage,
@@ -114,8 +112,7 @@ public:
         UpdateGroupNumbers,
         UpdateIdWithIndex,
         UpdateSortOrder,
-        UpdateTafsirLink,
-        FindLegacy
+        UpdateTafsirLink
     };
 };
 

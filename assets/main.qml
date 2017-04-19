@@ -169,6 +169,23 @@ TabbedPane
     
     Tab
     {
+        id: tags
+        title: qsTr("Tags") + Retranslate.onLanguageChanged
+        description: qsTr("Keywords") + Retranslate.onLanguageChanged
+        imageSource: "images/list/ic_tag.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        
+        onTriggered: {
+            console.log("UserEvent: TagTab");
+        }
+        
+        delegate: Delegate {
+            source: "TagPane.qml"
+        }
+    }
+    
+    Tab
+    {
         id: rijaalTab
         title: qsTr("Rijaal") + Retranslate.onLanguageChanged
         description: qsTr("Individuals") + Retranslate.onLanguageChanged
