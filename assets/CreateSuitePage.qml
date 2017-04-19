@@ -254,7 +254,7 @@ Page
                 DoubleTapHandler {
                     onDoubleTapped: {
                         console.log("UserEvent: TafsirReferenceDoubleTapped");
-                        referenceField.text = persist.getClipboardText();
+                        referenceField.text = global.stripSlashFromClipboard();
                     }
                 }
             ]
