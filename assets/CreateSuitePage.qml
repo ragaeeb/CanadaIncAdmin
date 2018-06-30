@@ -168,7 +168,7 @@ Page
             hintText: qsTr("Heading...") + Retranslate.onLanguageChanged
             backgroundVisible: false
             enabled: bodyField.editable
-            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
+            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff
             content.flags: TextContentFlag.ActiveTextOff | TextContentFlag.EmoticonsOff
             
             gestureHandlers: [
@@ -246,7 +246,7 @@ Page
             backgroundVisible: false
             content.flags: TextContentFlag.ActiveText | TextContentFlag.EmoticonsOff
             hintText: qsTr("Enter reference here...") + Retranslate.onLanguageChanged
-            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoPeriodOff
+            input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.AutoPeriodOff
             topPadding: 0; topMargin: 0
             editable: bodyField.editable
             

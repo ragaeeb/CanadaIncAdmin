@@ -49,7 +49,7 @@ NavigationPane
                 
                 function onCreate(id, author, translator, body, reference, suiteId, uri)
                 {
-                    var x = tafsirHelper.addQuote(author, translator, body, reference, suiteId, uri);
+                    var x = sql.executeInsert(author, translator, body, reference, suiteId, uri);
                     tafsirHelper.fetchAllQuotes(listView, x.id);
                     
                     persist.showToast( qsTr("Quote added!"), "images/menu/ic_add_quote.png" );

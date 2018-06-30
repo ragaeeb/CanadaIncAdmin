@@ -215,6 +215,22 @@ Page
                         text: qsTr("Taalib'ul Ilm") + Retranslate.onLanguageChanged
                         value: scholarOption.value+1
                     }
+                    
+                    Option {
+                        id: masjid
+                        imageSource: "images/list/ic_masjid.png"
+                        description: qsTr("Musalla") + Retranslate.onLanguageChanged
+                        text: qsTr("Masjid") + Retranslate.onLanguageChanged
+                        value: -1
+                    }
+                    
+                    Option {
+                        id: organization
+                        imageSource: "images/menu/ic_new_group.png"
+                        description: qsTr("Group") + Retranslate.onLanguageChanged
+                        text: qsTr("Organization") + Retranslate.onLanguageChanged
+                        value: -2
+                    }
                 }
                 
                 DropDown

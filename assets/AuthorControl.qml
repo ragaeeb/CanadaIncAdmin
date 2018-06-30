@@ -6,6 +6,7 @@ Container
     id: itf
     property string field: "author"
     property string label
+    property alias value: tf.text
     property variant pickedId
     property string table: "suites"
     property string where

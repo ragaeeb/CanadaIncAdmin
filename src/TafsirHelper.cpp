@@ -299,8 +299,8 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
     if (fieldName == "heading") {
         query = QString("SELECT %1,NULL AS heading,NULL AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 UNION SELECT %1,heading,suite_pages.id AS suite_page_id FROM suites LEFT JOIN individuals i ON i.id=suites.author INNER JOIN suite_pages ON suite_pages.suite_id=suites.id WHERE %3").arg( fields.join(",") ).arg( LIKE_CLAUSE("title") ).arg( LIKE_CLAUSE("heading") );
         args << searchTerm << searchTerm;
-    } else if (fieldName == "title") {
-        query = QString("SELECT suites.id,IFNULL(i.displayName,i.name) AS author,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( LIKE_CLAUSE("title") );
+    } else if (fieldName == "title" || fieldName == "collection_references") {
+        query = QString("SELECT suites.id,IFNULL(i.displayName,i.name) AS author,IFNULL(suites.displayName,suites.title) AS title,is_book FROM suites LEFT JOIN individuals i ON i.id=suites.author WHERE %2 ORDER BY suites.id DESC").arg( LIKE_CLAUSE(fieldName) );
         args << searchTerm;
     } else {
         if (fieldName == "description") {
@@ -322,7 +322,7 @@ void TafsirHelper::searchTafsir(QObject* caller, QString const& fieldName, QStri
             args << searchTerm;
         }
 
-        query = QString("SELECT %1 FROM suites LEFT JOIN individuals i ON i.id=suites.author %2 WHERE %3 ORDER BY suites.id DESC").arg( fields.join(",") ).arg( joins.join(" ") ).arg( where.join(" OR ") );
+        query = QString("SELECT %1 FROM suites LEFT JOIN individuals i ON i.id=suites.author %2 WHERE (%3) ORDER BY suites.id DESC").arg( fields.join(",") ).arg( joins.join(" ") ).arg( where.join(" OR ") );
     }
 
     m_sql->executeQuery(caller, query, QueryId::SearchTafsir, args);

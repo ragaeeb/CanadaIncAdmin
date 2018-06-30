@@ -9,8 +9,6 @@ Page
     property alias body: bodyField.text
     property alias reference: referenceField.text
     property alias uri: uriField.text
-    property alias bufferText: buffer.text
-    signal createQuote(variant id, variant author, variant translator, string body, string reference, variant suiteId, string uri)
     actionBarAutoHideBehavior: ActionBarAutoHideBehavior.HideOnScroll
     
     onQuoteIdChanged: {
@@ -132,7 +130,14 @@ Page
             onTriggered: {
                 console.log("UserEvent: CreateQuoteSaveTriggered");
                 
-                if ( authorField.pickedId && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) ) {
+                if ( authorField.pickedId && bodyField.text.trim().length > 3 && ( suiteId.text.trim().length > 0 || referenceField.text.trim().length > 3) )
+                {
+                    var data = {author: authorField.pickedId, authorName: authorField.value.trim(),
+                                translator: translatorField.pickedId, translatorName: translatorField.value.trim(),
+                                body: bodyField.text.trim(), reference: referenceField.text.trim(), url: uriField.text.trim(),
+                                suite_id: suiteId.pickedId, from_page: fromPage.text.trim(), to_page: toPage.text.trim(),
+                                volume_number: volNumber.text.trim(), book_number: bookNumber.text.trim(),
+                                indexed_number: indexNumber.text.trim()};
                     createQuote( quoteId, authorField.pickedId, translatorField.pickedId, bodyField.text.trim(), referenceField.text.trim(), suiteId.pickedId, uriField.text.trim() );
                 }
             }
@@ -210,6 +215,56 @@ Page
                     orientation: LayoutOrientation.LeftToRight
                 }
                 
+                TextField {
+                    id: fromPage
+                    hintText: qsTr("From Page") + Retranslate.onLanguageChanged
+                    clearButtonVisible: false
+                    input.flags: TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoCapitalizationOff
+                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                }
+                
+                TextField {
+                    id: toPage
+                    hintText: qsTr("To Page") + Retranslate.onLanguageChanged
+                    clearButtonVisible: false
+                    input.flags: TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoCapitalizationOff
+                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                }
+                
+                TextField {
+                    id: volNumber
+                    hintText: qsTr("Volume") + Retranslate.onLanguageChanged
+                    clearButtonVisible: false
+                    input.flags: TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoCapitalizationOff
+                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                }
+                
+                TextField {
+                    id: bookNumber
+                    hintText: qsTr("Book #") + Retranslate.onLanguageChanged
+                    clearButtonVisible: false
+                    content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
+                    input.flags: TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoCapitalizationOff
+                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                }
+                
+                TextField {
+                    id: indexNumber
+                    hintText: qsTr("Index #") + Retranslate.onLanguageChanged
+                    clearButtonVisible: false
+                    input.flags: TextInputFlag.WordSubstitutionOff | TextInputFlag.AutoCapitalizationOff
+                    inputMode: TextFieldInputMode.NumbersAndPunctuation
+                }
+            }
+            
+            Container
+            {
+                horizontalAlignment: HorizontalAlignment.Fill
+                
+                layout: StackLayout {
+                    orientation: LayoutOrientation.LeftToRight
+                }
+                
                 Button
                 {
                     id: suiteId
@@ -217,13 +272,13 @@ Page
                     property string label: qsTr("Suite ID...") + Retranslate.onLanguageChanged
                     horizontalAlignment: HorizontalAlignment.Fill
                     leftMargin: 0; rightMargin: 0
-                    
+
                     function reset()
                     {
                         text = label;
                         resetImageSource();
                     }
-                    
+
                     onPickedIdChanged: {
                         if (pickedId) {
                             tafsirHelper.fetchTafsirMetadata(suiteId, pickedId);
@@ -231,7 +286,7 @@ Page
                             reset();
                         }
                     }
-                    
+
                     onCreationCompleted: {
                         reset();
                     }
@@ -317,16 +372,6 @@ Page
                         }
                     }
                 ]
-            }
-            
-            TextArea
-            {
-                id: buffer
-                horizontalAlignment: HorizontalAlignment.Fill
-                content.flags: TextContentFlag.EmoticonsOff | TextContentFlag.ActiveTextOff
-                input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff | TextInputFlag.WordSubstitution | TextInputFlag.AutoPeriodOff
-                hintText: qsTr("Buffer (not used)...") + Retranslate.onLanguageChanged
-                backgroundVisible: false
             }
         }
     }

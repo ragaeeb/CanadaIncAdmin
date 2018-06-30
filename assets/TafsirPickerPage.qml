@@ -105,6 +105,8 @@ Page
 
                     if (field == titleOption.value && !titlesOnly.checked) {
                         field = "heading";
+                    } else if (field == referenceOption.value && titlesOnly.checked) {
+                        field = "collection_references"
                     }
                     
                     tafsirHelper.searchTafsir(listView, field, query);
@@ -173,6 +175,7 @@ Page
                 }
                 
                 Option {
+                    id: referenceOption
                     imageSource: "images/dropdown/search_reference.png"
                     text: qsTr("Reference") + Retranslate.onLanguageChanged
                     value: "reference"
